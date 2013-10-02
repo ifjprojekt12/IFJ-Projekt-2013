@@ -1,6 +1,10 @@
 /*implementace lexikalniho analyzatoru... */
 
+#include<stdio.h>
 #include "lexical.h"
+#include<string.h>
+#include<stdlib.h>
+#include<ctype.h>
 
 #define buffer_size 100
 #define keywords_table_length 18
@@ -9,9 +13,9 @@
 //ZNAME BUGY
 //retezce, promenne, identifikatory a podobny shit pri velikosti radku vetsi nez je buffer
 //stejne veci jako predchozi, akorat od zacatku radku vzdy doplni dalsim nulovym tokenem do paru...
-//bile mista na konci radku... (krome \n)
+//bile mista na konci radku... (krome \n)??
 
-FILE *source; // - ukazatel na soubor
+FILE *source; //prom. - zdrojovy soubor
 char buffer[buffer_size]; //buffer
 unsigned int pos_buffer = 0; //aktualni pozice v bufferu
 
@@ -71,6 +75,7 @@ void token_init(TOKEN *token){
   token->null = -1;
   token->id_name = NULL;
 }
+
 //------------------------------------------------
 TOKEN get_token(){
   TOKEN new_tok;
@@ -122,7 +127,34 @@ TOKEN get_token(){
       pos_buffer = 0;
     } else {break;}
   }
-  //blokove... DODELAT!!!
+
+  //oddelavame blokove komentare
+  if(buffer[pos_buffer] == '/' && buffer[pos_buffer+1] == '*'){
+    pos_buffer = pos_buffer + 2;
+    while(1){
+      if(buffer[pos_buffer] == '\n'){
+        if(read_src() == 1){
+          new_tok.type_token = 0;
+          return new_tok;
+        }
+        pos_buffer = 0;
+      }
+      if(buffer[pos_buffer] == '*' && buffer[pos_buffer+1] == '/'){
+        pos_buffer = pos_buffer + 2;
+        break;
+      }
+      pos_buffer++;
+    }
+
+    //tak detekujeme posledni \n na radku... again
+    if(buffer[pos_buffer] == '\n'){
+      if(read_src() == 1){
+        new_tok.type_token = 50;
+        return new_tok;
+      }
+      pos_buffer = 0;
+    }
+  }
 
   //a prebytecna bila mista... DODELAT!!!
   while(1){
@@ -160,31 +192,36 @@ TOKEN get_token(){
     pos_buffer++;
     return new_tok;
   }
+
   //************************************************
-  //+ 10-23
+  //+
     if(buffer[pos_buffer] == '+'){
     new_tok.type_token = 10;
     pos_buffer++;
     return new_tok;
   }
+
   //-
   if(buffer[pos_buffer] == '-'){
     new_tok.type_token = 11;
     pos_buffer++;
     return new_tok;
   }
+
   //*
   if(buffer[pos_buffer] == '*'){
     new_tok.type_token = 12;
     pos_buffer++;
     return new_tok;
   }
+
   // /
   if(buffer[pos_buffer] == '/'){
     new_tok.type_token = 13;
     pos_buffer++;
     return new_tok;
   }
+
   //=== a =
   if(buffer[pos_buffer] == '='){
     pos_buffer++;
@@ -197,18 +234,21 @@ TOKEN get_token(){
       return new_tok;
     }
   }
+
   // !==
   if(buffer[pos_buffer] == '!' && buffer[pos_buffer+1] == '=' && buffer[pos_buffer+2] == '=' ){
     new_tok.type_token = 17;
     pos_buffer = pos_buffer+3;
     return new_tok;
   }
+
   //.
   if(buffer[pos_buffer] == '.'){
     new_tok.type_token = 15;
     pos_buffer++;
     return new_tok;
   }
+
   //>= a >
   if(buffer[pos_buffer] == '>'){
     pos_buffer++;
@@ -221,6 +261,7 @@ TOKEN get_token(){
       return new_tok;
     }
   }
+
   //<= a <
   if(buffer[pos_buffer] == '<'){
     pos_buffer++;
@@ -233,23 +274,28 @@ TOKEN get_token(){
       return new_tok;
     }
   }
+
   //;
   if(buffer[pos_buffer] == ';'){
     new_tok.type_token = 22;
     pos_buffer++;
     return new_tok;
   }
+
   //,
   if(buffer[pos_buffer] == ','){
     new_tok.type_token = 23;
     pos_buffer++;
     return new_tok;
   }
+
   //************************************************
-  //cisla - DODELAT VYCISLENI HODNOTY DANEHO CISLA A KONTROLU TVARU CISLA
+  //cisla
   if((isdigit(buffer[pos_buffer])) != 0){
+    char value[20];
+    int value_pos = 0;
     int cel_or_double = 0;
-    pos_buffer++;
+
     while(1){
       if((isdigit(buffer[pos_buffer])) != 0){
 
@@ -262,15 +308,31 @@ TOKEN get_token(){
       } else {
         break;
       }
+
+      value[value_pos] = buffer[pos_buffer];
+      value_pos++;
       pos_buffer++;
     }
+
+    value[value_pos] = 0;
+
+    if(cel_or_double == 0){
+      new_tok.c_number = atoi(value);
+    }
+
+    if(cel_or_double == 1){
+      new_tok.d_number = atof(value);
+    }
+
     new_tok.type_token = 31;
 
     if(cel_or_double == 1){
       new_tok.type_token = 32;
     }
+
     return new_tok;
   }
+
   //string - DODELAT ZJISTENI OBSAHU RETEZCE!!!
   if(buffer[pos_buffer] == '"'){
     int ende_string = 0;
@@ -293,6 +355,7 @@ TOKEN get_token(){
       }
     }
   }
+
   //************************************************
   //predpokladam, ze promenne a identifikatory vzdy maji za sebou bily znak...
   //identifikator - DODELAT ZJISTENI A ULOZENI NAZVU IDENTIFIKATORU!!!
@@ -311,11 +374,13 @@ TOKEN get_token(){
     id_name[uk]='\0';
 
     new_tok.type_token = 35;
+
     //null...
     if((strcmp(id_name,"null"))){
       new_tok.type_token = 34;
       return new_tok;
     }
+
     //bool...
     if((strcmp(id_name,"false"))){
       new_tok.type_token = 33;
@@ -338,7 +403,6 @@ TOKEN get_token(){
       }
 
     }
-    //printf("%s ",id_name);
     return new_tok;
   }
 

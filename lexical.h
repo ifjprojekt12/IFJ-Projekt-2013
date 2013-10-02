@@ -1,11 +1,6 @@
 #ifndef _LEXICAL_H
 #define _LEXICAL_H
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-
 //datove typy pro lex.analyzator ...
 FILE *source;
 
