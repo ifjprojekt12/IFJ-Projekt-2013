@@ -1,10 +1,6 @@
 /*implementace lexikalniho analyzatoru... */
 
-#include<stdio.h>
 #include "lexical.h"
-#include<string.h>
-#include<stdlib.h>
-#include<ctype.h>
 
 #define buffer_size 100
 #define keywords_table_length 18
@@ -196,7 +192,7 @@ TOKEN get_token(){
   //************************************************
   //+
     if(buffer[pos_buffer] == '+'){
-    new_tok.type_token = 10;
+    new_tok.type_token = 14;
     pos_buffer++;
     return new_tok;
   }
@@ -230,7 +226,7 @@ TOKEN get_token(){
       new_tok.type_token = 16;
       return new_tok;
     } else {
-      new_tok.type_token = 14;
+      new_tok.type_token = 10;
       return new_tok;
     }
   }
@@ -290,20 +286,22 @@ TOKEN get_token(){
   }
 
   //************************************************
-  //cisla
+  //cisla --- bug pico !!!!!
   if((isdigit(buffer[pos_buffer])) != 0){
     char value[20];
     int value_pos = 0;
     int cel_or_double = 0;
+    int exponent = 0;
 
     while(1){
       if((isdigit(buffer[pos_buffer])) != 0){
 
       } else if(buffer[pos_buffer] == 'E' || buffer[pos_buffer] == 'e'){
           cel_or_double = 1;
+          exponent = 1;
       } else if(buffer[pos_buffer] == '.'){
           cel_or_double = 1;
-      } else if(buffer[pos_buffer] == '+' || buffer[pos_buffer] == '-'){
+      } else if((buffer[pos_buffer] == '+' || buffer[pos_buffer] == '-') && exponent == 1){
           cel_or_double = 1;
       } else {
         break;
@@ -376,23 +374,23 @@ TOKEN get_token(){
     new_tok.type_token = 35;
 
     //null...
-    if((strcmp(id_name,"null"))){
+    if((strcmp(id_name,"null")) == 0){
       new_tok.type_token = 34;
       return new_tok;
     }
 
     //bool...
-    if((strcmp(id_name,"false"))){
+    if((strcmp(id_name,"false")) == 0){
       new_tok.type_token = 33;
       new_tok.boolean = 0;
       return new_tok;
     }
-    if((strcmp(id_name,"true"))){
+    if((strcmp(id_name,"true")) == 0){
       new_tok.type_token = 33;
       new_tok.boolean = 1;
       return new_tok;
     }
-
+    //_________!!!
     for(unsigned int a = 0;a < keywords_table_length;a++){
       if((strcmp(table_words[a],id_name)) == 0){
         if(a < 7){
