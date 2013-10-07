@@ -11,6 +11,9 @@
 //stejne veci jako predchozi, akorat od zacatku radku vzdy doplni dalsim nulovym tokenem do paru...
 //bile mista na konci radku... (krome \n)??
 
+//dodelat reallocy u identifikatoru, retezcu a promennych
+//a dodelat podminky na to, ze malloc prosel a neexnul nam nekde v prubehu (0/100?)
+
 FILE *source; //prom. - zdrojovy soubor
 char buffer[buffer_size]; //buffer
 unsigned int pos_buffer = 0; //aktualni pozice v bufferu
@@ -286,7 +289,7 @@ TOKEN get_token(){
   }
 
   //************************************************
-  //cisla --- bug pico !!!!!
+  //cisla --- bug .... problem je akorat v tom, ze sem po par dnech zapomnel jaky, nebo jestli uz je spraveny :))
   if((isdigit(buffer[pos_buffer])) != 0){
     char value[20];
     int value_pos = 0;
@@ -331,24 +334,41 @@ TOKEN get_token(){
     return new_tok;
   }
 
-  //string - DODELAT ZJISTENI OBSAHU RETEZCE!!!
+  //string
   if(buffer[pos_buffer] == '"'){
     int ende_string = 0;
+    int length_string = 0;
 
     pos_buffer++;
 
     while(ende_string == 0){
       pos_buffer++;
+
       if(pos_buffer == strlen(buffer)){
         if((read_src()) == 1){
           return new_tok;
         }
         pos_buffer = 0;
       }
+
+      //**********************************
+      //ukladani obsahu retezce a prace s pameti kam se uklada
+      if(new_tok.string == NULL){
+        new_tok.string = malloc(sizeof(char)*100);
+      }
+
+      //DOPLNIT REALLOC <<------
+
+      new_tok.string[length_string] = buffer[pos_buffer-1];
+      length_string++;
+
+      //*********************************
       if(buffer[pos_buffer] == '"'){
         ende_string = 1;
         new_tok.type_token = 30;
         pos_buffer++;
+
+        new_tok.string[length_string] = '\0';
         return new_tok;
       }
     }
@@ -356,9 +376,8 @@ TOKEN get_token(){
 
   //************************************************
   //predpokladam, ze promenne a identifikatory vzdy maji za sebou bily znak...
-  //identifikator - DODELAT ZJISTENI A ULOZENI NAZVU IDENTIFIKATORU!!!
   if((isalpha(buffer[pos_buffer])) != 0 || buffer[pos_buffer] == '_'){
-    char id_name[50];
+    char id_name[500];
     int uk = 0;
     id_name[uk] = buffer[pos_buffer];
     uk++;
@@ -401,16 +420,43 @@ TOKEN get_token(){
       }
 
     }
+
+    //pokud to neni klicove slovo, nebo vestavena funkce ulozime to do id_name v tokenu
+    if(new_tok.type_token == 35){
+      if(new_tok.id_name == NULL){
+        new_tok.id_name = malloc(sizeof(char)*strlen(id_name)+10);
+      }
+
+      strcpy(new_tok.id_name,id_name);
+
+    }
+
     return new_tok;
   }
 
-  //promenna - DODELAT ZJISTENI A ULOZENI NAZVU PROMENNE!!!
+  //promenna
   if(buffer[pos_buffer] == '$'){
+    int length_string = 0;
+
     pos_buffer++;
     if((isalpha(buffer[pos_buffer])) != 0 || buffer[pos_buffer] == '_'){
       while((isalpha(buffer[pos_buffer])) != 0 || buffer[pos_buffer] == '_' || (isdigit(buffer[pos_buffer])) != 0){
+
+        //ukladani nazvu promenne a prace s pameti kam se uklada
+        if(new_tok.id_name == NULL){
+          new_tok.id_name = malloc(sizeof(char)*100);
+        }
+
+        //DOPLNIT REALLOC <<------
+
+        new_tok.id_name[length_string] = buffer[pos_buffer];
+        length_string++;
+
         pos_buffer++;
       }
+
+      new_tok.id_name[length_string] = '\0';
+
       new_tok.type_token = 36;
       return new_tok;
     }
