@@ -7,9 +7,9 @@
 #define NaN 0.0/0.0
 
 //ZNAME BUGY
-//retezce, promenne, identifikatory a podobny shit pri velikosti radku vetsi nez je buffer
-//stejne veci jako predchozi, akorat od zacatku radku vzdy doplni dalsim nulovym tokenem do paru...
-//bile mista na konci radku... (krome \n)??
+//retezce, promenne, identifikatory a podobny shit pri velikosti radku vetsi nez je buffer - dodelat
+
+//prebytecne bile znaky na konci radku, tj. treba 2-3 zbytecne tabulatory
 
 //dodelat reallocy u identifikatoru, retezcu a promennych
 //a dodelat podminky na to, ze malloc prosel a neexnul nam nekde v prubehu (0/100?)
@@ -79,7 +79,11 @@ void token_init(TOKEN *token){
 TOKEN get_token(){
   TOKEN new_tok;
 
+  //nastaveni vychazich hodnot noveho tokenu
   token_init(&new_tok);
+
+    /* kontroly pred jadrem zjistovani dalsiho tokenu
+  prebytecna bila mista, konce radku a podobne */
 
   //jednoducha kontrola na zacatek souboru <?php
   if(start == 0){
@@ -161,9 +165,11 @@ TOKEN get_token(){
       pos_buffer++;
     } else break;
   }
+
   //-------------------------------------------------
   //konecny automat...
   //-------------------------------------------------
+  //zavorky
   //znak (
   if(buffer[pos_buffer] == '('){
     new_tok.type_token = 40;
@@ -193,6 +199,7 @@ TOKEN get_token(){
   }
 
   //************************************************
+  //aritmeticke operatory, rovna se a podobne
   //+
     if(buffer[pos_buffer] == '+'){
     new_tok.type_token = 14;
@@ -299,20 +306,56 @@ TOKEN get_token(){
     while(1){
       if((isdigit(buffer[pos_buffer])) != 0){
 
+      //par podminek zjistujicich, zda cislo bude desetine, nebo zustane jako cele
       } else if(buffer[pos_buffer] == 'E' || buffer[pos_buffer] == 'e'){
           cel_or_double = 1;
+
+          //duplikace exponentu v cisle
+          if(exponent == 1){
+            return new_tok;
+          }
+
           exponent = 1;
+
+          //neprazdny exponent
+          if(!((isdigit(buffer[pos_buffer + 1])) != 0)){
+            if(buffer[pos_buffer + 1] != '+' && buffer[pos_buffer +1] != '-')
+              return new_tok;
+          }
+
       } else if(buffer[pos_buffer] == '.'){
+
+          //duplikace desetinne carky v cisle
+          if(cel_or_double == 1){
+            return new_tok;
+          }
           cel_or_double = 1;
+
+          //neprazdna desetinna cast
+          if((isdigit(buffer[pos_buffer + 1])) != 0){}
+          else return new_tok;
+
       } else if((buffer[pos_buffer] == '+' || buffer[pos_buffer] == '-') && exponent == 1){
           cel_or_double = 1;
+
+          //neprazdny exponent
+          if(!((isdigit(buffer[pos_buffer + 1])) != 0)){
+            return new_tok;
+          }
+
       } else {
-        break;
+          break;
       }
 
       value[value_pos] = buffer[pos_buffer];
       value_pos++;
       pos_buffer++;
+    }
+
+    //podminka zhruba na tvary 1aa,1.0aa a tak dale, funguje zatim na pismenka
+    if((isalpha(buffer[pos_buffer])) != 0){
+      new_tok.type_token = 0;
+      return new_tok;
     }
 
     value[value_pos] = 0;
@@ -334,7 +377,8 @@ TOKEN get_token(){
     return new_tok;
   }
 
-  //string
+  //************************************************
+  //retezce v " "
   if(buffer[pos_buffer] == '"'){
     int ende_string = 0;
     int length_string = 0;
@@ -351,7 +395,7 @@ TOKEN get_token(){
         pos_buffer = 0;
       }
 
-      //**********************************
+      //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       //ukladani obsahu retezce a prace s pameti kam se uklada
       if(new_tok.string == NULL){
         new_tok.string = malloc(sizeof(char)*100);
@@ -361,8 +405,8 @@ TOKEN get_token(){
 
       new_tok.string[length_string] = buffer[pos_buffer-1];
       length_string++;
+      //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      //*********************************
       if(buffer[pos_buffer] == '"'){
         ende_string = 1;
         new_tok.type_token = 30;
@@ -375,7 +419,7 @@ TOKEN get_token(){
   }
 
   //************************************************
-  //predpokladam, ze promenne a identifikatory vzdy maji za sebou bily znak...
+  //predpokladam, ze promenne a identifikatory vzdy maji za sebou bily znak... asi?
   if((isalpha(buffer[pos_buffer])) != 0 || buffer[pos_buffer] == '_'){
     char id_name[500];
     int uk = 0;
@@ -434,6 +478,7 @@ TOKEN get_token(){
     return new_tok;
   }
 
+  //************************************************
   //promenna
   if(buffer[pos_buffer] == '$'){
     int length_string = 0;
@@ -442,6 +487,7 @@ TOKEN get_token(){
     if((isalpha(buffer[pos_buffer])) != 0 || buffer[pos_buffer] == '_'){
       while((isalpha(buffer[pos_buffer])) != 0 || buffer[pos_buffer] == '_' || (isdigit(buffer[pos_buffer])) != 0){
 
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         //ukladani nazvu promenne a prace s pameti kam se uklada
         if(new_tok.id_name == NULL){
           new_tok.id_name = malloc(sizeof(char)*100);
@@ -451,6 +497,7 @@ TOKEN get_token(){
 
         new_tok.id_name[length_string] = buffer[pos_buffer];
         length_string++;
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         pos_buffer++;
       }
@@ -462,6 +509,7 @@ TOKEN get_token(){
     }
   }
 
+  //************************************************
   //kontrolujem zda mame konec radku po tokenu...
   if(pos_buffer == (strlen(buffer)-1)){
     pos_buffer = 0;
