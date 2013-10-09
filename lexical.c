@@ -1,4 +1,9 @@
-/*implementace lexikalniho analyzatoru... */
+/*
+IFJ 2013/14
+
+Lexikalni analyzator
+
+*/
 
 #include "lexical.h"
 

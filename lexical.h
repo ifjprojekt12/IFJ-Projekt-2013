@@ -1,3 +1,11 @@
+/*
+IFJ 2013/14
+
+Lexikalni analyzator
+
+*/
+
+
 #ifndef _LEXICAL_H
 #define _LEXICAL_H
 
