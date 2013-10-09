@@ -32,9 +32,11 @@ enum finalCode {
 	sSemFceDef, /* nedefinovana funkce nebo redefinovana */
 	sSemFceParam,	/* chybejici parametr pro volani funkce */
 	sSemVar,	/*  Nedeklarovana promenna */
-	sSynZero,	/* Chyba deleni nulou */
+	sSynZero = 10,	/* Chyba deleni nulou */
 	sSynTypeConv,	/* pretypovani promenne na cislo funkce doubleval */
-	
+	aSynCompatib,	/* chyba typove kompatibility v aritmetickych a relacnich vyrazech */
+	aSynRest,	/* ostatni chyby semantiky */
+	aIntern = 99,   /* interni chyba interpretu tj. neovlivnena vstupnim programem */
 };
 
 enum error {
