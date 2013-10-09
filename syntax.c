@@ -1,14 +1,28 @@
 #include "syntax.h"
 
+const char*MESSAGE[]=
+{
+	"Dosazena maximalni velikost pole tokenu",
+	"Chybna syntaxe struktury programu",
+	"Nespravne zapsany vyraz",
+};
+
 int syntaxer()
 {
     //pomocna promenna
     TOKEN unit;
+
     // vytvoreni pole tokenu a jeho inicializace
     TOKEN array[I_MAX];
     initialize_array(array);
 
+    // vytvoreni zasobniku a jeho inicializace
+    tStack leStack;
+    init(&leStack);
+
     unit = get_token();
+    int type = 0;
+    int top = 0;
     int i = 0;
     int brackets = 0;
     int super_brackets = 0;
@@ -17,18 +31,19 @@ int syntaxer()
         array[i++] = unit;
         if( i == I_MAX )
         {
-            printf("Dosazena maximalni velikost pole tokenu.\n");
+            printERR(eIMAX);
             break;
         }
 
         // if, elseif, while
         if( unit.type_token == 1 || unit.type_token == 3 || unit.type_token == 4 )
         {
+            type = unit.type_token;
             unit = get_token();
             array[i++] = unit;
             if( i == I_MAX )
             {
-                printf("Dosazena maximalni velikost pole tokenu.\n");
+                printERR(eIMAX);
                 break;
             }
 
@@ -36,15 +51,15 @@ int syntaxer()
             {
                 if( (i = expression(array, i, get_token(), END_B)) < 0 )
                 {
-                    printf("chyba\n");
+                    // chyba ve vyrazu
+                    printERR(eEXPR);
                     break;
-                    // TODO chyba
                 }
                 unit = get_token();
                 array[i++] = unit;
                 if( i == I_MAX )
                 {
-                    printf("Dosazena maximalni velikost pole tokenu.\n");
+                    printERR(eIMAX);
                     break;
                 }
 
@@ -54,15 +69,15 @@ int syntaxer()
                 }
                 else
                 {
-                    // TODO chyba
-                    printf("Chybi slozena oteviraci zavorka.\n");
+                    // chybejici znak {
+                    printERR(eWRONG);
                     break;
                 }
             }
             else
             {
-                // TODO chyba
-                printf("chyba\n");
+                // chybejici znak (
+                printERR(eWRONG);
                 break;
             }
         }
@@ -70,19 +85,19 @@ int syntaxer()
         {
             if( (i = expression(array, i, get_token(), END_S)) < 0)
             {
-                printf("chyba\n");
+                // chyba ve vyrazu
+                printERR(eEXPR);
                 break;
-                // TODO chyba
             }
         }
         else if( unit.type_token == 2 )   // else
         {
+            type = unit.type_token;
             unit = get_token();
             array[i++] = unit;
             if( i == I_MAX )
             {
-                // TODO chyba
-                printf("Dosazena maximalni velikost pole tokenu.\n");
+                printERR(eIMAX);
                 break;
             }
 
@@ -92,8 +107,8 @@ int syntaxer()
             }
             else
             {
-                // TODO chyba
-                printf("Chybi slozena oteviraci zavorka.\n");
+                // chybejici znak {
+                printERR(eWRONG);
                 break;
             }
         }
@@ -103,7 +118,7 @@ int syntaxer()
             array[i++] = unit;
             if( i == I_MAX )
             { 
-                printf("Dosazena maximalni velikost pole tokenu.\n");
+                printERR(eIMAX);
                 break;
             }
 
@@ -111,35 +126,183 @@ int syntaxer()
             {
                 if( (i = expression(array, i, get_token(), END_S)) < 0 )
                 {
-                    // TODO chyba
-                    printf("chyba\n");
+                    // chyba ve vyrazu
+                    printERR(eEXPR);
                     break;
                 }
             }
             else
             {
-                // TODO chyba
-                printf("chyba\n");
+                // chybejici znak =
+                printERR(eWRONG);
                 break;
             }
         }
-        else if( unit.type_token == 6 )
+        else if( unit.type_token == 6 )     // function
+        {
+            type = unit.type_token;
+            unit = get_token();
+            array[i++] = unit;
+            if( i == I_MAX )
+            {
+                printERR(eIMAX);
+                break;
+            }
+
+            if( unit.type_token == 35 )     // id
+            {
+                unit = get_token();
+                array[i++] = unit;
+                if( i == I_MAX )
+                {
+                    printERR(eIMAX);
+                    break;
+                }
+
+                if( unit.type_token == 40 )     // (
+                {
+                    unit = get_token(); 
+                    array[i++] = unit;
+                    
+                    bool id = true;
+                    bool err = false;
+                    // kontrola posloupnosti zapisu parametru funkci
+                    while( unit.type_token != 41 )  // )
+                    {
+                        if( id && unit.type_token == 36 )
+                            id = false;
+                        else if( !id && unit.type_token == 23 )     // ,
+                            id = true;
+                        else
+                        {
+                            // nespravny token ci posloupnost
+                            printERR(eWRONG);
+                            err = true;
+                            break;
+                        }
+
+                        unit = get_token();
+                        array[i++] = unit;
+                        if( i == I_MAX )
+                        {
+                            printERR(eIMAX);
+                            err = true;
+                            break;
+                        }
+                    }
+                    if( id || err )
+                    {
+                        // spatna posloupnost parametru funkce nebo prokroceno I_MAX
+                        printERR(eWRONG);
+                        break;
+                    }
+                    
+                    unit = get_token();
+                    array[i++] = unit;
+                    if( i == I_MAX )
+                    {
+                        printERR(eIMAX);
+                        break;
+                    }
+
+                    if( unit.type_token == 42 ) // {
+                    {
+                        super_brackets++;
+                    }
+                    else
+                    {
+                        // chybejici znak {
+                        printERR(eWRONG);
+                        break;
+                    }
+                }
+            }
+        }
         else if( unit.type_token == 43 )    // }
         {
             super_brackets--;
             if( super_brackets < 0 )
             {
-                printf("prilis mnoho slozenych uzaviracich zavorek\n");
+                // vice } nez { zavorek
+                printERR(eWRONG);
                 break;
-                // TODO chyba
+            }
+
+            if( SEmpty( &leStack ) )
+            {
+                // zavorka s prazdnym zasobnikem
+                printERR(eWRONG);
+            }
+            TOP( &leStack, &top );
+            if( top == cREADY )
+            {
+                POP( &leStack );
+                TOP( &leStack, &top );
+            }
+            switch(top) {
+                case cWHILE:
+                case cFOR:
+                case cFUNCTION:
+                case cELSE:     POP( &leStack );
+                                break;
+                case cIF:
+                case cELSEIF:   POP( &leStack );
+                                PUSH( &leStack, cREADY );
             }
         }
         else
         {
-            // TODO chyba
-            printf("chyba\n");
+            // token, ktery se nesmi nalezat na zacatku radku
+            printERR(eWRONG);
             break;
         }
+
+        // ukladani na zasobnik
+        switch(type) {
+            case 1: // if 
+            case 4: // while
+            case 5: // for
+            case 6:
+                    if( !SEmpty( &leStack ) )
+                    {
+                        TOP( &leStack, &top );
+                        if( top == cREADY )
+                            POP( &leStack );
+                    }
+                    if( type == 1 )
+                        PUSH( &leStack, cIF );
+                    else if( type == 4 )
+                        PUSH( &leStack, cWHILE);
+                    else if( type == 6 )
+                        PUSH( &leStack, cFUNCTION );
+                    else
+                        PUSH( &leStack, cFOR);
+                    break;
+
+            case 2: // else
+            case 3: // elseif
+                    if( SEmpty( &leStack ) )
+                    {
+                        // prazdny zasobnik ( == else(if) bez IF ?)
+                        printERR(eWRONG);
+                        break;
+                    }
+                    TOP( &leStack, &top );
+                    if( top == cREADY )
+                    {
+                        POP( &leStack );
+                        if( type == 2 )
+                            PUSH( &leStack, cELSE );
+                        else
+                            PUSH( &leStack, cELSEIF );
+                    }
+                    else
+                    {
+                        // else(if) bez IF
+                        printERR(eWRONG);
+                    }
+        }
+        type = 0;
     
         unit = get_token(); // nacteni dalsiho tokenu
     }
@@ -147,10 +310,11 @@ int syntaxer()
 
     if( brackets != 0 && super_brackets != 0 )
     {
-        printf("nespravny pocet zavorek\n");
-        // TODO chyba
+        // vice { nez } v celem programu
+        printERR(eWRONG);
     }
 
+/*
     // vypis pole tokenu
     for(int x=0; x<I_MAX; x++)
     {
@@ -158,6 +322,7 @@ int syntaxer()
         printf("%d ", array[x].type_token);
     }
     printf("\n");
+*/
 
     return EXIT_SUCCESS;
 }
@@ -184,7 +349,7 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending)
         array[i++] = unit;
         if( i == I_MAX )
         {
-            printf("Dosazena maximalni velikost pole tokenu.\n");
+            printERR(eIMAX);
             break;
         }
 
@@ -211,8 +376,8 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending)
                     break;
                 else
                 {
-                    // TODO chyba!!
-                    printf("chyba\n");
+                    // chyba, ted nevim presne jaka
+                    printERR(eEXPR);
                     return -1;
                 }
             }
@@ -221,16 +386,16 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending)
         {
             if( brackets != 0 )
             {
-                // TODO chyba
-                printf("chybi zavorka ve vyrazu.\n");
+                // chybi zavorka ve vyrazu
+                printERR(eEXPR);
                 return -1;
             }
             break;
         }
         else
         {
-            // TODO chyba
-            printf("Znak na nespravnem miste.\n");
+            // znak na nespravnem miste
+            printERR(eEXPR);
             return -1;
         }
 
@@ -238,4 +403,10 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending)
     }
 
     return i;
+}
+
+// vypis chyboveho hlaseni
+void printERR(int err)
+{
+    fprintf(stderr, "Chyba: %s.\n", MESSAGE[err]);
 }
