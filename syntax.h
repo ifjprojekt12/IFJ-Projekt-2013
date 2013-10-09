@@ -25,6 +25,18 @@ enum conditions {
     cREADY,
 };
 
+
+enum finalCode {
+	sOk,		/* vse v poradku */
+	sSyn,		/* chyba syntakticke struktury programy */		
+	sSemFceDef, /* nedefinovana funkce nebo redefinovana */
+	sSemFceParam,	/* chybejici parametr pro volani funkce */
+	sSemVar,	/*  Nedeklarovana promenna */
+	sSynZero,	/* Chyba deleni nulou */
+	sSynTypeConv,	/* pretypovani promenne na cislo funkce doubleval */
+	
+};
+
 enum error {
 	eIMAX,
 	eWRONG,
