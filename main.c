@@ -10,20 +10,22 @@
 
 int main(int argc, char *argv[])
 {
+	int eCode;
 	/*Soubor se nacte pres parametr*/
 	if(argc != 2)
 	{
+		//TODO ODSTRANIT  printf
 		printf("Chybi argument!\n");
-		return 0;
+		return sINTERN;
 	}
 	if(open_source(argv[1]) != 0)
 	{
+		//TODO ODSTRANIT  printf
 		printf("nepodarilo se otevrit soubor \"%s\".\n", argv[1]);
-		return 1;
+		return sINTERN;
 	}
 
 	/*Po otevreni souboru prechazime do syntaxe*/
-	syntaxer();
-
-	return EXIT_SUCCESS;
+	eCode = syntaxer();
+	return eCode;
 }
