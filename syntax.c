@@ -9,9 +9,9 @@ const char*MESSAGE[]=
 
 int syntaxer()
 {
-    //pomocna promenna
+    // promenna do ktere ulozime token
     TOKEN unit;
-
+    unit = get_token();
     // vytvoreni pole tokenu a jeho inicializace
     TOKEN array[I_MAX];
     initialize_array(array);
@@ -19,19 +19,23 @@ int syntaxer()
     // vytvoreni zasobniku a jeho inicializace
     tStack leStack;
     init(&leStack);
-
-    unit = get_token();
+   
+    // pomocne promenne
     int type = 0;
     int top = 0;
     int i = 0;
     int brackets = 0;
     int super_brackets = 0;
+    int eCode = sOK;
+    /* -------------------------------- */
+    
     while(unit.type_token > 0 && unit.type_token != 50 )    // konec pri chybe nebo EOF
     {
         array[i++] = unit;
         if( i == I_MAX )
         {
             printERR(eIMAX);
+            eCode = sINTERN;
             break;
         }
 
@@ -44,6 +48,7 @@ int syntaxer()
             if( i == I_MAX )
             {
                 printERR(eIMAX);
+            	eCode = sINTERN;
                 break;
             }
 
@@ -53,6 +58,10 @@ int syntaxer()
                 {
                     // chyba ve vyrazu
                     printERR(eEXPR);
+                    if(i == -1)
+                    	eCode = sSyn;
+                    else
+                    	ecode = sINTERN;
                     break;
                 }
                 unit = get_token();
@@ -60,6 +69,7 @@ int syntaxer()
                 if( i == I_MAX )
                 {
                     printERR(eIMAX);
+                    eCode = sINTERN;
                     break;
                 }
 
@@ -71,6 +81,7 @@ int syntaxer()
                 {
                     // chybejici znak {
                     printERR(eWRONG);
+                    eCode = sSyn;
                     break;
                 }
             }
@@ -78,6 +89,7 @@ int syntaxer()
             {
                 // chybejici znak (
                 printERR(eWRONG);
+                eCode = sSyn;
                 break;
             }
         }
@@ -87,6 +99,10 @@ int syntaxer()
             {
                 // chyba ve vyrazu
                 printERR(eEXPR);
+                if(i == -1)
+                	eCode = sSyn;
+                else
+                    	ecode = sINTERN;
                 break;
             }
         }
@@ -98,6 +114,7 @@ int syntaxer()
             if( i == I_MAX )
             {
                 printERR(eIMAX);
+                eCode = sINTERN;
                 break;
             }
 
@@ -109,6 +126,7 @@ int syntaxer()
             {
                 // chybejici znak {
                 printERR(eWRONG);
+                eCode = sSyn;
                 break;
             }
         }
@@ -119,6 +137,7 @@ int syntaxer()
             if( i == I_MAX )
             { 
                 printERR(eIMAX);
+                eCode = sINTERN;
                 break;
             }
 
@@ -128,6 +147,10 @@ int syntaxer()
                 {
                     // chyba ve vyrazu
                     printERR(eEXPR);
+                    if(i == -1)
+                    	eCode = sSyn;
+                    else
+                    	ecode = sINTERN;
                     break;
                 }
             }
@@ -135,6 +158,7 @@ int syntaxer()
             {
                 // chybejici znak =
                 printERR(eWRONG);
+                eCode = sSyn;
                 break;
             }
         }
@@ -146,6 +170,7 @@ int syntaxer()
             if( i == I_MAX )
             {
                 printERR(eIMAX);
+                eCode = sINTERN;
                 break;
             }
 
@@ -156,6 +181,7 @@ int syntaxer()
                 if( i == I_MAX )
                 {
                     printERR(eIMAX);
+                    eCode = sINTERN;
                     break;
                 }
 
@@ -177,6 +203,7 @@ int syntaxer()
                         {
                             // nespravny token ci posloupnost
                             printERR(eWRONG);
+                            eCode = sSyn;
                             err = true;
                             break;
                         }
@@ -186,6 +213,7 @@ int syntaxer()
                         if( i == I_MAX )
                         {
                             printERR(eIMAX);
+                            eCode = sINTERN;
                             err = true;
                             break;
                         }
@@ -194,6 +222,7 @@ int syntaxer()
                     {
                         // spatna posloupnost parametru funkce nebo prokroceno I_MAX
                         printERR(eWRONG);
+                        eCode = sSyn;
                         break;
                     }
                     
@@ -202,6 +231,7 @@ int syntaxer()
                     if( i == I_MAX )
                     {
                         printERR(eIMAX);
+                        eCode = sINTERN;
                         break;
                     }
 
@@ -213,6 +243,7 @@ int syntaxer()
                     {
                         // chybejici znak {
                         printERR(eWRONG);
+                        eCode = sSyn;
                         break;
                     }
                 }
@@ -225,6 +256,7 @@ int syntaxer()
             {
                 // vice } nez { zavorek
                 printERR(eWRONG);
+                eCode = sSyn;
                 break;
             }
 
@@ -232,6 +264,8 @@ int syntaxer()
             {
                 // zavorka s prazdnym zasobnikem
                 printERR(eWRONG);
+                eCode = sSyn;
+                break;
             }
             TOP( &leStack, &top );
             if( top == cREADY )
@@ -254,6 +288,7 @@ int syntaxer()
         {
             // token, ktery se nesmi nalezat na zacatku radku
             printERR(eWRONG);
+            eCode = sSyn;
             break;
         }
 
@@ -285,6 +320,7 @@ int syntaxer()
                     {
                         // prazdny zasobnik ( == else(if) bez IF ?)
                         printERR(eWRONG);
+                        eCode = sSyn;
                         break;
                     }
                     TOP( &leStack, &top );
@@ -300,6 +336,8 @@ int syntaxer()
                     {
                         // else(if) bez IF
                         printERR(eWRONG);
+                        eCode = sSyn;
+                        break;
                     }
         }
         type = 0;
@@ -312,6 +350,7 @@ int syntaxer()
     {
         // vice { nez } v celem programu
         printERR(eWRONG);
+        eCode = sSyn;
     }
 
 /*
@@ -324,7 +363,7 @@ int syntaxer()
     printf("\n");
 */
 
-    return EXIT_SUCCESS;
+    return eCode;
 }
 
 // funkce pro inicializaci pole tokenu
@@ -350,7 +389,7 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending)
         if( i == I_MAX )
         {
             printERR(eIMAX);
-            break;
+            return -2;
         }
 
         if( wasSign && unit.type_token == 40 )  // (
