@@ -34,9 +34,9 @@ enum finalCode {
 	sSemVar,	/*  Nedeklarovana promenna */
 	sSynZero = 10,	/* Chyba deleni nulou */
 	sSynTypeConv,	/* pretypovani promenne na cislo funkce doubleval */
-	aSynCompatib,	/* chyba typove kompatibility v aritmetickych a relacnich vyrazech */
-	aSynRest,	/* ostatni chyby semantiky */
-	aIntern = 99,   /* interni chyba interpretu tj. neovlivnena vstupnim programem */
+	sSynCompatib,	/* chyba typove kompatibility v aritmetickych a relacnich vyrazech */
+	sSynRest,	/* ostatni chyby semantiky */
+	sIntern = 99,   /* interni chyba interpretu tj. neovlivnena vstupnim programem */
 };
 
 enum error {
