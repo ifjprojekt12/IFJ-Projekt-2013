@@ -27,7 +27,7 @@ enum conditions {
 
 
 enum finalCode {
-	sOk,		/* vse v poradku */
+	sOK,		/* vse v poradku */
 	sSyn,		/* chyba syntakticke struktury programy */		
 	sSemFceDef, /* nedefinovana funkce nebo redefinovana */
 	sSemFceParam,	/* chybejici parametr pro volani funkce */
@@ -36,7 +36,7 @@ enum finalCode {
 	sSynTypeConv,	/* pretypovani promenne na cislo funkce doubleval */
 	sSynCompatib,	/* chyba typove kompatibility v aritmetickych a relacnich vyrazech */
 	sSynRest,	/* ostatni chyby semantiky */
-	sIntern = 99,   /* interni chyba interpretu tj. neovlivnena vstupnim programem */
+	sINTERN = 99,   /* interni chyba interpretu tj. neovlivnena vstupnim programem */
 };
 
 enum error {
