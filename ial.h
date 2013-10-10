@@ -15,19 +15,19 @@ typedef struct LIST
     struct LIST *next;
 } *LIST;
 
-typedef struct node
+typedef struct NODE
 {
 	char *key; // klic = jmeno promenne / funkce
 	TOKEN data;
     LIST *params;
 
-	struct node *LPtr;                                    // levy podstrom
-	struct node *RPtr;                                   // pravy podstrom
-} *node;
-
-
+	struct NODE *LPtr;                                    // levy podstrom
+	struct NODE *RPtr;                                   // pravy podstrom
+} *NODE;
 
 #endif // IAL_H_INCLUDED
 
-void treeInit (node*);
-void varInit (node*);
+
+void treeInit (NODE*);
+void insertVarToTree (char *, TOKEN, NODE*);
+NODE searchIdent (char *, NODE*);
