@@ -29,7 +29,7 @@ void insertVarToTree (char *key, TOKEN data, NODE *ptr)
         {
             unsigned int maxlen = strlen(key); // maximalni delka klice
             if (strlen(node->key) > maxlen) maxlen = strlen(node->key);
-            for (unsigned int i = 0; i < maxlen-1; i++)
+            for (unsigned int i = 0; i < maxlen; i++)
             {
                 if (i == strlen(key) && i < strlen(node->key))
                 {
@@ -64,7 +64,7 @@ NODE searchIdent (char *key, NODE *ptr)
     else
     {
         unsigned int maxlen = strlen(key);
-        for (unsigned int i = 0; i < maxlen; i++)
+        for (unsigned int i = 0; i < maxlen+1; i++)
         {
             if (i == maxlen)
             {
