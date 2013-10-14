@@ -30,6 +30,7 @@ typedef struct instruct{
   struct instruct *left; //predchozi prvek
   struct instruct *right; //nasledujici prvek
 
+  struct instruct *jump; //adresa instrukce, kam se bude presunovat v pripade skoku na "pasce"
 } *INSTRUCT;
 
 //seznam instrukci
@@ -43,7 +44,7 @@ typedef struct list_3ak{
 void new_instr_list(LIST_3AK *);
 
 //vytvori instrukci a prida ji na konec seznamu
-int new_instuct(LIST_3AK *, int id, NODE *, NODE *, NODE *);
+int new_instuct(LIST_3AK *, int id, NODE *, NODE *, NODE *, INSTRUCT);
 
 //smazani a uvolneni pameti po seznamu instrukci
 void destroy_instr_list(LIST_3AK *list);

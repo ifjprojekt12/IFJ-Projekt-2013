@@ -18,7 +18,7 @@ void new_instr_list(LIST_3AK *new_list){
 }
 
 //pridava novou instrukci na konec seznamu
-int new_instuct(LIST_3AK *list, int id, NODE *op_1, NODE *op_2, NODE *result){
+int new_instuct(LIST_3AK *list, int id, NODE *op_1, NODE *op_2, NODE *result, INSTRUCT jump){
   INSTRUCT new_instr;
 
   //urcime pamet pro novou instrukci
@@ -32,6 +32,7 @@ int new_instuct(LIST_3AK *list, int id, NODE *op_1, NODE *op_2, NODE *result){
   new_instr->operand_1 = *op_1;
   new_instr->operand_2 = *op_2;
   new_instr->result = *result;
+  new_instr->jump = jump;
 
   new_instr->left = list->last;
 
