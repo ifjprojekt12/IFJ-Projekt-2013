@@ -26,8 +26,10 @@ typedef struct instruct{
   struct NODE *operand_1; //vstup 1
   struct NODE *operand_2; //vstup 2
   struct NODE *result;    //vystup
+
   struct instruct *left; //predchozi prvek
   struct instruct *right; //nasledujici prvek
+
 } *INSTRUCT;
 
 //seznam instrukci
@@ -45,6 +47,9 @@ int new_instuct(LIST_3AK *, int id, NODE *, NODE *, NODE *);
 
 //smazani a uvolneni pameti po seznamu instrukci
 void destroy_instr_list(LIST_3AK *list);
+
+//korektne zrusime seznam
+void free_instr_list(LIST_3AK *);
 
 //*************************************
 
