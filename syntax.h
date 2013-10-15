@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "lexical.h"
-#include "stack.h"
+#include "semantic.h"
 
 #define OK      0
 #define END_B   30

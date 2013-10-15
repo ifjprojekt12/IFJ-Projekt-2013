@@ -18,6 +18,7 @@ void init(tStack *);	//Inicializace zasobniku
 void PUSH(tStack *,int);	// Vlozi na vrchol zasobniku El
 void POP(tStack *);		// Uvolni posledni prvek na zasobniku
 void TOP(tStack *,int *);		// Vrati prvek z vrcholu zasobniku
+int TOPCheck(tStack *);		// vrati prvek z vrcholu zasobniku
 void DisposeStack (tStack *);	//Zrusi zasobnik
 bool SEmpty(tStack *);		// Je zasobnik prazdny
 

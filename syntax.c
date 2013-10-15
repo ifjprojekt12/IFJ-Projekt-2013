@@ -61,7 +61,7 @@ int syntaxer()
                     if(i == -1)
                     	eCode = sSyn;
                     else
-                    	ecode = sINTERN;
+                    	eCode = sINTERN;
                     break;
                 }
                 unit = get_token();
@@ -102,7 +102,7 @@ int syntaxer()
                 if(i == -1)
                 	eCode = sSyn;
                 else
-                    	ecode = sINTERN;
+                    	eCode = sINTERN;
                 break;
             }
         }
@@ -150,7 +150,7 @@ int syntaxer()
                     if(i == -1)
                     	eCode = sSyn;
                     else
-                    	ecode = sINTERN;
+                    	eCode = sINTERN;
                     break;
                 }
             }
@@ -341,6 +341,8 @@ int syntaxer()
                     }
         }
         type = 0;
+
+        semantixer(array);
     
         unit = get_token(); // nacteni dalsiho tokenu
     }

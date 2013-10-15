@@ -29,6 +29,10 @@ void TOP (tStack *S, int *val)		{
 		*val = S->Last->Elem;
 }
 
+int TOPCheck(tStack *S)     {
+    return S->Last->Elem;
+}
+
 void POP (tStack *S)	{
     tElemPtr ptr = NULL;
 	ptr = S->Last;
