@@ -13,11 +13,9 @@ Lexikalni analyzator
 
 //ZNAME BUGY
 //retezce, promenne, identifikatory a podobny shit pri velikosti radku vetsi nez je buffer - dodelat
-
-//prebytecne bile znaky na konci radku, tj. treba 2-3 zbytecne tabulatory
-
 //dodelat reallocy u identifikatoru, retezcu a promennych
 //a dodelat podminky na to, ze malloc prosel a neexnul nam nekde v prubehu (0/100?)
+//retezec neukonceny " zacykli lexikalni analyzator...
 
 FILE *source; //prom. - zdrojovy soubor
 char buffer[buffer_size]; //buffer
@@ -398,6 +396,17 @@ TOKEN get_token(){
     int length_string = 0;
 
     pos_buffer++;
+
+    //kontrola na prazdny string
+    if(buffer[pos_buffer] == '"'){
+      pos_buffer++;
+      if(new_tok.string == NULL){
+        new_tok.string = malloc(sizeof(char)*100);
+      }
+      new_tok.string[0] = '\0';
+      new_tok.type_token = 30;
+      return new_tok;
+    }
 
     while(ende_string == 0){
       pos_buffer++;
