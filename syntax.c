@@ -1,5 +1,6 @@
 #include "syntax.h"
 
+// tabulka pro vypis chyboveho hlaseni
 const char*MESSAGE[]=
 {
 	"Dosazena maximalni velikost pole tokenu",
@@ -7,12 +8,14 @@ const char*MESSAGE[]=
 	"Nespravne zapsany vyraz",
 };
 
+// hlavni funkce syntaxe
 int syntaxer()
 {
     // promenna do ktere ulozime token
     TOKEN unit;
     unit = get_token();
-    // vytvoreni pole tokenu a jeho inicializace
+
+    // vytvoreni statickeho pole tokenu a jeho inicializace
     TOKEN array[I_MAX];
     initialize_array(array);
 
@@ -24,7 +27,6 @@ int syntaxer()
     int type = 0;
     int top = 0;
     int i = 0;
-    int brackets = 0;
     int super_brackets = 0;
     int eCode = sOK;
     /* -------------------------------- */
@@ -73,16 +75,81 @@ int syntaxer()
                     break;
                 }
 
-                if( unit.type_token == 42 ) // {
-                {
-                    super_brackets++;
-                }
-                else
+                if( unit.type_token != 42 ) // {
                 {
                     // chybejici znak {
                     printERR(eWRONG);
                     eCode = sSyn;
                     break;
+                }
+                super_brackets++;
+            }
+            else
+            {
+                // chybejici znak (
+                printERR(eWRONG);
+                eCode = sSyn;
+                break;
+            }
+        }
+        else if( unit.type_token == 5 )   // for
+        {
+            // type = unit.type_token; potreba ?? TODO
+            unit = get_token();
+            array[i++] = unit;
+            if( i == I_MAX )
+            {
+                printERR(eIMAX);
+            	eCode = sINTERN;
+                break;
+            }
+
+            if( unit.type_token == 40 ) // (
+            {
+                unit = get_token();
+                array[i++] = unit;
+                if( i == I_MAX )
+                {
+                    printERR(eIMAX);
+                    eCode = sINTERN;
+                    break;
+                }
+
+                if( unit.type_token == 36 )     // promenna
+                {
+                    unit = get_token();
+                    array[i++] = unit;
+                    if( i == I_MAX )
+                    {
+                        printERR(eIMAX);
+                        eCode = sINTERN;
+                        break;
+                    }
+
+                    if( unit.type_token == 10 )     // =
+                    {
+                        if( (i = expression(array, i, get_token(), END_S)) < 0 )
+                        {
+                            // chyba ve vyrazu
+                            printERR(eEXPR);
+                            if(i == -1)
+                            	eCode = sSyn;
+                            else
+                            	eCode = sINTERN;
+                            break;
+                        }                
+                    }
+                    else
+                    {
+                        printERR(eWRONG);
+                        eCode = eSyn;
+                        break;
+                    }
+                }
+
+                if( unit.type_token == 22 )     // prvni ;
+                {
+                    
                 }
             }
             else
@@ -102,7 +169,7 @@ int syntaxer()
                 if(i == -1)
                 	eCode = sSyn;
                 else
-                    	eCode = sINTERN;
+                    eCode = sINTERN;
                 break;
             }
         }
@@ -118,17 +185,14 @@ int syntaxer()
                 break;
             }
 
-            if( unit.type_token == 42 ) // {
-            {
-                super_brackets++;
-            }
-            else
+            if( unit.type_token != 42 ) // {
             {
                 // chybejici znak {
                 printERR(eWRONG);
                 eCode = sSyn;
                 break;
             }
+            super_brackets++;
         }
         else if( unit.type_token == 36 )    // promenna
         {
@@ -235,17 +299,14 @@ int syntaxer()
                         break;
                     }
 
-                    if( unit.type_token == 42 ) // {
-                    {
-                        super_brackets++;
-                    }
-                    else
+                    if( unit.type_token != 42 ) // {
                     {
                         // chybejici znak {
                         printERR(eWRONG);
                         eCode = sSyn;
                         break;
                     }
+                    super_brackets++;
                 }
             }
         }
@@ -273,6 +334,13 @@ int syntaxer()
                 POP( &leStack );
                 TOP( &leStack, &top );
             }
+
+            // nahrada za switch dole TODO
+            POP( &leStack);
+            if( top == cIF || top == cELSEIF )
+                PUSH( &leStack, cREADY );
+/*
+            // zbytecny ????
             switch(top) {
                 case cWHILE:
                 case cFOR:
@@ -283,6 +351,7 @@ int syntaxer()
                 case cELSEIF:   POP( &leStack );
                                 PUSH( &leStack, cREADY );
             }
+*/
         }
         else
         {
@@ -342,13 +411,17 @@ int syntaxer()
         }
         type = 0;
 
+        // snad to nezpusobi chybu, ale novy radek -> nove pole TODO
+        i = 0;
+
+        // po zpracovani jednoho radku volame funkci pro kontrolu semantiky
         semantixer(array);
     
         unit = get_token(); // nacteni dalsiho tokenu
     }
     array[i] = unit;
 
-    if( brackets != 0 && super_brackets != 0 )
+    if( super_brackets != 0 )
     {
         // vice { nez } v celem programu
         printERR(eWRONG);
@@ -380,12 +453,12 @@ void initialize_array(TOKEN*array)
 // funkce pro kontrolu vyrazu
 int expression(TOKEN*array, int i, TOKEN unit, int ending)
 {
-//    bool isFirst = true;
+    // definice a deklarace pomocnych promennych
     bool wasExpr = false;
     bool wasSign = true;
     int brackets = 0;
 
-    while( unit.type_token > 0 && unit.type_token != 50 && unit.type_token != 100 ) // nic, EOF, chyba
+    while( unit.type_token > 0 && unit.type_token != 50 && unit.type_token != 100 ) // chyba, EOF, chyba
     {
         array[i++] = unit;
         if( i == I_MAX )
@@ -417,7 +490,7 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending)
                     break;
                 else
                 {
-                    // chyba, ted nevim presne jaka
+                    // prebytecna uzaviraci zavorka, cekame strednik (semicolon)
                     printERR(eEXPR);
                     return -1;
                 }
