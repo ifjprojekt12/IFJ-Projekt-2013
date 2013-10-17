@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "lexical.h"
 #include "stack.h"
+#include "ial.h"
 
 #define MAXINDEX    14
 #define N_MAX       512
 #define SEMICOLON   22      // type_token ;
 #define BRACKET     42      // type_token {
+#define ASCII       48      // prevod int -> char
 
 // enum pro urceni priorit
 enum table {
@@ -38,6 +41,11 @@ int semantixer(TOKEN *array);
 
 // funkce pro zpracovani vyrazu - prevod do postfixove notace a odeslani instrukci interpretu
 int expression_sem(TOKEN *array, int n, int end);
+
+int read_postfix(TOKEN *array);
+
+// funkce pro vytvoreni jmena do tabulky symbolu
+char* makeName(TOKEN unit);
 
 // funkce pro prevod typu tokenu na index v precedencni tabulce
 int Give_index(int type);

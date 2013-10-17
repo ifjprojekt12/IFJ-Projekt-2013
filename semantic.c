@@ -165,6 +165,9 @@ int expression_sem(TOKEN *array, int n, int end)
         POP( &leStack );
     }
 
+    i = read_postfix(array_expr);
+
+/*
     for( i=0; i<N_MAX; i++)
     {
         if( array_expr[i].type_token == 0 )
@@ -172,8 +175,120 @@ int expression_sem(TOKEN *array, int n, int end)
         printf("%d ", array_expr[i].type_token);
     }
     printf("\n");
+*/
 
     return EXIT_SUCCESS;
+}
+
+// funkce pro cteni postfixove notace vyrazu a odesilani instrukci interpretu
+int read_postfix(TOKEN *array)
+{
+    int i=0;
+    char *name = NULL;
+
+    tStack leStack;
+    init( &leStack );
+
+//    NODE assist1 = NULL, assist2 = NULL, assist3 = NULL;
+
+    while( array[i].type_token != 0 )   // konec pole ?? TODO
+    {
+        switch( array[i].type_token )
+        {
+            case 30:    // string
+            case 31:    // int
+            case 32:    // double
+            case 33:    // bool
+            case 34:    // null
+            case 36:    // promenna
+                name = makeName(array[i]);
+                printf("nazev: %s\n", name);
+//                InsertVarToTree();
+                break;
+        }
+        break;
+    }
+    if( name == NULL );
+
+    return 0;
+}
+
+// funkce pro vytvoreni jmena pro ukladani do stromu
+char* makeName(TOKEN unit)
+{
+    char *name = NULL;
+    int size = 1, n=0;
+    if( unit.type_token == 31 )         // int
+    {
+        n = unit.c_number;
+        // cyklus pro zjisteni delky cisla (poctu cislic)
+        while( n > 9 )
+        {
+            size++;
+            n /= 10;
+        }
+
+        // alokace retezce pro ulozeni nazvu
+        if( (name = malloc((size+1) * sizeof(char))) == NULL )
+        {
+            printf("spatny malloc\n");
+            // TODO nepovedeny malloc
+        }
+
+        n = unit.c_number;
+        // skladani retezce
+        name[size--] = '\0';
+        while( size >= 0 )
+        {
+            name[size--] = (char)((n % 10) + ASCII);
+            n /= 10;
+        }
+    }
+    else if( unit.type_token == 33 )    // bool
+    {
+        if( unit.boolean == 1 )
+            name = "true";
+        else
+            name = "false";
+    }
+    else                                // double
+    {
+//        printf("orig:  %f\n", unit.d_number);
+
+        // vypocteni delky cisla (poctu cislic)
+        n = (int)unit.d_number;
+        while( n > 9 )
+        {
+            size++;
+            n /= 10;
+        }
+        size+=7;        // pripocteni tecky a 6 desetinnych mist
+
+        // alokace retezce pro velikost nazvu
+        if( (name = malloc((size+1) * sizeof(char))) == NULL )
+        {
+            printf("chyba malloc\n");
+            // TODO
+        }
+
+        // skladani nazvu do retezce
+        n = (int)((unit.d_number - (int)unit.d_number) * 1000000);  // prevod vsech desetinnych mist pred desetinnou carku
+        name[size--] = '\0';
+        for( int count = 6; count > 0; count-- )    // 6 desetinnych mist
+        {
+            name[size--] = (char)((n % 10) + ASCII);
+            n /= 10;
+        }
+        name[size--] = '.';
+        n = (int)unit.d_number;
+        while( size >= 0 )
+        {
+            name[size--] = (char)((n % 10) + ASCII);
+            n /= 10;
+        }
+    }
+
+    return name;
 }
 
 // funkce pro prevod typu tokenu na index do precedencni tabulky
