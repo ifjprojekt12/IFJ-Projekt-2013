@@ -22,23 +22,36 @@ int table[MAXINDEX][MAXINDEX]={
 // hlavni funkce semantiky
 int semantixer(TOKEN *array)
 {
-    printf("semantixer\n");
+//    printf("semantixer\n");
 
     int n=0;
-    if( array[n].type_token == 36 )
+    if( array[n].type_token == 36 )     // promenna
+    {
         n+=2;
+        if( expression_sem(array, n, SEMICOLON) == EXIT_FAILURE )
+            return EXIT_FAILURE;
+    }
+    else if( array[n].type_token == 1 || array[n].type_token == 3 || array[n].type_token == 4)
+    {
+        n++;
+        if( expression_sem(array, n, BRACKET) == EXIT_FAILURE )
+            return EXIT_FAILURE;
+    }
+    else
+    {
+        printf("else - semantixer\n");
+    }
 
-    if( expression_sem(array, n) == EXIT_FAILURE )
-        return EXIT_FAILURE;
-    printf("semantixer\n");
+      
+//    printf("semantixer\n");
 
     return EXIT_SUCCESS;
 }
 
 // funkce pro zapis vyrazu do postfixove notace a odeslani instrukci
-int expression_sem(TOKEN *array, int n)
+int expression_sem(TOKEN *array, int n, int end)
 {
-    printf("expression_sem\n");
+//    printf("expression_sem\n");
 
     // deklarace zasobniku a jeho inicializace
     tStack leStack;
@@ -60,7 +73,7 @@ int expression_sem(TOKEN *array, int n)
     }
 
     i = 0;
-    while( array[n].type_token != 22 )      // ;
+    while( array[n].type_token != end )      // SEMICOLON nebo BRACKET
     {
         switch( array[n].type_token )
         {
@@ -115,16 +128,13 @@ int expression_sem(TOKEN *array, int n)
                     precedent = table[old][new];
 
                     if( precedent == L )
-                    {
                         PUSH( &leStack, array[n++].type_token);
-                        break;
-                    }
                     else
                     {
                         array_expr[i++].type_token = TOPCheck( &leStack );
                         POP( &leStack );
-                        break;
                     }
+                    break;
                 }
             }
             case 41:    // )

@@ -50,7 +50,7 @@ int syntaxer()
             if( i == I_MAX )
             {
                 printERR(eIMAX);
-            	eCode = sINTERN;
+				eCode = sINTERN;
                 break;
             }
 
@@ -61,9 +61,9 @@ int syntaxer()
                     // chyba ve vyrazu
                     printERR(eEXPR);
                     if(i == -1)
-                    	eCode = sSyn;
+						eCode = sSyn;
                     else
-                    	eCode = sINTERN;
+						eCode = sINTERN;
                     break;
                 }
                 unit = get_token();
@@ -100,7 +100,7 @@ int syntaxer()
             if( i == I_MAX )
             {
                 printERR(eIMAX);
-            	eCode = sINTERN;
+				eCode = sINTERN;
                 break;
             }
 
@@ -133,16 +133,16 @@ int syntaxer()
                             // chyba ve vyrazu
                             printERR(eEXPR);
                             if(i == -1)
-                            	eCode = sSyn;
+								eCode = sSyn;
                             else
-                            	eCode = sINTERN;
+								eCode = sINTERN;
                             break;
                         }                
                     }
                     else
                     {
                         printERR(eWRONG);
-                        eCode = eSyn;
+                        eCode = sSyn;
                         break;
                     }
                 }
@@ -167,7 +167,7 @@ int syntaxer()
                 // chyba ve vyrazu
                 printERR(eEXPR);
                 if(i == -1)
-                	eCode = sSyn;
+					eCode = sSyn;
                 else
                     eCode = sINTERN;
                 break;
@@ -212,9 +212,9 @@ int syntaxer()
                     // chyba ve vyrazu
                     printERR(eEXPR);
                     if(i == -1)
-                    	eCode = sSyn;
+						eCode = sSyn;
                     else
-                    	eCode = sINTERN;
+						eCode = sINTERN;
                     break;
                 }
             }
@@ -411,11 +411,14 @@ int syntaxer()
         }
         type = 0;
 
-        // snad to nezpusobi chybu, ale novy radek -> nove pole TODO
-        i = 0;
-
         // po zpracovani jednoho radku volame funkci pro kontrolu semantiky
-        semantixer(array);
+        if( semantixer(array) == EXIT_FAILURE )
+            return EXIT_FAILURE;
+
+        // snad to nezpusobi chybu, ale novy radek -> nove pole TODO
+    	// plus mazat pole!!
+        i = 0;
+        initialize_array(array);
     
         unit = get_token(); // nacteni dalsiho tokenu
     }
