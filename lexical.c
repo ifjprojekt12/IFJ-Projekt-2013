@@ -8,7 +8,7 @@ Lexikalni analyzator
 #include "lexical.h"
 
 #define buffer_size 100
-#define keywords_table_length 18
+#define keywords_table_length 20
 #define NaN 0.0/0.0
 
 //ZNAME BUGY
@@ -25,7 +25,7 @@ int start = 0;
 
 //tabulka klicovych slov - retezce se porovnaji s timto a token se tomu podridi
 const char table_words[keywords_table_length][15] = {"if","else","elseif","while","for","function","return",
-            "boolval","doubleval","intval","strval","get_string","put_string","strlen",
+            "break","continue","boolval","doubleval","intval","strval","get_string","put_string","strlen",
             "get_substring","find_string","sort_string"};
 
 
@@ -479,7 +479,7 @@ TOKEN get_token(){
     //_________!!!
     for(unsigned int a = 0;a < keywords_table_length;a++){
       if((strcmp(table_words[a],id_name)) == 0){
-        if(a < 7){
+        if(a < 9){
           new_tok.type_token = a+1;
         } else {
           new_tok.type_token = a+51;
