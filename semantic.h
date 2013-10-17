@@ -1,3 +1,6 @@
+#ifndef _SEMANTIC_H
+#define _SEMANTIC_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -49,3 +52,5 @@ char* makeName(TOKEN unit);
 
 // funkce pro prevod typu tokenu na index v precedencni tabulce
 int Give_index(int type);
+
+#endif

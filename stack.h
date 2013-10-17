@@ -1,3 +1,6 @@
+#ifndef _STACK_H
+#define _STACK_H
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<stdarg.h>
@@ -22,3 +25,4 @@ int TOPCheck(tStack *);		// vrati prvek z vrcholu zasobniku
 void DisposeStack (tStack *);	//Zrusi zasobnik
 bool SEmpty(tStack *);		// Je zasobnik prazdny
 
+#endif
