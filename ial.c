@@ -55,7 +55,7 @@ void insertVarToTree (char *key, TOKEN data, NODE *ptr)
         }
     }
 }
-
+// funkce vyhleda promennou ve stromu a vrati jeji podnotu, popr. NULL
 NODE searchIdent (char *key, NODE *ptr)
 {
     NODE node = *ptr;
@@ -85,4 +85,28 @@ NODE searchIdent (char *key, NODE *ptr)
     }
     printf("Hledas neco co tam neni\n");
     return NULL;
+}
+
+// funkce zkopiruje puvodni strom promennych do noveho
+// novy strom MUSI byt inicializovany
+NODE copyTree(NODE *ptr, NODE *ptrNew)
+{
+    NODE tree = *ptr;
+    NODE treeNew = *ptrNew;
+    if (tree == NULL)
+    {
+        treeNew = NULL;
+        return treeNew;
+    }
+    else
+    {
+        treeNew->key = malloc((strlen(tree->key)+1) * sizeof(char));
+        strcpy(treeNew->key, tree->key);
+        treeNew->data = tree->data;
+        if (tree->LPtr != NULL) treeNew->LPtr = copyTree(&tree->LPtr, &treeNew->LPtr);
+        else treeNew->LPtr = NULL;
+        if (tree->RPtr != NULL) treeNew->RPtr = copyTree(&tree->RPtr, &treeNew->RPtr);
+        else treeNew->RPtr = NULL;
+    }
+    return treeNew;
 }
