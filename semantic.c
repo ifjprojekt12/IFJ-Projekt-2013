@@ -189,24 +189,41 @@ int read_postfix(TOKEN *array)
     tStack leStack;
     init( &leStack );
 
-//    NODE assist1 = NULL, assist2 = NULL, assist3 = NULL;
+    NODE root = NULL;
+    treeInit(&root);
+    NODE assist1 = NULL;//, assist2 = NULL, assist3 = NULL;
 
     while( array[i].type_token != 0 )   // konec pole ?? TODO
     {
         switch( array[i].type_token )
         {
             case 30:    // string
+            case 34:    // null
             case 31:    // int
             case 32:    // double
             case 33:    // bool
-            case 34:    // null
             case 36:    // promenna
                 name = makeName(array[i]);
-                printf("nazev: %s\n", name);
-//                InsertVarToTree();
+       		printf("nazev: %s\n", name);
+		assist1 = searchIdent(name, &root);
+		if(assist1 == NULL){
+			if(array[i].type_token == 36){
+				printf("ale pozor nedeklarovana promenna! nachystat chybovy kod\n");
+				return -111;
+			}
+                	insertVarToTree(name, array[i], &root);
+			assist1 = searchIdent(name, &root);
+		} 
+		//PUSH DO NOD STACKU
                 break;
         }
-        break;
+
+	printf("prvek ve stromu data.string: %s\n",assist1->data.string);
+	printf("prvek ve stromu data.id_name: %s\n",assist1->data.id_name);
+	printf("prvek ve stromu data.c_number: %d\n",assist1->data.c_number);
+	printf("prvek ve stromu data.d_number: %f\n",assist1->data.d_number);
+	printf("prvek ve stromu data.boolean: %d\n",assist1->data.boolean);
+        i++;
     }
     if( name == NULL );
 
@@ -251,7 +268,7 @@ char* makeName(TOKEN unit)
         else
             name = "false";
     }
-    else                                // double
+    else if( unit.type_token == 32)                               // double
     {
 //        printf("orig:  %f\n", unit.d_number);
 
@@ -287,9 +304,52 @@ char* makeName(TOKEN unit)
             n /= 10;
         }
     }
+    else if( unit.type_token == 34)    // null
+    {
+	name = "null";
+    }
+    else if( unit.type_token == 30)    // string
+    {
+        size = strlen(unit.string);
+        // alokace retezce pro ulozeni nazvu
+        if( (name = malloc((size+2) * sizeof(char))) == NULL )
+        {
+            printf("spatny malloc\n");
+            // TODO nepovedeny malloc
+        }
 
+	name[0] = 0x06; //ACK
+        name[size+1] = '\0';
+	while(size >= 0){
+		name[size+1] = unit.string[size];
+		size--;
+	}	
+
+	
+    }		
+    else if( unit.type_token == 36)    // promenna
+    {	
+	    size = strlen(unit.id_name);
+        // alokace retezce pro ulozeni nazvu
+        if( (name = malloc((size+2) * sizeof(char))) == NULL )
+        {
+            printf("spatny malloc\n");
+            // TODO nepovedeny malloc
+        }
+
+    	name[0] = 0x05; //ENQ
+        name[size+1] = '\0';
+    	while(size >= 0)
+    	{
+	    	name[size+1] = unit.id_name[size];
+	    	size--;
+	    }	
+
+
+    }
     return name;
 }
+
 
 // funkce pro prevod typu tokenu na index do precedencni tabulky
 int Give_index( int type )
