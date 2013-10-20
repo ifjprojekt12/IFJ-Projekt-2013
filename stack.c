@@ -47,3 +47,64 @@ bool SEmpty(tStack *S){
 		return false;
 	}
 }
+
+void initNode(tSNode *S){
+	S->Last = NULL;
+}
+
+/*void DisposeSNode (tSNode *S)	{
+	tNodePtr ptr = NULL;
+	tNodePtr Del = NULL;
+	ptr = S->Last;
+	while (ptr != NULL)
+	{
+		Del = ptr;
+		ptr = ptr->ptr;
+		free(Del);
+	}
+	S->Last = NULL;
+}*/
+
+void PUSHNode (tSNode *S, NODE val)	{
+    	tNodePtr ptr = NULL;
+	ptr = malloc(sizeof(struct tNode));
+	ptr->Node = val;
+	ptr->ptr=S->Last;
+	S->Last = ptr;
+}
+
+void TOPNode (tSNode *S, NODE *val)		{
+		*val = S->Last->Node;
+}
+
+void POPNode (tSNode *S)	{
+    tNodePtr ptr = NULL;
+	ptr = S->Last;
+	S->Last = S->Last->ptr;
+	free(ptr);
+}
+
+void TOPPOPNode(tSNode *S, NODE *val){
+	*val = S->Last->Node;
+	tNodePtr ptr = NULL;
+	ptr = S->Last;
+	S->Last = S->Last->ptr;
+	free(ptr);
+}
+
+/*NODE* ToPoPtr(tSNode *){
+	NODE *val = S->Last->Node;
+	tSNodePtr ptr = NULL;
+	ptr = S->Last;
+	S->Last = S->Last->ptr;
+	//free(ptr);
+	return val;
+}*/
+
+bool SEmptyNode(tSNode *S){
+	if (S->Last == NULL){
+		return true;
+	}else{
+		return false;
+	}
+}
