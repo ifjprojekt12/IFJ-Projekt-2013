@@ -42,17 +42,51 @@ int interpret(LIST_3AK *list){
     //Aritmeticke a retezcove operatory
     //+
     if(list->actual->id == 1){
+      //int a int
       if(op_1->data.type_token == 31 && op_2->data.type_token == 31){
         result->data.type_token = 31;
         result->data.c_number = op_1->data.c_number + op_2->data.c_number;
       }
+      //double a double
       else if(op_1->data.type_token == 32 && op_2->data.type_token == 32){
         result->data.type_token = 32;
         result->data.d_number = op_1->data.d_number + op_2->data.d_number;
       }
+      //int a double
+      else if(op_1->data.type_token == 31 && op_2->data.type_token == 32){
+        result->data.type_token = 32;
+        result->data.d_number = (double)op_1->data.c_number + op_2->data.d_number;
+      }
+      //double a int
+      else if(op_1->data.type_token == 32 && op_2->data.type_token == 31){
+
+        result->data.type_token = 32;
+        result->data.d_number = op_1->data.d_number + (double)op_2->data.c_number;
+      }
     }
+
     //-
     if(list->actual->id == 2){
+      //int a int
+      if(op_1->data.type_token == 31 && op_2->data.type_token == 31){
+        result->data.type_token = 31;
+        result->data.c_number = op_1->data.c_number - op_2->data.c_number;
+      }
+      //double a double
+      else if(op_1->data.type_token == 32 && op_2->data.type_token == 32){
+        result->data.type_token = 32;
+        result->data.d_number = op_1->data.d_number - op_2->data.d_number;
+      }
+      //int a double
+      else if(op_1->data.type_token == 31 && op_2->data.type_token == 32){
+        result->data.type_token = 32;
+        result->data.d_number = (double)op_1->data.c_number - op_2->data.d_number;
+      }
+      //double a int
+      else if(op_1->data.type_token == 32 && op_2->data.type_token == 31){
+        result->data.type_token = 32;
+        result->data.d_number = op_1->data.d_number - (double)op_2->data.c_number;
+      }
     }
     //*
     if(list->actual->id == 3){
@@ -86,7 +120,6 @@ int interpret(LIST_3AK *list){
     list->actual = list->actual->right;
   }
 
-  //zde bude while(1) a obecne jadro interpretu
   return 0;
 }
 
