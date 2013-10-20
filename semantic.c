@@ -186,25 +186,20 @@ int read_postfix(TOKEN *array)
     int i=0;
     char *name = NULL;
 
-    tStack leStack;
-    init( &leStack );
+    tSNode nodeStack;
+    initNode( &nodeStack );
 
     NODE root = NULL;
     treeInit(&root);
-    NODE assist1 = NULL;//, assist2 = NULL, assist3 = NULL;
+    NODE assist1 = NULL, assist2 = NULL;//, assist3 = NULL;
 
     while( array[i].type_token != 0 )   // konec pole ?? TODO
     {
-        switch( array[i].type_token )
+	// narazime na cisla int nebo double, booly, stringy nebo promenne
+	if(array[i].type_token == 36 || (array[i].type_token >= 30 && array[i].type_token <= 34))
         {
-            case 30:    // string
-            case 34:    // null
-            case 31:    // int
-            case 32:    // double
-            case 33:    // bool
-            case 36:    // promenna
-                name = makeName(array[i]);
-       		printf("nazev: %s\n", name);
+	        name = makeName(array[i]);
+       		//printf("nazev: %s\n", name);
 		assist1 = searchIdent(name, &root);
 		if(assist1 == NULL){
 			if(array[i].type_token == 36){
@@ -214,21 +209,40 @@ int read_postfix(TOKEN *array)
                 	insertVarToTree(name, array[i], &root);
 			assist1 = searchIdent(name, &root);
 		} 
-		//PUSH DO NOD STACKU
-                break;
+	
+		
+		PUSHNode( &nodeStack, assist1);
         }
+	// narazili jsme na znamenko
+	else if(array[i].type_token >= 11 && array[i].type_token <= 21)
+	{
+		TOPPOPNode(&nodeStack, &assist1);		
+		TOPPOPNode(&nodeStack, &assist2);		
 
-	printf("prvek ve stromu data.string: %s\n",assist1->data.string);
-	printf("prvek ve stromu data.id_name: %s\n",assist1->data.id_name);
-	printf("prvek ve stromu data.c_number: %d\n",assist1->data.c_number);
-	printf("prvek ve stromu data.d_number: %f\n",assist1->data.d_number);
-	printf("prvek ve stromu data.boolean: %d\n",assist1->data.boolean);
-        i++;
+		/*doplnit assist3 a jedeme na znamenka*/
+		printf("---------------------------------------------------\n");
+		printf("assist1\n");
+		printf("prvek ve stromu data.string: %s\n",assist1->data.string);
+		printf("prvek ve stromu data.id_name: %s\n",assist1->data.id_name);
+		printf("prvek ve stromu data.c_number: %d\n",assist1->data.c_number);
+		printf("prvek ve stromu data.d_number: %f\n",assist1->data.d_number);
+		printf("prvek ve stromu data.boolean: %d\n",assist1->data.boolean);
+		printf("assist2\n");
+		printf("prvek ve stromu data.string: %s\n",assist2->data.string);
+		printf("prvek ve stromu data.id_name: %s\n",assist2->data.id_name);
+		printf("prvek ve stromu data.c_number: %d\n",assist2->data.c_number);
+		printf("prvek ve stromu data.d_number: %f\n",assist2->data.d_number);
+		printf("prvek ve stromu data.boolean: %d\n",assist2->data.boolean);
+		printf("---------------------------------------------------\n");
+
+	}
+        i++; assist1 = NULL; assist2 = NULL;// assist3 = NULL;
     }
     if( name == NULL );
 
     return 0;
 }
+
 
 // funkce pro vytvoreni jmena pro ukladani do stromu
 char* makeName(TOKEN unit)
