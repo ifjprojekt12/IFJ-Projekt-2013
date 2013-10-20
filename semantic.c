@@ -186,32 +186,63 @@ int read_postfix(TOKEN *array)
     int i=0;
     char *name = NULL;
 
-    tStack leStack;
-    init( &leStack );
+    tSNode nodeStack;
+    initNode( &nodeStack );
 
-//    NODE assist1 = NULL, assist2 = NULL, assist3 = NULL;
+    NODE root = NULL;
+    treeInit(&root);
+    NODE assist1 = NULL, assist2 = NULL;//, assist3 = NULL;
 
     while( array[i].type_token != 0 )   // konec pole ?? TODO
     {
-        switch( array[i].type_token )
+	// narazime na cisla int nebo double, booly, stringy nebo promenne
+	if(array[i].type_token == 36 || (array[i].type_token >= 30 && array[i].type_token <= 34))
         {
-            case 30:    // string
-            case 31:    // int
-            case 32:    // double
-            case 33:    // bool
-            case 34:    // null
-            case 36:    // promenna
-                name = makeName(array[i]);
-                printf("nazev: %s\n", name);
-//                InsertVarToTree();
-                break;
+	        name = makeName(array[i]);
+       		//printf("nazev: %s\n", name);
+		assist1 = searchIdent(name, &root);
+		if(assist1 == NULL){
+			if(array[i].type_token == 36){
+				printf("ale pozor nedeklarovana promenna! nachystat chybovy kod\n");
+				return -111;
+			}
+                	insertVarToTree(name, array[i], &root);
+			assist1 = searchIdent(name, &root);
+		} 
+	
+		
+		PUSHNode( &nodeStack, assist1);
         }
-        break;
+	// narazili jsme na znamenko
+	else if(array[i].type_token >= 11 && array[i].type_token <= 21)
+	{
+		TOPPOPNode(&nodeStack, &assist1);		
+		TOPPOPNode(&nodeStack, &assist2);		
+
+		/*doplnit assist3 a jedeme na znamenka*/
+		printf("---------------------------------------------------\n");
+		printf("assist1\n");
+		printf("prvek ve stromu data.string: %s\n",assist1->data.string);
+		printf("prvek ve stromu data.id_name: %s\n",assist1->data.id_name);
+		printf("prvek ve stromu data.c_number: %d\n",assist1->data.c_number);
+		printf("prvek ve stromu data.d_number: %f\n",assist1->data.d_number);
+		printf("prvek ve stromu data.boolean: %d\n",assist1->data.boolean);
+		printf("assist2\n");
+		printf("prvek ve stromu data.string: %s\n",assist2->data.string);
+		printf("prvek ve stromu data.id_name: %s\n",assist2->data.id_name);
+		printf("prvek ve stromu data.c_number: %d\n",assist2->data.c_number);
+		printf("prvek ve stromu data.d_number: %f\n",assist2->data.d_number);
+		printf("prvek ve stromu data.boolean: %d\n",assist2->data.boolean);
+		printf("---------------------------------------------------\n");
+
+	}
+        i++; assist1 = NULL; assist2 = NULL;// assist3 = NULL;
     }
     if( name == NULL );
 
     return 0;
 }
+
 
 // funkce pro vytvoreni jmena pro ukladani do stromu
 char* makeName(TOKEN unit)
@@ -251,7 +282,7 @@ char* makeName(TOKEN unit)
         else
             name = "false";
     }
-    else                                // double
+    else if( unit.type_token == 32)                               // double
     {
 //        printf("orig:  %f\n", unit.d_number);
 
@@ -287,9 +318,52 @@ char* makeName(TOKEN unit)
             n /= 10;
         }
     }
+    else if( unit.type_token == 34)    // null
+    {
+	name = "null";
+    }
+    else if( unit.type_token == 30)    // string
+    {
+        size = strlen(unit.string);
+        // alokace retezce pro ulozeni nazvu
+        if( (name = malloc((size+2) * sizeof(char))) == NULL )
+        {
+            printf("spatny malloc\n");
+            // TODO nepovedeny malloc
+        }
 
+	name[0] = 0x06; //ACK
+        name[size+1] = '\0';
+	while(size >= 0){
+		name[size+1] = unit.string[size];
+		size--;
+	}	
+
+	
+    }		
+    else if( unit.type_token == 36)    // promenna
+    {	
+	    size = strlen(unit.id_name);
+        // alokace retezce pro ulozeni nazvu
+        if( (name = malloc((size+2) * sizeof(char))) == NULL )
+        {
+            printf("spatny malloc\n");
+            // TODO nepovedeny malloc
+        }
+
+    	name[0] = 0x05; //ENQ
+        name[size+1] = '\0';
+    	while(size >= 0)
+    	{
+	    	name[size+1] = unit.id_name[size];
+	    	size--;
+	    }	
+
+
+    }
     return name;
 }
+
 
 // funkce pro prevod typu tokenu na index do precedencni tabulky
 int Give_index( int type )
