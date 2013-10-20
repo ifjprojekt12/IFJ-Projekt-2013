@@ -29,9 +29,15 @@ int new_instuct(LIST_3AK *list, int id, NODE *op_1, NODE *op_2, NODE *result, IN
 
   //vlozime data
   new_instr->id = id;
-  new_instr->operand_1 = *op_1;
-  new_instr->operand_2 = *op_2;
-  new_instr->result = *result;
+  if(op_1 != NULL){
+    new_instr->operand_1 = *op_1;
+  }
+  if(op_2 != NULL){
+    new_instr->operand_2 = *op_2;
+  }
+  if(result != NULL){
+    new_instr->result = *result;
+  }
   new_instr->jump = jump;
 
   new_instr->left = list->last;
