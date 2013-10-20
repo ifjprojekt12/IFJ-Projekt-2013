@@ -5,7 +5,10 @@
 #include<stdlib.h>
 #include<stdarg.h>
 #include<stdbool.h>
+#include<string.h>
 
+#include "lexical.h"
+#include "ial.h"
 
 typedef struct tElem {
     struct tElem *ptr;	//ukazatel na predchozi prvek
@@ -15,6 +18,24 @@ typedef struct tElem {
 typedef struct { 
 	tElemPtr Last;
 } tStack;
+
+typedef struct tNode {
+    struct tNode *ptr;	//ukazatel na predchozi prvek
+    NODE Node;			//hodnota na zasobniku
+} *tNodePtr;
+
+typedef struct { 
+	tNodePtr Last;
+} tSNode;
+
+
+void initNode(tSNode *);	//Inicializace zasobniku
+void PUSHNode(tSNode *,NODE);	// Vlozi na vrchol zasobniku El
+void POPNode(tSNode *);		// Uvolni posledni prvek na zasobniku
+void TOPNode(tSNode *,NODE *);		// Vrati prvek z vrcholu zasobniku
+void TOPPOPNode(tSNode *, NODE *);
+void DisposeSNode(tSNode *);	//Zrusi zasobnik
+bool SEmptyNode(tSNode *);		// Je zasobnik prazdny
 
 
 void init(tStack *);	//Inicializace zasobniku
