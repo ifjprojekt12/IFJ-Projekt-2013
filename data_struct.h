@@ -31,6 +31,8 @@ typedef struct instruct{
   struct instruct *right; //nasledujici prvek
 
   struct instruct *jump; //adresa instrukce, kam se bude presunovat v pripade skoku na "pasce"
+
+  int number; //a pro eleganci cislo instrukce, unikatni :)
 } *INSTRUCT;
 
 //seznam instrukci

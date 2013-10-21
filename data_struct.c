@@ -7,6 +7,8 @@ Pomocne datove struktury
 
 #include "data_struct.h"
 
+int instr_number;
+
 //*************************************
 //inicializuje seznam instrukci
 void new_instr_list(LIST_3AK *new_list){
@@ -15,6 +17,7 @@ void new_instr_list(LIST_3AK *new_list){
   new_list->actual = NULL;
   new_list->last = NULL;
 
+  instr_number = 0;
 }
 
 //pridava novou instrukci na konec seznamu
@@ -47,6 +50,9 @@ int new_instuct(LIST_3AK *list, int id, NODE *op_1, NODE *op_2, NODE *result, IN
   } else {
     list->first = new_instr;
   }
+
+  new_instr->number = instr_number;
+  instr_number++;
 
   list->last = new_instr;
 
