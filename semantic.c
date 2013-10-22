@@ -19,6 +19,8 @@ int table[MAXINDEX][MAXINDEX]={
     /* 14. ) */   { L,      H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H },
 };
 
+int special_count = 0;
+
 // hlavni funkce semantiky
 int semantixer(TOKEN *array)
 {
@@ -186,56 +188,62 @@ int read_postfix(TOKEN *array)
     int i=0;
     char *name = NULL;
 
-//    tSNode nodeStack;
-//    initNode( &nodeStack );
-
-    NODE root = NULL;
-    treeInit(&root);
     NODE assist1 = NULL, assist2 = NULL;//, assist3 = NULL;
+    TOKEN unit;
+
+    tSNode nodeStack;
+    initNode( &nodeStack );
 
     while( array[i].type_token != 0 )   // konec pole ?? TODO
     {
-	// narazime na cisla int nebo double, booly, stringy nebo promenne
-	if(array[i].type_token == 36 || (array[i].type_token >= 30 && array[i].type_token <= 34))
+        // narazime na cisla int nebo double, booly, stringy nebo promenne
+        if(array[i].type_token == 36 || (array[i].type_token >= 30 && array[i].type_token <= 34))
         {
-	        name = makeName(array[i]);
-       		//printf("nazev: %s\n", name);
-		assist1 = searchIdent(name, &root);
-		if(assist1 == NULL){
-			if(array[i].type_token == 36){
-				printf("ale pozor nedeklarovana promenna! nachystat chybovy kod\n");
-				return -111;
-			}
-                	insertVarToTree(name, array[i], &root);
-			assist1 = searchIdent(name, &root);
-		} 
-	
-		
-		PUSHNode( &nodeStack, assist1);
+            name = makeName(array[i]);
+            //printf("nazev: %s\n", name);
+            assist1 = searchIdent(name, &root);
+            if(assist1 == NULL)
+            {
+                if(array[i].type_token == 36) {
+                    printf("ale pozor nedeklarovana promenna! nachystat chybovy kod\n");
+                    return -111;
+                }
+                insertVarToTree(name, array[i], &root);
+                assist1 = searchIdent(name, &root);
+            } 
+
+            PUSHNode( &nodeStack, assist1);
         }
-	// narazili jsme na znamenko
-	else if(array[i].type_token >= 11 && array[i].type_token <= 21)
-	{
-		TOPPOPNode(&nodeStack, &assist1);		
-		TOPPOPNode(&nodeStack, &assist2);		
+        // narazili jsme na znamenko
+        else if(array[i].type_token >= 11 && array[i].type_token <= 21)
+        {
+            TOPPOPNode(&nodeStack, &assist1);
+            TOPPOPNode(&nodeStack, &assist2);
 
-		/*doplnit assist3 a jedeme na znamenka*/
-		printf("---------------------------------------------------\n");
-		printf("assist1\n");
-		printf("prvek ve stromu data.string: %s\n",assist1->data.string);
-		printf("prvek ve stromu data.id_name: %s\n",assist1->data.id_name);
-		printf("prvek ve stromu data.c_number: %d\n",assist1->data.c_number);
-		printf("prvek ve stromu data.d_number: %f\n",assist1->data.d_number);
-		printf("prvek ve stromu data.boolean: %d\n",assist1->data.boolean);
-		printf("assist2\n");
-		printf("prvek ve stromu data.string: %s\n",assist2->data.string);
-		printf("prvek ve stromu data.id_name: %s\n",assist2->data.id_name);
-		printf("prvek ve stromu data.c_number: %d\n",assist2->data.c_number);
-		printf("prvek ve stromu data.d_number: %f\n",assist2->data.d_number);
-		printf("prvek ve stromu data.boolean: %d\n",assist2->data.boolean);
-		printf("---------------------------------------------------\n");
+            token_init(&unit);
+            unit.type_token = 37;   // vnitrni promenna semantiky
+            name = makeName(unit);
+            insertVarToTree(name, unit, &root);
 
-	}
+
+            /*doplnit assist3 a jedeme na znamenka*/
+            printf("---------------------------------------------------\n");
+            printf("assist1\n");
+            printf("prvek ve stromu data.string: %s\n",assist1->data.string);
+            printf("prvek ve stromu data.id_name: %s\n",assist1->data.id_name);
+            printf("prvek ve stromu data.c_number: %d\n",assist1->data.c_number);
+            printf("prvek ve stromu data.d_number: %f\n",assist1->data.d_number);
+            printf("prvek ve stromu data.boolean: %d\n",assist1->data.boolean);
+            printf("assist2\n");
+            printf("prvek ve stromu data.string: %s\n",assist2->data.string);
+            printf("prvek ve stromu data.id_name: %s\n",assist2->data.id_name);
+            printf("prvek ve stromu data.c_number: %d\n",assist2->data.c_number);
+            printf("prvek ve stromu data.d_number: %f\n",assist2->data.d_number);
+            printf("prvek ve stromu data.boolean: %d\n",assist2->data.boolean);
+            printf("---------------------------------------------------\n");
+
+        }
+
         i++; assist1 = NULL; assist2 = NULL;// assist3 = NULL;
     }
     if( name == NULL );
@@ -284,8 +292,6 @@ char* makeName(TOKEN unit)
     }
     else if( unit.type_token == 32)                               // double
     {
-//        printf("orig:  %f\n", unit.d_number);
-
         // vypocteni delky cisla (poctu cislic)
         n = (int)unit.d_number;
         while( n > 9 )
@@ -320,7 +326,7 @@ char* makeName(TOKEN unit)
     }
     else if( unit.type_token == 34)    // null
     {
-	name = "null";
+        name = "null";
     }
     else if( unit.type_token == 30)    // string
     {
@@ -332,18 +338,17 @@ char* makeName(TOKEN unit)
             // TODO nepovedeny malloc
         }
 
-	name[0] = 0x06; //ACK
+        name[0] = 0x06; //ACK
         name[size+1] = '\0';
-	while(size >= 0){
-		name[size+1] = unit.string[size];
-		size--;
-	}	
-
-	
-    }		
+        while(size >= 0){
+            name[size+1] = unit.string[size];
+            size--;
+        }   
+    
+    }       
     else if( unit.type_token == 36)    // promenna
-    {	
-	    size = strlen(unit.id_name);
+    {   
+        size = strlen(unit.id_name);
         // alokace retezce pro ulozeni nazvu
         if( (name = malloc((size+2) * sizeof(char))) == NULL )
         {
@@ -351,16 +356,41 @@ char* makeName(TOKEN unit)
             // TODO nepovedeny malloc
         }
 
-    	name[0] = 0x05; //ENQ
+        name[0] = 0x05; //ENQ
         name[size+1] = '\0';
-    	while(size >= 0)
-    	{
-	    	name[size+1] = unit.id_name[size];
-	    	size--;
-	    }	
-
+        while(size >= 0)
+        {
+            name[size+1] = unit.id_name[size];
+            size--;
+        }   
 
     }
+    else if( unit.type_token == 37 )        // interni promenna semantiky
+    {
+        n = special_count;
+        // cyklus pro zjisteni delky cisla (poctu cislic)
+        while( n > 9 )
+        {
+            size++;
+            n /= 10;
+        }
+
+        if( (name = malloc((size+2) * sizeof(char))) == NULL )
+        {
+            printf("spatny malloc\n");
+            // TODO nepovedeny malloc
+        }
+        
+        name[0] = 0x07;     // BELL
+        name[size+1] = '\0';
+        n = special_count;
+        while( size >= 0 )
+        {
+            name[size--] = (char)((n % 10) + ASCII);
+            n /= 10;
+        }
+    }
+
     return name;
 }
 

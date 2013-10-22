@@ -24,8 +24,7 @@ int syntaxer()
     init(&leStack);
 
     // inicializace tabulky promennych
-    tSNode nodeStack;
-    initNode( &nodeStack );
+    treeInit(&root);
    
     // pomocne promenne
     int type = 0;

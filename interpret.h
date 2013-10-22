@@ -6,9 +6,10 @@ Interpret
 */
 
 #ifndef _INTERPRET_H
-#define _INTERPRET_h
+#define _INTERPRET_H
 
 #include "data_struct.h"
+#include "syntax.h"
 
 enum intstructions {
     END,

@@ -20,7 +20,6 @@ end    (0, null, null, null, null)     END    nutna instrukce, znaci konec progr
 */
 
 #include "interpret.h"
-#include "syntax.h"
 
 //konstanty etc.
 const int str_rezerv = 50;

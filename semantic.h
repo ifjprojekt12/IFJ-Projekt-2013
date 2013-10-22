@@ -14,7 +14,7 @@
 #define BRACKET     42      // type_token {
 #define ASCII       48      // prevod int -> char
 
-extern tSNode nodeStack;
+extern NODE root;
 
 // enum pro urceni priorit
 enum table {

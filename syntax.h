@@ -14,7 +14,7 @@
 #define END_SB  33	// semicolon or bracket
 #define I_MAX   512
 
-tSNode nodeStack;
+NODE root;
 
 // vyctovy typ pro ukladani stavu na zasobnik pro kontrolu spravnou posloupnost podminenych vyrazu
 enum conditions {
