@@ -7,6 +7,7 @@
 #include "lexical.h"
 #include "stack.h"
 #include "ial.h"
+#include "data_struct.h"
 
 #define MAXINDEX    14
 #define N_MAX       512
@@ -15,6 +16,7 @@
 #define ASCII       48      // prevod int -> char
 
 extern NODE root;
+extern LIST_3AK list;
 
 // enum pro urceni priorit
 enum table {
@@ -51,6 +53,9 @@ int read_postfix(TOKEN *array);
 
 // funkce pro vytvoreni jmena do tabulky symbolu
 char* makeName(TOKEN unit);
+
+// funkce pro porovnavani datovych typu
+bool Compatible(NODE *a1, NODE *a2, int sign);
 
 // funkce pro prevod typu tokenu na index v precedencni tabulce
 int Give_index(int type);

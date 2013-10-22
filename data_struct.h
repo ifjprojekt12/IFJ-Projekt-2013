@@ -20,6 +20,36 @@ Pomocne datova struktury
 //*************************************
 //struktury a funkce pro intepreret a 3AK
 
+enum intstructions {
+    iEND,
+    iPLUS,
+    iMINUS,
+    iMUL,
+    iDIV,
+    iKONK,
+    iASSIGN,
+    iEQ = 10,
+    iNEQ,
+    iHIGH,
+    iHEQ,
+    iLOW,
+    iLEQ,
+    iBVAL = 20,
+    iDVAL,
+    iIVAL,
+    iSVAL,
+    iG_STR,
+    iP_STR,
+    iSTRLEN,
+    iG_SUSTR,
+    iF_STR,
+    iS_STR,
+    iFUNCTION,
+    iRETURN,
+    iJUMP,
+    iG_SUBSTR2 = 270,
+};
+
 //jedna instrukce
 typedef struct instruct{
   int id;          //cislo dane 3AK instrukce
@@ -46,7 +76,7 @@ typedef struct list_3ak{
 void new_instr_list(LIST_3AK *);
 
 //vytvori instrukci a prida ji na konec seznamu
-int new_instuct(LIST_3AK *, int id, NODE *, NODE *, NODE *, INSTRUCT);
+int new_instr(LIST_3AK *, int id, NODE *, NODE *, NODE *, INSTRUCT);
 
 //smazani a uvolneni pameti po seznamu instrukci
 void destroy_instr_list(LIST_3AK *list);

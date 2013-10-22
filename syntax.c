@@ -24,8 +24,11 @@ int syntaxer()
     init(&leStack);
 
     // inicializace tabulky promennych
-    treeInit(&root);
-   
+    treeInit( &root );
+
+    // vytvoreni instrukcniho listu
+    new_instr_list( &list );
+ 
     // pomocne promenne
     int type = 0;
     int top = 0;

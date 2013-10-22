@@ -29,6 +29,8 @@ int semantixer(TOKEN *array)
     int n=0;
     if( array[n].type_token == 36 )     // promenna
     {
+        name = makeName();
+        insertValToTree();
         n+=2;
         if( expression_sem(array, n, SEMICOLON) == EXIT_FAILURE )
             return EXIT_FAILURE;
@@ -188,7 +190,7 @@ int read_postfix(TOKEN *array)
     int i=0;
     char *name = NULL;
 
-    NODE assist1 = NULL, assist2 = NULL;//, assist3 = NULL;
+    NODE assist1 = NULL, assist2 = NULL, assist3 = NULL;
     TOKEN unit;
 
     tSNode nodeStack;
@@ -220,11 +222,55 @@ int read_postfix(TOKEN *array)
             TOPPOPNode(&nodeStack, &assist1);
             TOPPOPNode(&nodeStack, &assist2);
 
+            if( !Compatible(&assist1, &assist2, array[i].type_token) )
+            {
+                printf("chybne datove typy.\n");
+                break;
+            }
+
             token_init(&unit);
             unit.type_token = 37;   // vnitrni promenna semantiky
             name = makeName(unit);
             insertVarToTree(name, unit, &root);
+            assist3 = searchIdent(name, &root);
 
+            switch( array[i].type_token )
+            {
+                case 11:
+                    new_instr(&list, iMINUS, &assist1, &assist2, &assist3, NULL);
+                    break;
+                case 12:
+                    new_instr(&list, iMUL, &assist1, &assist2, &assist3, NULL);
+                    break;
+                case 13:
+                    new_instr(&list, iDIV, &assist1, &assist2, &assist3, NULL);
+                    break;
+                case 14:
+                    new_instr(&list, iPLUS, &assist1, &assist2, &assist3, NULL);
+                    break;
+                case 15:
+                    new_instr(&list, iKONK, &assist1, &assist2, &assist3, NULL);
+                    break;
+                case 16:
+                    new_instr(&list, iEQ, &assist1, &assist2, &assist3, NULL);
+                    break;
+                case 17:
+                    new_instr(&list, iNEQ, &assist1, &assist2, &assist3, NULL);
+                    break;
+                case 18:
+                    new_instr(&list, iHIGH, &assist1, &assist2, &assist3, NULL);
+                    break;
+                case 19:
+                    new_instr(&list, iHEQ, &assist1, &assist2, &assist3, NULL);
+                    break;
+                case 20:
+                    new_instr(&list, iLOW, &assist1, &assist2, &assist3, NULL);
+                    break;
+                case 21:
+                    new_instr(&list, iLEQ, &assist1, &assist2, &assist3, NULL);
+            }
+
+            PUSHNode( &nodeStack, assist3);
 
             /*doplnit assist3 a jedeme na znamenka*/
             printf("---------------------------------------------------\n");
@@ -241,10 +287,17 @@ int read_postfix(TOKEN *array)
             printf("prvek ve stromu data.d_number: %f\n",assist2->data.d_number);
             printf("prvek ve stromu data.boolean: %d\n",assist2->data.boolean);
             printf("---------------------------------------------------\n");
+            printf("assist3\n");
+            printf("prvek ve stromu data.string: %s\n",assist3->data.string);
+            printf("prvek ve stromu data.id_name: %s\n",assist3->data.id_name);
+            printf("prvek ve stromu data.c_number: %d\n",assist3->data.c_number);
+            printf("prvek ve stromu data.d_number: %f\n",assist3->data.d_number);
+            printf("prvek ve stromu data.boolean: %d\n",assist3->data.boolean);
+            printf("---------------------------------------------------\n");
 
         }
 
-        i++; assist1 = NULL; assist2 = NULL;// assist3 = NULL;
+        i++; assist1 = NULL; assist2 = NULL; assist3 = NULL;    // smazat nulovani assist* - rychlost
     }
     if( name == NULL );
 
@@ -325,9 +378,7 @@ char* makeName(TOKEN unit)
         }
     }
     else if( unit.type_token == 34)    // null
-    {
         name = "null";
-    }
     else if( unit.type_token == 30)    // string
     {
         size = strlen(unit.string);
@@ -344,7 +395,6 @@ char* makeName(TOKEN unit)
             name[size+1] = unit.string[size];
             size--;
         }   
-    
     }       
     else if( unit.type_token == 36)    // promenna
     {   
@@ -363,7 +413,6 @@ char* makeName(TOKEN unit)
             name[size+1] = unit.id_name[size];
             size--;
         }   
-
     }
     else if( unit.type_token == 37 )        // interni promenna semantiky
     {
@@ -383,7 +432,7 @@ char* makeName(TOKEN unit)
         
         name[0] = 0x07;     // BELL
         name[size+1] = '\0';
-        n = special_count;
+        n = special_count++;
         while( size >= 0 )
         {
             name[size--] = (char)((n % 10) + ASCII);
@@ -394,6 +443,42 @@ char* makeName(TOKEN unit)
     return name;
 }
 
+// funkce pro porovnani dvou datovych typu
+bool Compatible(NODE *a1, NODE *a2, int sign)
+{
+    switch( sign )
+    {
+        case 11:    // -
+        case 12:    // *
+        case 13:    // /
+        case 14:    // +
+
+            if( ((*a1)->data.type_token != 31 && (*a1)->data.type_token != 32 && (*a1)->data.type_token != 36 &&
+                (*a1)->data.type_token != 37) || ((*a2)->data.type_token != 31 && (*a2)->data.type_token != 32 &&
+                (*a2)->data.type_token != 36 && (*a2)->data.type_token != 37 ))
+
+                return false;
+            break;
+
+        case 15:    // .
+
+            if( (*a1)->data.type_token != 30 || (*a1)->data.type_token != 36 || (*a1)->data.type_token != 37 )
+                return false;
+            break;
+
+        case 18:    // >
+        case 19:    // >=
+        case 20:    // <
+        case 21:    // <=
+
+            if( (*a1)->data.type_token != 36 && (*a1)->data.type_token != 37 &&
+                (*a1)->data.type_token != (*a2)->data.type_token && (*a2)->data.type_token != 36 &&
+                (*a2)->data.type_token != 37 )
+                    return false;
+    }
+
+    return true;
+}
 
 // funkce pro prevod typu tokenu na index do precedencni tabulky
 int Give_index( int type )

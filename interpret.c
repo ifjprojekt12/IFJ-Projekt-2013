@@ -41,7 +41,7 @@ int interpret(LIST_3AK *list){
     //*******************************************
     //instrukce konce programu
     //*******************************************
-    if(list->actual->id == END){
+    if(list->actual->id == iEND){
       break;
     }
 
@@ -49,7 +49,7 @@ int interpret(LIST_3AK *list){
     //Aritmeticke a retezcove operatory
     //*******************************************
     //scitani
-    if(list->actual->id == PLUS){
+    if(list->actual->id == iPLUS){
 
       //int a int
       if(op_1->data.type_token == 31 && op_2->data.type_token == 31){
@@ -82,7 +82,7 @@ int interpret(LIST_3AK *list){
     }
     //-------------------------------------------
     //odcitani
-    if(list->actual->id == MINUS){
+    if(list->actual->id == iMINUS){
 
       //int a int
       if(op_1->data.type_token == 31 && op_2->data.type_token == 31){
@@ -193,7 +193,7 @@ int interpret(LIST_3AK *list){
     }
     //-------------------------------------------
     //konkatenace
-    if(list->actual->id == KONK){
+    if(list->actual->id == iKONK){
 
       //string a string
       if(op_1->data.type_token == 30 && op_2->data.type_token == 30){
@@ -351,7 +351,7 @@ int interpret(LIST_3AK *list){
     //*******************************************
     //Operator prirazeni
     //*******************************************
-    if(list->actual->id == ASSIGN){
+    if(list->actual->id == iASSIGN){
       if(op_1->data.type_token == 30){
         char *old_str = result->data.string;
         char *new_str;
