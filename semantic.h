@@ -9,7 +9,7 @@
 #include "ial.h"
 #include "data_struct.h"
 
-#define MAXINDEX    14
+#define MAXINDEX    15
 #define N_MAX       512
 #define SEMICOLON   22      // type_token ;
 #define BRACKET     42      // type_token {
@@ -41,6 +41,7 @@ enum tIndex {
     KON,        // .
     LBRACKET,   // (
     RBRACKET,   // )
+    ASSIGN,     // =
 };
 
 // hlavni funkce semantiky

@@ -2,21 +2,22 @@
 
 // precedencni tabulka
 int table[MAXINDEX][MAXINDEX]={
-    //              term    +   -   *   /   <   >   === <=  >=  !== .   (   )
-    /* 1. term */ { H,      H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H },
-    /* 2. + */    { L,      H,  H,  L,  L,  H,  H,  H,  H,  H,  H,  E,  L,  H },
-    /* 3. - */    { L,      H,  H,  L,  L,  H,  H,  H,  H,  H,  H,  E,  L,  H },
-    /* 4. * */    { L,      H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  E,  L,  H },
-    /* 5. / */    { L,      H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  E,  L,  H },
-    /* 6. < */    { L,      L,  L,  L,  L,  H,  H,  H,  H,  H,  H,  L,  L,  H },
-    /* 7. > */    { L,      L,  L,  L,  L,  H,  H,  H,  H,  H,  H,  L,  L,  H },
-    /* 8. === */  { L,      L,  L,  L,  L,  L,  L,  H,  L,  L,  H,  L,  L,  H },
-    /* 9. <= */   { L,      L,  L,  L,  L,  H,  H,  H,  H,  H,  H,  L,  L,  H },
-    /* 10. >= */  { L,      L,  L,  L,  L,  H,  H,  H,  H,  H,  H,  L,  L,  H },
-    /* 11. !== */ { L,      L,  L,  L,  L,  L,  L,  H,  L,  L,  H,  L,  L,  H },
-    /* 12. . */   { L,      E,  E,  E,  E,  H,  H,  H,  H,  H,  H,  H,  L,  H },
-    /* 13. ( */   { L,      L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L },
-    /* 14. ) */   { L,      H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H },
+    //              term    +   -   *   /   <   >   === <=  >=  !== .   (   )  =
+    /* 1. term */ { H,      H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H, H },
+    /* 2. + */    { L,      H,  H,  L,  L,  H,  H,  H,  H,  H,  H,  E,  L,  H, H },
+    /* 3. - */    { L,      H,  H,  L,  L,  H,  H,  H,  H,  H,  H,  E,  L,  H, H },
+    /* 4. * */    { L,      H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  E,  L,  H, H },
+    /* 5. / */    { L,      H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  E,  L,  H, H },
+    /* 6. < */    { L,      L,  L,  L,  L,  H,  H,  H,  H,  H,  H,  L,  L,  H, H },
+    /* 7. > */    { L,      L,  L,  L,  L,  H,  H,  H,  H,  H,  H,  L,  L,  H, H },
+    /* 8. === */  { L,      L,  L,  L,  L,  L,  L,  H,  L,  L,  H,  L,  L,  H, H },
+    /* 9. <= */   { L,      L,  L,  L,  L,  H,  H,  H,  H,  H,  H,  L,  L,  H, H },
+    /* 10. >= */  { L,      L,  L,  L,  L,  H,  H,  H,  H,  H,  H,  L,  L,  H, H },
+    /* 11. !== */ { L,      L,  L,  L,  L,  L,  L,  H,  L,  L,  H,  L,  L,  H, H },
+    /* 12. . */   { L,      E,  E,  E,  E,  H,  H,  H,  H,  H,  H,  H,  L,  H, H },
+    /* 13. ( */   { L,      L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L, H },
+    /* 14. ) */   { L,      H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H, H },
+    /* 15. = */   { L,      L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L, H },
 };
 
 int special_count = 0;
@@ -24,21 +25,28 @@ int special_count = 0;
 // hlavni funkce semantiky
 int semantixer(TOKEN *array)
 {
-//    printf("semantixer\n");
+    NODE assist1 = NULL;
+    char *name = NULL;
 
     int n=0;
     if( array[n].type_token == 36 )     // promenna
     {
-        name = makeName();
-        insertValToTree();
-        n+=2;
+        name = makeName(array[n]);
+        if( (assist1 = searchIdent(name, &root)) == NULL )
+            insertVarToTree(name, array[n], &root);
         if( expression_sem(array, n, SEMICOLON) == EXIT_FAILURE )
             return EXIT_FAILURE;
     }
-    else if( array[n].type_token == 1 || array[n].type_token == 3 || array[n].type_token == 4)
+    else if( array[n].type_token == 1 || array[n].type_token == 3 || array[n].type_token == 4 )  // if, elseif, while
     {
         n++;
         if( expression_sem(array, n, BRACKET) == EXIT_FAILURE )
+            return EXIT_FAILURE;
+    }
+    else if( array[n].type_token == 7 )
+    {
+        n++;
+        if( expression_sem(array, n, SEMICOLON) == EXIT_FAILURE )
             return EXIT_FAILURE;
     }
     else
@@ -46,16 +54,12 @@ int semantixer(TOKEN *array)
         printf("else - semantixer\n");
     }
 
-      
-//    printf("semantixer\n");
-
     return EXIT_SUCCESS;
 }
 
 // funkce pro zapis vyrazu do postfixove notace a odeslani instrukci
 int expression_sem(TOKEN *array, int n, int end)
 {
-//    printf("expression_sem\n");
 
     // deklarace zasobniku a jeho inicializace
     tStack leStack;
@@ -96,6 +100,7 @@ int expression_sem(TOKEN *array, int n, int end)
                 PUSH( &leStack, array[n++].type_token );
                 break;
             }
+            case 10:    // =
             case 11:    // -
             case 12:    // *
             case 13:    // /
@@ -157,8 +162,8 @@ int expression_sem(TOKEN *array, int n, int end)
             }
             default:
             {
-                fprintf(stderr, "switch default\n");
-                return EXIT_FAILURE;
+                printf("switch default, type: %d.\n", array[n].type_token);
+                break;
             }
         }
     }
@@ -206,6 +211,7 @@ int read_postfix(TOKEN *array)
             assist1 = searchIdent(name, &root);
             if(assist1 == NULL)
             {
+                
                 if(array[i].type_token == 36) {
                     printf("ale pozor nedeklarovana promenna! nachystat chybovy kod\n");
                     return -111;
@@ -217,7 +223,7 @@ int read_postfix(TOKEN *array)
             PUSHNode( &nodeStack, assist1);
         }
         // narazili jsme na znamenko
-        else if(array[i].type_token >= 11 && array[i].type_token <= 21)
+        else if(array[i].type_token >= 10 && array[i].type_token <= 21)
         {
             TOPPOPNode(&nodeStack, &assist1);
             TOPPOPNode(&nodeStack, &assist2);
@@ -236,6 +242,9 @@ int read_postfix(TOKEN *array)
 
             switch( array[i].type_token )
             {
+                case 10:
+                    new_instr(&list, iASSIGN, &assist2, NULL, &assist1, NULL);
+                    break;
                 case 11:
                     new_instr(&list, iMINUS, &assist1, &assist2, &assist3, NULL);
                     break;
@@ -498,6 +507,7 @@ int Give_index( int type )
         case 15:    return KON;
         case 40:    return LBRACKET;
         case 41:    return RBRACKET;
+        case 10:    return ASSIGN;
         default:    break;
     }
     return -1;
