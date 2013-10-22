@@ -22,6 +22,10 @@ int syntaxer()
     // vytvoreni zasobniku a jeho inicializace
     tStack leStack;
     init(&leStack);
+
+    // inicializace tabulky promennych
+    tSNode nodeStack;
+    initNode( &nodeStack );
    
     // pomocne promenne
     int type = 0;

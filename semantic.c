@@ -186,8 +186,8 @@ int read_postfix(TOKEN *array)
     int i=0;
     char *name = NULL;
 
-    tSNode nodeStack;
-    initNode( &nodeStack );
+//    tSNode nodeStack;
+//    initNode( &nodeStack );
 
     NODE root = NULL;
     treeInit(&root);

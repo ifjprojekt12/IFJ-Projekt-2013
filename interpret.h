@@ -10,6 +10,14 @@ Interpret
 
 #include "data_struct.h"
 
+enum intstructions {
+    END,
+    PLUS,
+    MINUS,
+    KONK,
+    ASSIGN,
+};
+
 int interpret(LIST_3AK *);
 
 #endif
