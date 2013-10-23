@@ -6,7 +6,7 @@ Interpret
 */
 
 #ifndef _INTERPRET_H
-#define _INTERPRET_H
+#define _INTERPRET_h
 
 #include "data_struct.h"
 #include "syntax.h"

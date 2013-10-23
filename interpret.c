@@ -4,26 +4,11 @@ IFJ 2013/14
 Interpret
 
 */
-/*
-end    (0, null, null, null, null)     END    nutna instrukce, znaci konec programu
-+     (1, id1, id2, id3, null)    PLUS
--    (2, id1, id2, id3, null)    MINUS
-*    (3, id1, id2, id3, null)    MUL
-/    (4, id1, id2, id3, null)    DIV
-.    (5, id1, id2, id3, null)    KONK
-=     (6, id1, null, id3, null)    ASSIGN
-30    string
-31    int
-32    double
-33    bool
-34    null - Data Type
-*/
 
 #include "interpret.h"
 
 //konstanty etc.
 const int str_rezerv = 50;
-
 
 int interpret(LIST_3AK *list){
 
@@ -32,6 +17,10 @@ int interpret(LIST_3AK *list){
   list->actual = list->first;
 
   while(1){
+    //pro jistotu kontrola, ze instrukce neodkazuje na NULL
+    if(list->actual == NULL){
+      return sINTERN;
+    }
 
     //ulozeni ukazatelu, ciste pro zjednoduseni konstrukci -> a .
     op_1 = list->actual->operand_1;
@@ -115,7 +104,7 @@ int interpret(LIST_3AK *list){
     }
     //-------------------------------------------
     //nasobeni
-    if(list->actual->id == 3){
+    if(list->actual->id == iMUL){
 
       //int a int
       if(op_1->data.type_token == 31 && op_2->data.type_token == 31){
@@ -148,7 +137,7 @@ int interpret(LIST_3AK *list){
     }
     //-------------------------------------------
     //deleni
-    if(list->actual->id == 4){
+    if(list->actual->id == iDIV){
 
       //kontrola na deleni nulou
       if(op_2->data.type_token == 32){
@@ -164,8 +153,8 @@ int interpret(LIST_3AK *list){
 
       //int a int
       if(op_1->data.type_token == 31 && op_2->data.type_token == 31){
-        result->data.type_token = 31;
-        result->data.c_number = op_1->data.c_number / op_2->data.c_number;
+        result->data.type_token = 32;
+        result->data.d_number = (double)op_1->data.c_number / (double)op_2->data.c_number;
       }
 
       //double a double
@@ -380,7 +369,307 @@ int interpret(LIST_3AK *list){
         result->data.boolean = op_1->data.boolean;
       }
     }
+
     //*******************************************
+    //Porovnavaci operatory
+    //*******************************************
+    // rovno
+    if(list->actual->id == iEQ){
+      //odlisne typy
+      if(op_1->data.type_token != op_2->data.type_token){
+        list->actual = list->actual->jump;
+        continue;
+      }
+      //string
+      if(op_1->data.type_token == 30){
+        if((strcmp(op_1->data.string,op_2->data.string)) == 0){
+          list->actual = list->actual->right;
+          continue;
+        }
+        else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      //int
+      if(op_1->data.type_token == 31){
+        if(op_1->data.c_number == op_2->data.c_number){
+          list->actual = list->actual->right;
+          continue;
+        }
+        else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      //double
+      if(op_1->data.type_token == 32){
+        if(op_1->data.d_number == op_2->data.d_number){
+          list->actual = list->actual->right;
+          continue;
+        }
+        else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      //boolean
+      if(op_1->data.type_token == 33){
+        if(op_1->data.boolean == op_2->data.boolean){
+          list->actual = list->actual->right;
+          continue;
+        }
+        else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      //null
+      if(op_1->data.type_token == 34){
+        list->actual = list->actual->right;
+        continue;
+      }
+    }
+    //---------------------------------
+    // nerovno
+    if(list->actual->id == iNEQ){
+      //odlisne typy -- pokud vemu zadani doslova, tak stejne datove typy = false
+      //a jak by se pak mohlo porovnavat?
+      /*
+      if(op_1->data.type_token == op_2->data.type_token){
+        list->actual = list->actual->jump;
+        continue;
+      }*/
+      //string
+      if(op_1->data.type_token == 30){
+        if((strcmp(op_1->data.string,op_2->data.string)) != 0){
+          list->actual = list->actual->right;
+          continue;
+        }
+        else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      //int
+      if(op_1->data.type_token == 31){
+        if(op_1->data.c_number != op_2->data.c_number){
+          list->actual = list->actual->right;
+          continue;
+        }
+        else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      //double
+      if(op_1->data.type_token == 32){
+        if(op_1->data.d_number != op_2->data.d_number){
+          list->actual = list->actual->right;
+          continue;
+        }
+        else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      //boolean
+      if(op_1->data.type_token == 33){
+        if(op_1->data.boolean != op_2->data.boolean){
+          list->actual = list->actual->right;
+          continue;
+        }
+        else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      //null
+      if(op_1->data.type_token == 34){
+        list->actual = list->actual->jump;
+        continue;
+      }
+    }
+    //---------------------------------
+    // vetsi
+    if(list->actual->id == iHIGH){
+      if(op_1->data.type_token == 30 && op_2->data.type_token == 30){
+        if((strcmp(op_1->data.string,op_2->data.string)) > 0){
+          list->actual = list->actual->right;
+          continue;
+        } else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      else if(op_1->data.type_token == 31 && op_2->data.type_token == 31){
+        if(op_1->data.c_number > op_2->data.c_number){
+          list->actual = list->actual->right;
+          continue;
+        } else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      else if(op_1->data.type_token == 32 && op_2->data.type_token == 32){
+        if(op_1->data.d_number > op_2->data.d_number){
+          list->actual = list->actual->right;
+          continue;
+        } else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      else if(op_1->data.type_token == 33 && op_2->data.type_token == 33){
+        if(op_1->data.boolean > op_2->data.boolean){
+          list->actual = list->actual->right;
+          continue;
+        } else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      else {
+        return sSynCompatib;
+      }
+    }
+    //---------------------------------
+    // vetsi rovno
+    if(list->actual->id == iHEQ){
+      if(op_1->data.type_token == 30 && op_2->data.type_token == 30){
+        if((strcmp(op_1->data.string,op_2->data.string)) >= 0){
+          list->actual = list->actual->right;
+          continue;
+        } else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      else if(op_1->data.type_token == 31 && op_2->data.type_token == 31){
+        if(op_1->data.c_number >= op_2->data.c_number){
+          list->actual = list->actual->right;
+          continue;
+        } else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      else if(op_1->data.type_token == 32 && op_2->data.type_token == 32){
+        if(op_1->data.d_number >= op_2->data.d_number){
+          list->actual = list->actual->right;
+          continue;
+        } else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      else if(op_1->data.type_token == 33 && op_2->data.type_token == 33){
+        if(op_1->data.boolean >= op_2->data.boolean){
+          list->actual = list->actual->right;
+          continue;
+        } else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      else {
+        return sSynCompatib;
+      }
+    }
+    //---------------------------------
+    // mensi
+    if(list->actual->id == iLOW){
+      if(op_1->data.type_token == 30 && op_2->data.type_token == 30){
+        if((strcmp(op_1->data.string,op_2->data.string)) < 0){
+          list->actual = list->actual->right;
+          continue;
+        } else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      else if(op_1->data.type_token == 31 && op_2->data.type_token == 31){
+        if(op_1->data.c_number < op_2->data.c_number){
+          list->actual = list->actual->right;
+          continue;
+        } else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      else if(op_1->data.type_token == 32 && op_2->data.type_token == 32){
+        if(op_1->data.d_number < op_2->data.d_number){
+          list->actual = list->actual->right;
+          continue;
+        } else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      else if(op_1->data.type_token == 33 && op_2->data.type_token == 33){
+        if(op_1->data.boolean < op_2->data.boolean){
+          list->actual = list->actual->right;
+          continue;
+        } else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      else {
+        return sSynCompatib;
+      }
+    }
+    //---------------------------------
+    // mensi rovno
+    if(list->actual->id == iLEQ){
+      if(op_1->data.type_token == 30 && op_2->data.type_token == 30){
+        if((strcmp(op_1->data.string,op_2->data.string)) <= 0){
+          list->actual = list->actual->right;
+          continue;
+        } else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      else if(op_1->data.type_token == 31 && op_2->data.type_token == 31){
+        if(op_1->data.c_number <= op_2->data.c_number){
+          list->actual = list->actual->right;
+          continue;
+        } else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      else if(op_1->data.type_token == 32 && op_2->data.type_token == 32){
+        if(op_1->data.d_number <= op_2->data.d_number){
+          list->actual = list->actual->right;
+          continue;
+        } else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      else if(op_1->data.type_token == 33 && op_2->data.type_token == 33){
+        if(op_1->data.boolean <= op_2->data.boolean){
+          list->actual = list->actual->right;
+          continue;
+        } else {
+          list->actual = list->actual->jump;
+          continue;
+        }
+      }
+      else {
+        return sSynCompatib;
+      }
+    }
+    //*******************************************
+    //Jednoduchy skok
+    //*******************************************
+    if(list->actual->id == iJUMP){
+      list->actual = list->actual->jump;
+      continue;
+    }
+
 
     //nastavi dalsi instrukci v poradi
     list->actual = list->actual->right;
