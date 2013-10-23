@@ -6,6 +6,11 @@ const char*MESSAGE[]=
 	"Dosazena maximalni velikost pole tokenu",
 	"Chybna syntaxe struktury programu",
 	"Nespravne zapsany vyraz",
+    "Chybi oteviraci zavorka",
+    "Chybi slozena oteviraci zavorka",
+    "Nespravne zapsany tvar prirazeni",
+    "Spatna posloupnost parametru v definici funkce",
+    "Neznamy token",
 };
 
 // hlavni funkce syntaxe
@@ -37,11 +42,14 @@ int syntaxer()
     int eCode = sOK;
     /* -------------------------------- */
     
-    while(unit.type_token > 0 && unit.type_token != 50 )    // konec pri chybe nebo EOF
+    // cyklus zajistujici nacitani tokenu
+    while(unit.type_token > 0 && unit.type_token != 100 && unit.type_token != 50 )    // konec pri chybe nebo EOF
     {
+        // pole pro ukladani tokenu celeho jednoho radku
         array[i++] = unit;
         if( i == I_MAX )
         {
+            // vycerpani staticke velikosti pole
             printERR(eIMAX);
             eCode = sINTERN;
             break;
@@ -50,7 +58,9 @@ int syntaxer()
         // if, elseif, while
         if( unit.type_token == 1 || unit.type_token == 3 || unit.type_token == 4 )
         {
+            // ulozeni typu prvniho tokenu pro zjisteni spravneho poradi if-elseif-else
             type = unit.type_token;
+
             unit = get_token();
             array[i++] = unit;
             if( i == I_MAX )
@@ -62,6 +72,7 @@ int syntaxer()
 
             if( unit.type_token == 40 ) // (
             {
+                // zpracovani vyrazu, ktery musi nasledovat, END_B = vyraz konci zavorkou
                 if( (i = expression(array, i, get_token(), END_B)) < 0 )
                 {
                     // chyba ve vyrazu
@@ -72,6 +83,7 @@ int syntaxer()
 						eCode = sINTERN;
                     break;
                 }
+
                 unit = get_token();
                 array[i++] = unit;
                 if( i == I_MAX )
@@ -84,23 +96,26 @@ int syntaxer()
                 if( unit.type_token != 42 ) // {
                 {
                     // chybejici znak {
-                    printERR(eWRONG);
+                    printERR(eSBRACKETO);
                     eCode = sSyn;
                     break;
                 }
+
+                // promenna pro kontrolu poctu slozenych zavorek
                 super_brackets++;
             }
             else
             {
                 // chybejici znak (
-                printERR(eWRONG);
+                printERR(eBRACKETO);
                 eCode = sSyn;
                 break;
             }
         }
         else if( unit.type_token == 5 )   // for
         {
-            // type = unit.type_token; potreba ?? TODO
+            // ulozeni typu prvniho tokenu pro zjisteni spravneho poradi if-elseif-else
+            type = unit.type_token;
             unit = get_token();
             array[i++] = unit;
             if( i == I_MAX )
@@ -134,6 +149,7 @@ int syntaxer()
 
                     if( unit.type_token == 10 )     // =
                     {
+                        // zpracovani vyrazu, END_S = vyraz konci strednikem
                         if( (i = expression(array, i, get_token(), END_S)) < 0 )
                         {
                             // chyba ve vyrazu
@@ -161,13 +177,14 @@ int syntaxer()
             else
             {
                 // chybejici znak (
-                printERR(eWRONG);
+                printERR(eBRACKETO);
                 eCode = sSyn;
                 break;
             }
         }
         else if( unit.type_token == 7 )     // return
         {
+            // zpracovani vyrazu, END_S = vyraz konci strednikem
             if( (i = expression(array, i, get_token(), END_S)) < 0)
             {
                 // chyba ve vyrazu
@@ -181,6 +198,7 @@ int syntaxer()
         }
         else if( unit.type_token == 2 )   // else
         {
+            // ulozeni typu prvniho tokenu pro zjisteni spravneho poradi if-elseif-else
             type = unit.type_token;
             unit = get_token();
             array[i++] = unit;
@@ -194,10 +212,12 @@ int syntaxer()
             if( unit.type_token != 42 ) // {
             {
                 // chybejici znak {
-                printERR(eWRONG);
+                printERR(eSBRACKETO);
                 eCode = sSyn;
                 break;
             }
+
+            // promenna pro kontrolu poctu slozenych zavorek
             super_brackets++;
         }
         else if( unit.type_token == 36 )    // promenna
@@ -213,6 +233,7 @@ int syntaxer()
 
             if( unit.type_token == 10 )     // =
             {
+                // zpracovani vyrazu, END_S = vyraz konci strednikem
                 if( (i = expression(array, i, get_token(), END_S)) < 0 )
                 {
                     // chyba ve vyrazu
@@ -227,13 +248,14 @@ int syntaxer()
             else
             {
                 // chybejici znak =
-                printERR(eWRONG);
+                printERR(eASSIGN);
                 eCode = sSyn;
                 break;
             }
         }
         else if( unit.type_token == 6 )     // function
         {
+            // ulozeni typu prvniho tokenu pro zjisteni spravneho poradi if-elseif-else
             type = unit.type_token;
             unit = get_token();
             array[i++] = unit;
@@ -260,21 +282,28 @@ int syntaxer()
                     unit = get_token(); 
                     array[i++] = unit;
                     
+                    bool empty = true;  // seznam parametru je prazdny
                     bool id = true;
                     bool err = false;
+                    int err_type = ePARAM;
                     // kontrola posloupnosti zapisu parametru funkci
                     while( unit.type_token != 41 )  // )
                     {
-                        if( id && unit.type_token == 36 )
+                        // seznama parametru neni prazdny
+                        if( empty )
+                            empty = false;
+
+                        if( id && unit.type_token == 36 )       // ocekavame promennou && prijde promenna
                             id = false;
-                        else if( !id && unit.type_token == 23 )     // ,
+                        else if( !id && unit.type_token == 23 )     // neocekavame promennou && prijde ','
                             id = true;
                         else
                         {
                             // nespravny token ci posloupnost
-                            printERR(eWRONG);
                             eCode = sSyn;
+                            // priznak znacici vyskyt chyby
                             err = true;
+                            err_type = ePARAM;
                             break;
                         }
 
@@ -282,16 +311,17 @@ int syntaxer()
                         array[i++] = unit;
                         if( i == I_MAX )
                         {
-                            printERR(eIMAX);
                             eCode = sINTERN;
+                            // priznak znacici vyskyt chyby
                             err = true;
+                            err_type = eIMAX;
                             break;
                         }
                     }
-                    if( id || err )
+                    if( (id && !empty)  || err )
                     {
                         // spatna posloupnost parametru funkce nebo prokroceno I_MAX
-                        printERR(eWRONG);
+                        printERR(err_type);
                         eCode = sSyn;
                         break;
                     }
@@ -308,20 +338,23 @@ int syntaxer()
                     if( unit.type_token != 42 ) // {
                     {
                         // chybejici znak {
-                        printERR(eWRONG);
+                        printERR(eSBRACKETO);
                         eCode = sSyn;
                         break;
                     }
+
+                    // promenna pro kontrolu poctu slozenych zavorek
                     super_brackets++;
                 }
             }
         }
         else if( unit.type_token == 43 )    // }
         {
+            // promenna pro kontrolu poctu slozenych zavorek
             super_brackets--;
             if( super_brackets < 0 )
             {
-                // vice } nez { zavorek
+                // vice '}' nez '{' zavorek
                 printERR(eWRONG);
                 eCode = sSyn;
                 break;
@@ -334,6 +367,7 @@ int syntaxer()
                 eCode = sSyn;
                 break;
             }
+
             TOP( &leStack, &top );
             if( top == cREADY )
             {
@@ -341,38 +375,30 @@ int syntaxer()
                 TOP( &leStack, &top );
             }
 
-            // nahrada za switch dole TODO
             POP( &leStack);
             if( top == cIF || top == cELSEIF )
                 PUSH( &leStack, cREADY );
-/*
-            // zbytecny ????
-            switch(top) {
-                case cWHILE:
-                case cFOR:
-                case cFUNCTION:
-                case cELSE:     POP( &leStack );
-                                break;
-                case cIF:
-                case cELSEIF:   POP( &leStack );
-                                PUSH( &leStack, cREADY );
-            }
-*/
+   
+            // abychom neposilali semantice samostatny znak '}', urychlime beh programu 
+            i = 0;
+            initialize_array(array);
+            unit = get_token();
+            continue;
         }
         else
         {
             // token, ktery se nesmi nalezat na zacatku radku
-            printERR(eWRONG);
+            printERR(eUNKNOWN);
             eCode = sSyn;
             break;
         }
 
-        // ukladani na zasobnik
+        // ukladani na zasobnik, kontrola if-elseif-else
         switch(type) {
-            case 1: // if 
-            case 4: // while
-            case 5: // for
-            case 6:
+            case 1:     // if 
+            case 4:     // while
+            case 5:     // for
+            case 6:     // function
                     if( !SEmpty( &leStack ) )
                     {
                         TOP( &leStack, &top );
@@ -389,8 +415,8 @@ int syntaxer()
                         PUSH( &leStack, cFOR);
                     break;
 
-            case 2: // else
-            case 3: // elseif
+            case 2:     // else
+            case 3:     // elseif
                     if( SEmpty( &leStack ) )
                     {
                         // prazdny zasobnik ( == else(if) bez IF ?)
@@ -428,11 +454,11 @@ int syntaxer()
     
         unit = get_token(); // nacteni dalsiho tokenu
     }
-    array[i] = unit;
+    // array[i] = unit;     // ukladame do pole i tokeny 0, 50, 100 ?? proc ?? TODO
 
     if( super_brackets != 0 )
     {
-        // vice { nez } v celem programu
+        // vice '{' nez '}' v celem programu
         printERR(eWRONG);
         eCode = sSyn;
     }
@@ -447,6 +473,8 @@ int syntaxer()
     printf("\n");
 */
 
+    if( eCode == sOK )
+        printf("vse ok!\n");
     return eCode;
 }
 
@@ -467,7 +495,7 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending)
     bool wasSign = true;
     int brackets = 0;
 
-    while( unit.type_token > 0 && unit.type_token != 50 && unit.type_token != 100 ) // chyba, EOF, chyba
+    while( unit.type_token > 0 && unit.type_token != 100 && unit.type_token != 50 ) // chyba nebo EOF
     {
         array[i++] = unit;
         if( i == I_MAX )

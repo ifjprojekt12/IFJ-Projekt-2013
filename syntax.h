@@ -46,6 +46,11 @@ enum error {
 	eIMAX,
 	eWRONG,
 	eEXPR,
+    eBRACKETO,
+    eSBRACKETO,
+    eASSIGN,
+    ePARAM,
+    eUNKNOWN,
 };
 
 // funkce pro vypis chybovych zprav

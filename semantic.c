@@ -43,7 +43,7 @@ int semantixer(TOKEN *array)
         if( expression_sem(array, n, BRACKET) == EXIT_FAILURE )
             return EXIT_FAILURE;
     }
-    else if( array[n].type_token == 7 )
+    else if( array[n].type_token == 7 )     // return
     {
         n++;
         if( expression_sem(array, n, SEMICOLON) == EXIT_FAILURE )
@@ -51,7 +51,8 @@ int semantixer(TOKEN *array)
     }
     else
     {
-        printf("else - semantixer\n");
+        printf("nedodelana semantika? token: %d\n",array[n].type_token);
+        return EXIT_FAILURE;
     }
 
     return EXIT_SUCCESS;
@@ -281,7 +282,7 @@ int read_postfix(TOKEN *array)
 
             PUSHNode( &nodeStack, assist3);
 
-            /*doplnit assist3 a jedeme na znamenka*/
+            /*doplnit assist3 a jedeme na znamenka*//*
             printf("---------------------------------------------------\n");
             printf("assist1\n");
             printf("prvek ve stromu data.string: %s\n",assist1->data.string);
@@ -303,7 +304,7 @@ int read_postfix(TOKEN *array)
             printf("prvek ve stromu data.d_number: %f\n",assist3->data.d_number);
             printf("prvek ve stromu data.boolean: %d\n",assist3->data.boolean);
             printf("---------------------------------------------------\n");
-
+*/
         }
 
         i++; assist1 = NULL; assist2 = NULL; assist3 = NULL;    // smazat nulovani assist* - rychlost
