@@ -3,9 +3,9 @@
 // tabulka pro vypis chyboveho hlaseni
 const char*MESSAGE[]=
 {
-	"Dosazena maximalni velikost pole tokenu",
-	"Chybna syntaxe struktury programu",
-	"Nespravne zapsany vyraz",
+    "Dosazena maximalni velikost pole tokenu",
+    "Chybna syntaxe struktury programu",
+    "Nespravne zapsany vyraz",
     "Chybi oteviraci zavorka",
     "Chybi slozena oteviraci zavorka",
     "Nespravne zapsany tvar prirazeni",
@@ -66,7 +66,7 @@ int syntaxer()
             if( i == I_MAX )
             {
                 printERR(eIMAX);
-				eCode = sINTERN;
+                eCode = sINTERN;
                 break;
             }
 
@@ -78,9 +78,9 @@ int syntaxer()
                     // chyba ve vyrazu
                     printERR(eEXPR);
                     if(i == -1)
-						eCode = sSyn;
+                        eCode = sSyn;
                     else
-						eCode = sINTERN;
+                        eCode = sINTERN;
                     break;
                 }
 
@@ -121,12 +121,13 @@ int syntaxer()
             if( i == I_MAX )
             {
                 printERR(eIMAX);
-				eCode = sINTERN;
+                eCode = sINTERN;
                 break;
             }
 
             if( unit.type_token == 40 ) // (
             {
+                // nacteni dalsiho tokenu - prvni cast hlavicky
                 unit = get_token();
                 array[i++] = unit;
                 if( i == I_MAX )
@@ -136,6 +137,7 @@ int syntaxer()
                     break;
                 }
 
+                // prvni cast je neprazdna
                 if( unit.type_token == 36 )     // promenna
                 {
                     unit = get_token();
@@ -155,28 +157,138 @@ int syntaxer()
                             // chyba ve vyrazu
                             printERR(eEXPR);
                             if(i == -1)
-								eCode = sSyn;
+                                eCode = sSyn;
                             else
-								eCode = sINTERN;
+                                eCode = sINTERN;
                             break;
                         }                
                     }
                     else
                     {
+                        // chybi znamenko '='
                         printERR(eWRONG);
                         eCode = sSyn;
                         break;
                     }
                 }
-
-                if( unit.type_token == 22 )     // prvni ;
+                else if( unit.type_token != 22 )     // pokud je prvni cast prazdna, musi nasledovat ';'
                 {
-                    
+                    // chybi znamenko ';'
+                    printERR(eWRONG);
+                    eCode = sSyn;
+                    break;
                 }
+
+                // nacteni dalsiho tokenu - druha cast hlavicky
+                unit = get_token();
+                array[i++] = unit;
+                if( i == I_MAX )
+                {
+                    printERR(eIMAX);
+                    eCode = sINTERN;
+                    break;
+                }
+
+                // druha cast je neprazdna
+                if( (unit.type_token >= 30 && unit.type_token <= 34) || unit.type_token == 36 )
+                    // string, int, double, bool, null nebo promenna
+                {
+                    // zpracovani vyrazu, END_S = vyraz konci strednikem
+                    if( (i = expression(array, i-1, unit, END_S)) < 0 )
+                    {
+                        // chyba ve vyrazu
+                        printERR(eEXPR);
+                        if(i == -1)
+                        eCode = sSyn;
+                        else
+                        eCode = sINTERN;
+                        break;
+                     }                
+
+                }
+                else if( unit.type_token != 22 )     // pokud je druha cast prazdna, musi nasledovat ';'
+                {
+                    // chybi znamenko ';'
+                    printERR(eWRONG);
+                    eCode = sSyn;
+                    break;
+                }
+
+                // nacteni dalsiho tokenu - treti cast hlavicky
+                unit = get_token();
+                array[i++] = unit;
+                if( i == I_MAX )
+                {
+                    printERR(eIMAX);
+                    eCode = sINTERN;
+                    break;
+                }
+               
+                if( unit.type_token == 36 )     // promenna
+                {
+                    unit = get_token();
+                    array[i++] = unit;
+                    if( i == I_MAX )
+                    {
+                        printERR(eIMAX);
+                        eCode = sINTERN;
+                        break;
+                    }
+
+                    if( unit.type_token == 10 )     // =
+                    {
+                        // zpracovani vyrazu, END_B = vyraz konci zavorkou
+                        if( (i = expression(array, i, get_token(), END_B)) < 0 )
+                        {
+                            // chyba ve vyrazu
+                            printERR(eEXPR);
+                            if(i == -1)
+                                eCode = sSyn;
+                            else
+                                eCode = sINTERN;
+                            break;
+                        }                
+                    }
+                    else
+                    {
+                        // chybejici znak '='
+                        printERR(eWRONG);
+                        eCode = sSyn;
+                        break;
+                    }
+
+                }
+                else if( unit.type_token != 41 )    // pokud je treti cast prazdna, musi nasledovat ')'
+                {
+                    // chybi znamenko ';'
+                    printERR(eWRONG);
+                    eCode = sSyn;
+                    break;
+                }
+
+                unit = get_token();
+                array[i++] = unit;
+                if( i == I_MAX )
+                {
+                    printERR(eIMAX);
+                    eCode = sINTERN;
+                    break;
+                }
+
+                if( unit.type_token != 42 )     // {
+                {
+                    // chybejici znak '{'
+                    printERR(eSBRACKETO);
+                    eCode = sSyn;
+                    break;
+                }
+
+                // promenna pro kontrolu poctu slozenych zavorek
+                super_brackets++;
             }
             else
             {
-                // chybejici znak (
+                // chybejici znak '('
                 printERR(eBRACKETO);
                 eCode = sSyn;
                 break;
@@ -190,7 +302,7 @@ int syntaxer()
                 // chyba ve vyrazu
                 printERR(eEXPR);
                 if(i == -1)
-					eCode = sSyn;
+                    eCode = sSyn;
                 else
                     eCode = sINTERN;
                 break;
@@ -239,9 +351,9 @@ int syntaxer()
                     // chyba ve vyrazu
                     printERR(eEXPR);
                     if(i == -1)
-						eCode = sSyn;
+                        eCode = sSyn;
                     else
-						eCode = sINTERN;
+                        eCode = sINTERN;
                     break;
                 }
             }
@@ -448,7 +560,7 @@ int syntaxer()
             return EXIT_FAILURE;
 
         // snad to nezpusobi chybu, ale novy radek -> nove pole TODO
-    	// plus mazat pole!!
+        // plus mazat pole!!
         i = 0;
         initialize_array(array);
     
