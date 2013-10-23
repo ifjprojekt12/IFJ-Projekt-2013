@@ -51,6 +51,7 @@ enum error {
     eASSIGN,
     ePARAM,
     eUNKNOWN,
+    eFOR,
 };
 
 // funkce pro vypis chybovych zprav

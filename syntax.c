@@ -11,6 +11,7 @@ const char*MESSAGE[]=
     "Nespravne zapsany tvar prirazeni",
     "Spatna posloupnost parametru v definici funkce",
     "Neznamy token",
+    "Prikaz break nebo continue mimo telo prikazu for",
 };
 
 // hlavni funkce syntaxe
@@ -40,6 +41,7 @@ int syntaxer()
     int i = 0;
     int super_brackets = 0;
     int eCode = sOK;
+    bool inFOR = false;
     /* -------------------------------- */
     
     // cyklus zajistujici nacitani tokenu
@@ -293,6 +295,34 @@ int syntaxer()
                 eCode = sSyn;
                 break;
             }
+            inFOR = true;
+        }
+        else if( unit.type_token == 8 || unit.type_token == 9 )     // break nebo continue
+        {
+            if( !inFOR )
+            {
+                // prikaz break nebo continue se nenachazi uvnitr prikazu FOR
+                printERR(eFOR);
+                eCode = sSyn;
+                break;
+            }
+
+            unit = get_token();
+            array[i++] = unit;
+            if( i == I_MAX )
+            {
+                printERR(eIMAX);
+                eCode = sINTERN;
+                break;
+            }
+
+            if( unit.type_token != 22 )     // ;
+            {
+                // chybejici znak ';'
+                printERR(eWRONG);
+                eCode = sSyn;
+                break;
+            }
         }
         else if( unit.type_token == 7 )     // return
         {
@@ -480,16 +510,30 @@ int syntaxer()
                 break;
             }
 
+            // vyjmeme ze zasobniku posledni otevreny prikaz
             TOP( &leStack, &top );
             if( top == cREADY )
             {
+                // pokud jsme nacli cREADY, nacteme ze zasobniku jeste jednou
                 POP( &leStack );
                 TOP( &leStack, &top );
             }
 
+            // smazeme ze zasobniku nacteny prikaz
             POP( &leStack);
             if( top == cIF || top == cELSEIF )
+                // pokud byl tento prikaz IF nebo ELSEIF, ulozime do zasobniku cREADY - umiznime prikaz ELSE
                 PUSH( &leStack, cREADY );
+            else if( top == cFOR )
+            {
+                inFOR = false;
+                if( !SEmpty( &leStack ) )
+                {
+                    TOP( &leStack, &top );
+                    if( top == cFOR )
+                        inFOR = true;
+                }
+            }
    
             // abychom neposilali semantice samostatny znak '}', urychlime beh programu 
             i = 0;
