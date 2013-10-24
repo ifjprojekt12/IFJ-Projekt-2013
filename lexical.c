@@ -16,6 +16,8 @@ Lexikalni analyzator
 //dodelat reallocy u identifikatoru, retezcu a promennych
 //a dodelat podminky na to, ze malloc prosel a neexnul nam nekde v prubehu (0/100?)
 //retezec neukonceny " zacykli lexikalni analyzator...
+//podivat se na rozdil ve vypisu stylu "marenka\t" a "marenka \t", to prvni z nejakeho duvodu nevypise tabulator
+//zeptat se na foru, zda muzeme v retezci hexa kodem zadavat i znaky < 31 ASCII, aktualne to mam tak, ze nemuzem
 
 FILE *source; //prom. - zdrojovy soubor
 char buffer[buffer_size]; //buffer
@@ -409,6 +411,7 @@ TOKEN get_token(){
     }
 
     while(ende_string == 0){
+
       pos_buffer++;
 
       if(pos_buffer == strlen(buffer)){
@@ -419,6 +422,7 @@ TOKEN get_token(){
       }
 
       //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
       //ukladani obsahu retezce a prace s pameti kam se uklada
       if(new_tok.string == NULL){
         new_tok.string = malloc(sizeof(char)*100);
@@ -426,8 +430,76 @@ TOKEN get_token(){
 
       //DOPLNIT REALLOC <<------
 
-      new_tok.string[length_string] = buffer[pos_buffer-1];
-      length_string++;
+      //kontrola na znaky <31 a $
+      if(buffer[pos_buffer - 1] == '$' && buffer[pos_buffer - 2] != '\\'){
+        return new_tok;
+      }
+      if(buffer[pos_buffer - 1] < 32){
+        return new_tok;
+      }
+
+      //zde nahrazuje espace sekvence a hex. hodnoty
+      if(buffer[pos_buffer-1] == '\\'){
+        if(buffer[pos_buffer] == 't'){
+          new_tok.string[length_string] = '\t';
+          length_string++;
+          pos_buffer = pos_buffer + 1;
+        }
+        else if(buffer[pos_buffer] == '\\'){
+          new_tok.string[length_string] = '\\';
+          length_string++;
+          pos_buffer = pos_buffer + 1;
+        }
+        else if(buffer[pos_buffer] == 'n'){
+          new_tok.string[length_string] = '\n';
+          length_string++;
+          pos_buffer = pos_buffer + 1;
+        }
+        else if(buffer[pos_buffer] == '$'){
+          new_tok.string[length_string] = '$';
+          length_string++;
+          pos_buffer = pos_buffer + 1;
+        }
+        else if(buffer[pos_buffer] == '"'){
+          new_tok.string[length_string] = '"';
+          length_string++;
+          pos_buffer = pos_buffer + 1;
+        }
+        //hex. hodnoty
+        else if(buffer[pos_buffer] == 'x'){
+          if(isxdigit(buffer[pos_buffer + 1]) != 0 && isxdigit(buffer[pos_buffer + 2]) != 0){
+            char hexa[2];
+            hexa[0] = buffer[pos_buffer + 1];
+            hexa[1] = buffer[pos_buffer + 2];
+            if((strtol(hexa,NULL, 16)) < 32){
+              return new_tok;
+            }
+            new_tok.string[length_string] = strtol(hexa,NULL, 16);
+
+            length_string++;
+            pos_buffer = pos_buffer + 3;
+          }
+          //kdyz prijde jen /x or /x1, proste neuplny hex, bere se jako normalni znaky
+          else {
+            new_tok.string[length_string] = buffer[pos_buffer-1];
+            length_string++;
+            new_tok.string[length_string] = buffer[pos_buffer];
+            length_string++;
+            pos_buffer++;
+          }
+        }
+        //pokud to escape sekvence neni
+        else {
+          new_tok.string[length_string] = buffer[pos_buffer-1];
+          length_string++;
+        }
+      }
+      //pokud to escape sekvence neni
+      else {
+        new_tok.string[length_string] = buffer[pos_buffer-1];
+        length_string++;
+      }
+
       //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       if(buffer[pos_buffer] == '"'){
