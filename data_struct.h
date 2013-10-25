@@ -47,6 +47,7 @@ enum intstructions {
     iFUNCTION,
     iRETURN,
     iJUMP,
+    iSAVE_PAR,
     iG_SUBSTR2 = 270,
 };
 
