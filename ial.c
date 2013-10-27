@@ -102,7 +102,19 @@ NODE copyTree(NODE *ptr, NODE *ptrNew)
     {
         treeNew->key = malloc((strlen(tree->key)+1) * sizeof(char));
         strcpy(treeNew->key, tree->key);
-        treeNew->data = tree->data;
+        treeNew->data->type_token = tree->data->type_token;
+        treeNew->data->c_number = tree->data->c_number;
+        treeNew->data->d_number = tree->data->d_number;
+        if (tree->data->string != NULL)
+        {
+            treeNew->data->string = malloc((strlen(tree->data->string)+1) * sizeof(char));
+            strcpy(treeNew->data->string, tree->data->string);
+        }
+        treeNew->data->boolean = tree->data->boolean;
+        treeNew->data->null = tree->data->null;
+        treeNew->data->id_name = malloc((strlen(tree->data->id_name)+1) * sizeof(char));
+        strcpy(treeNew->data->id_name, tree->data->id_name);
+
         if (tree->LPtr != NULL) treeNew->LPtr = copyTree(&tree->LPtr, &treeNew->LPtr);
         else treeNew->LPtr = NULL;
         if (tree->RPtr != NULL) treeNew->RPtr = copyTree(&tree->RPtr, &treeNew->RPtr);
