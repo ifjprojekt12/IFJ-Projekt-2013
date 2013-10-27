@@ -243,40 +243,40 @@ int read_postfix(TOKEN *array)
 
             switch( array[i].type_token )
             {
-                case 10:
+                case 10:    // =
                     new_instr(&list, iASSIGN, &assist2, NULL, &assist1, NULL);
                     break;
-                case 11:
+                case 11:    // -
                     new_instr(&list, iMINUS, &assist1, &assist2, &assist3, NULL);
                     break;
-                case 12:
+                case 12:    // *
                     new_instr(&list, iMUL, &assist1, &assist2, &assist3, NULL);
                     break;
-                case 13:
+                case 13:    // /
                     new_instr(&list, iDIV, &assist1, &assist2, &assist3, NULL);
                     break;
-                case 14:
+                case 14:    // +
                     new_instr(&list, iPLUS, &assist1, &assist2, &assist3, NULL);
                     break;
-                case 15:
+                case 15:    // .
                     new_instr(&list, iKONK, &assist1, &assist2, &assist3, NULL);
                     break;
-                case 16:
+                case 16:    // ===
                     new_instr(&list, iEQ, &assist1, &assist2, &assist3, NULL);
                     break;
-                case 17:
+                case 17:    // !==
                     new_instr(&list, iNEQ, &assist1, &assist2, &assist3, NULL);
                     break;
-                case 18:
+                case 18:    // >
                     new_instr(&list, iHIGH, &assist1, &assist2, &assist3, NULL);
                     break;
-                case 19:
+                case 19:    // >=
                     new_instr(&list, iHEQ, &assist1, &assist2, &assist3, NULL);
                     break;
-                case 20:
+                case 20:    // <
                     new_instr(&list, iLOW, &assist1, &assist2, &assist3, NULL);
                     break;
-                case 21:
+                case 21:    // <=
                     new_instr(&list, iLEQ, &assist1, &assist2, &assist3, NULL);
             }
 

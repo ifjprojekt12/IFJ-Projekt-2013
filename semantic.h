@@ -17,6 +17,7 @@
 
 extern NODE root;
 extern LIST_3AK list;
+extern int eCode;
 
 // enum pro urceni priorit
 enum table {

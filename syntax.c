@@ -40,7 +40,6 @@ int syntaxer()
     int top = 0;
     int i = 0;
     int super_brackets = 0;
-    int eCode = sOK;
     bool inFOR = false;
     /* -------------------------------- */
     

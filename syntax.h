@@ -14,8 +14,9 @@
 #define END_SB  33	// semicolon or bracket
 #define I_MAX   512
 
-NODE root;
-LIST_3AK list;
+extern NODE root;
+extern LIST_3AK list;
+extern int eCode;
 
 // vyctovy typ pro ukladani stavu na zasobnik pro kontrolu spravnou posloupnost podminenych vyrazu
 enum conditions {
