@@ -3,6 +3,8 @@
 
 #include "ial.h"
 
+extern int eCode;
+
 //konverzni funkce
 
 //vraci hodnotu 0 - false, nebo hodnotu 1 - true

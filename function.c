@@ -293,6 +293,11 @@ unsigned int my_strlen (char *string)
 // funkce vraci podretezec z retezce ohraniceny indexy
 char * my_get_substring (char *string, int start, int end)
 {
+    if (start < 0 || end < 0 || start > end || start >= strlen(string) || end > strlen(string))
+    {
+        eCode = 13;
+        return NULL;
+    }
     char *new_string = malloc((end - start + 1) + sizeof (char));
     for (int i = 0; i < (end-start); i++)
     {
