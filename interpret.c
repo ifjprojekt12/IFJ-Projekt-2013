@@ -19,7 +19,8 @@ int interpret(LIST_3AK *list){
   while(1){
     //pro jistotu kontrola, ze instrukce neodkazuje na NULL
     if(list->actual == NULL){
-      return sINTERN;
+      eCode = sINTERN;
+      return EXIT_FAILURE;
     }
 
     //ulozeni ukazatelu, ciste pro zjednoduseni konstrukci -> a .
@@ -66,7 +67,8 @@ int interpret(LIST_3AK *list){
 
       //cokoliv jineho - chyba
       else {
-        return sSynCompatib;
+        eCode = sSynCompatib;
+        return EXIT_FAILURE;
       }
     }
     //-------------------------------------------
@@ -99,7 +101,8 @@ int interpret(LIST_3AK *list){
 
       //cokoliv jineho - chyba
       else {
-        return sSynCompatib;
+        eCode = sSynCompatib;
+        return EXIT_FAILURE;
       }
     }
     //-------------------------------------------
@@ -132,7 +135,8 @@ int interpret(LIST_3AK *list){
 
       //cokoliv jineho - chyba
       else {
-        return sSynCompatib;
+        eCode = sSynCompatib;
+        return EXIT_FAILURE;
       }
     }
     //-------------------------------------------
@@ -142,12 +146,14 @@ int interpret(LIST_3AK *list){
       //kontrola na deleni nulou
       if(op_2->data.type_token == 32){
         if(op_2->data.d_number == 0.0){
-          return sSynZero;
+          eCode = sSynZero;
+          return EXIT_FAILURE;
         }
       }
       if(op_2->data.type_token == 31){
         if(op_2->data.c_number == 0){
-          return sSynZero;
+          eCode = sSynZero;
+          return EXIT_FAILURE;
         }
       }
 
@@ -177,7 +183,8 @@ int interpret(LIST_3AK *list){
 
       //cokoliv jineho - chyba
       else {
-        return sSynCompatib;
+        eCode = sSynCompatib;
+        return EXIT_FAILURE;
       }
     }
     //-------------------------------------------
@@ -195,7 +202,8 @@ int interpret(LIST_3AK *list){
 
         //zabereme misto pro spojene retezce s nejakou rezervou
         if((new_str = malloc(sizeof(char) * strlen(op_1->data.string) + strlen(op_2->data.string)+ str_rezerv)) == NULL){
-          return sINTERN;
+          eCode = sINTERN;
+          return EXIT_FAILURE;
         }
 
         //a provedeme samotnou konkatenaci
@@ -220,12 +228,14 @@ int interpret(LIST_3AK *list){
         char *buffer;
 
         if((buffer = malloc(sizeof(char) * str_rezerv)) == NULL){
-          return sINTERN;
+          eCode = sINTERN;
+          return EXIT_FAILURE;
         }
 
         //zabereme misto pro spojene retezce s nejakou rezervou
         if((new_str = malloc(sizeof(char) * strlen(op_1->data.string) + str_rezerv)) == NULL){
-          return sINTERN;
+          eCode = sINTERN;
+          return EXIT_FAILURE;
         }
 
         //samotna konkatenace
@@ -281,12 +291,14 @@ int interpret(LIST_3AK *list){
         char *buffer;
 
         if((buffer = malloc(sizeof(char) * str_rezerv)) == NULL){
-          return sINTERN;
+          eCode = sINTERN;
+          return EXIT_FAILURE;
         }
 
         //zabereme misto pro spojene retezce s nejakou rezervou
         if((new_str = malloc(sizeof(char) * strlen(op_2->data.string) + str_rezerv)) == NULL){
-          return sINTERN;
+          eCode = sINTERN;
+          return EXIT_FAILURE;
         }
 
         //samotna konkatenace
@@ -333,7 +345,8 @@ int interpret(LIST_3AK *list){
 
       //cokoliv jineho - chyba
       else {
-        return sSynCompatib;
+        eCode = sSynCompatib;
+        return EXIT_FAILURE;
       }
     }
 
@@ -346,7 +359,8 @@ int interpret(LIST_3AK *list){
         char *new_str;
 
         if((new_str = malloc(sizeof(char) * strlen(op_1->data.string))) == NULL){
-          return sINTERN;
+          eCode = sINTERN;
+          return EXIT_FAILURE;
         }
 
         result->data.type_token = 30;
@@ -530,7 +544,8 @@ int interpret(LIST_3AK *list){
         }
       }
       else {
-        return sSynCompatib;
+        eCode = sSynCompatib;
+        return EXIT_FAILURE;
       }
     }
     //---------------------------------
@@ -573,7 +588,8 @@ int interpret(LIST_3AK *list){
         }
       }
       else {
-        return sSynCompatib;
+        eCode = sSynCompatib;
+        return EXIT_FAILURE;
       }
     }
     //---------------------------------
@@ -616,7 +632,8 @@ int interpret(LIST_3AK *list){
         }
       }
       else {
-        return sSynCompatib;
+        eCode = sSynCompatib;
+        return EXIT_FAILURE;
       }
     }
     //---------------------------------
@@ -659,7 +676,8 @@ int interpret(LIST_3AK *list){
         }
       }
       else {
-        return sSynCompatib;
+        eCode = sSynCompatib;
+        return EXIT_FAILURE;
       }
     }
     //*******************************************
@@ -675,6 +693,6 @@ int interpret(LIST_3AK *list){
     list->actual = list->actual->right;
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
