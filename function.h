@@ -8,7 +8,7 @@
 //vraci hodnotu 0 - false, nebo hodnotu 1 - true
 int boolval(NODE);
 
-double doubleval();
+double doubleval(NODE);
 int intval();
 char *strval();
 
