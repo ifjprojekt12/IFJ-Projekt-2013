@@ -252,14 +252,14 @@ char * my_get_string ()
 }
 
 // funkce vypisuje retezce na standartni vystup
-void put_string(char *string, ...)
+void put_string(NODE *ptr)
 {
-    va_list strings; int c = 0;
-    va_start(strings, string);
-    printf("%s", string);
-    while ((c = vprintf( "%s", strings)) > 0)
+    NODE node = *ptr;
+    if (node->data.type_token == 30) printf("%s", node->data.string);
+    else if (node->data.type_token == 31) printf("%i", node->data.c_number);
+    else if (node->data.type_token == 32) printf("%f", node->data.d_number);
+    else if (node->data.type_token == 33)
     {
-        // teoreticky by tady nic byt nemelo
+        if (node->data.boolean == TRUE) printf("1");
     }
-    va_end(strings);
 }
