@@ -210,6 +210,75 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 		return result;
 }
 
+//Funkce prevede retezec na int
+int intval(NODE node){ 
+	int result = 0;
+	int i = 0;
+	if(node->data.type_token != 30){
+			fprintf(stderr, "Token neni tzpu string");
+			return result;
+	}
+	char *string = node->data.string;
+	printf("%s\n",string);
+	
+	while ( string[i] == ' ' || string[i] == '\n' || string[i] == '\t' || string[i] == '\r' ) { //preskoci prazdna mista 
+				i++;
+	}	
+	if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
+			while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
+				result *= 10;
+				result += (int) string[i]-48;
+				i++;
+				
+			}
+		}
+	return result;
+}
+
+// funkce prevede datove typy na retezec
+char *strval(NODE node){ //TODO uvolneni malloc dodelat
+	char *result = malloc(100);
+	char *nulll = "";
+	char *True = "1";
+	switch( node->data.type_token) 
+		{
+			//----------------------------------------------
+			case 0:
+				printf("Chyba \n");
+				return 0;
+				break;
+			
+			case 30: //string to string
+				return node->data.string;
+				break;
+			case 31: //string to int
+				sprintf(result, "%d", node->data.c_number);
+				return &(*result);
+				break;
+			case 32: // string to double
+				sprintf(result,"%g",node->data.d_number);
+				return result;
+				break;
+			case 33: // string to bool
+				if (node->data.boolean != 0) {
+					return True;
+				} else {
+					return nulll;
+				}	
+				break;
+			case 34: // string to null
+				return nulll;
+				break;
+			
+			case 100:
+				printf("fce: chyba\n");
+				return 0;
+				break;
+			
+		}
+	return result;
+}
+
 // funkce vraci delku retezce
 unsigned int my_strlen (char *string)
 {
