@@ -1,5 +1,9 @@
 #include "ial.h"
 
+//////////////////////////////////////
+///// FUNKCE PRO TABULKU SYMBOLU /////
+//////////////////////////////////////
+
 // funkce inicializuje strom
 void treeInit (NODE *ptr)
 {
@@ -121,4 +125,33 @@ NODE copyTree(NODE *ptr, NODE *ptrNew)
         else treeNew->RPtr = NULL;
     }
     return treeNew;
+}
+
+
+//////////////////////////////////////
+////////// VESTAVENE FUNKCE //////////
+//////////////////////////////////////
+
+// funkce vraci delku retezce
+unsigned int my_strlen (char *string)
+{
+    int i = 0;
+    unsigned int length = 0;
+    while (string[i] != '\0')
+    {
+        length++;
+    }
+    return length;
+}
+
+// funkce vraci podretezec z retezce ohraniceny indexy
+char * my_get_substring (char *string, int start, int end)
+{
+    char *new_string = malloc((end - start + 1) + sizeof (char));
+    for (int i = 0; i < (end-start); i++)
+    {
+        new_string[i] = string[i+start];
+    }
+    new_string[end-start] = '\0';
+    return new_string;
 }

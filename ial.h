@@ -32,3 +32,5 @@ void treeInit (NODE*);
 void insertVarToTree (char *, TOKEN, NODE*);
 NODE searchIdent (char *, NODE*);
 NODE copyTree (NODE*, NODE*);
+
+unsigned int my_strlen (char *);
