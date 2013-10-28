@@ -9,8 +9,8 @@
 int boolval(NODE);
 
 double doubleval(NODE);
-int intval();
-char *strval();
+int intval(NODE);
+char *strval(NODE);
 
 //prace s retezci
 unsigned int my_strlen (char *);
