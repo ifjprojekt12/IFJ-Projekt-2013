@@ -52,25 +52,25 @@ enum intstructions {
 };
 
 enum error {
-    eINTERN,
-    eIMAX,
-    eWRONG,
-    eEXPR,
-    eBRACKETO,
-    eSBRACKETO,
-    eASSIGN,
-    ePARAM,
-    eUNKNOWN,
-    eFOR,
-    eVAR,
-    eCOMPATIBLE,
+    eINTERN,        // interni chyba, napr malloc
+    eIMAX,          // prekrocena max velikost pole
+    eWRONG,         // chyba v syntaxi
+    eEXPR,          // syntakticka chyba ve vyrazu
+    eBRACKETO,      // chybi znak '('
+    eSBRACKETO,     // chybi znak '{'
+    eASSIGN,        // chybi znak '=' pri prirazovani
+    ePARAM,         // chyba v posloupnosti parametru funkce
+    eUNKNOWN,       // neznamy token
+    eFOR,           // break nebo continue mimo prikaz FOR
+    eVAR,           // nedefinovana promenna
+    eCOMPATIBLE,    // nekompatibilni datove typy ve vyrazu
 };
 
 enum finalCode {
 	sOK,		/* vse v poradku */
 	sSyn,		/* chyba syntakticke struktury programy */		
 	sSemFceDef, /* nedefinovana funkce nebo redefinovana */
-	sSemFceParam,	/* chybejici parametr pro volani funkce */
+    sSemFceParam,	/* chybejici parametr pro volani funkce */
 	sSemVar,	/*  Nedeklarovana promenna */
 	sSynZero = 10,	/* Chyba deleni nulou */
 	sSynTypeConv,	/* pretypovani promenne na cislo funkce doubleval */

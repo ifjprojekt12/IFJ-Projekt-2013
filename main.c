@@ -31,6 +31,20 @@ int main(int argc, char *argv[])
 	if( syntaxer() == EXIT_FAILURE )
     	return eCode;
 
+/*
+    // kontrola listu instrukci pro skoky (c) Kuba
+    for( INSTRUCT aux = list.first; aux != NULL; aux = aux->right )
+    {
+        printf("%d", aux->id);
+        if( (aux->id >= 10 && aux->id <= 15 ) || aux->id == 32 )   // porovnani nebo skok
+            printf(" (-> %d), ", aux->jump->id);
+        else
+            printf(", ");
+    }
+    printf("\n");
+*/
+
+
     /* Po kontrole validace vstupu prechazime do interpretu */
     eCode = interpret( &list );
 
