@@ -12,8 +12,9 @@
 #define I_MAX   512
 
 INSTRUCT aux;
+INSTRUCT aux2;
 tSInstr InstrStack;
-tStack SemStack;
+NODE check_func;
 
 extern NODE root;
 extern LIST_3AK list;

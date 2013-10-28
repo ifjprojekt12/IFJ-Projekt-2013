@@ -59,6 +59,7 @@ bool SEmpty(tStack *);      // Je zasobnik prazdny
 
 void initInstr(tSInstr *);
 void PUSHInstr(tSInstr *,INSTRUCT,int);
+void TOPInstr(tSInstr *,int *);
 void POPInstr(tSInstr *,INSTRUCT *,int *);
 bool SEmptyInstr(tSInstr *);
 

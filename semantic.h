@@ -15,13 +15,11 @@
 #define BRACKET     42      // type_token {
 #define ASCII       48      // prevod int -> char
 
-
-extern tStack SemStack;
-NODE check_func;
-
+extern NODE check_func;
 extern NODE root;
 extern LIST_3AK list;
 extern INSTRUCT aux;
+extern INSTRUCT aux2;
 extern tSInstr InstrStack;
 extern int eCode;
 
@@ -61,7 +59,7 @@ int functions(TOKEN *array, int n);
 int expression_sem(TOKEN *array, int n, int end);
 
 // funkce zpracovava vyrazy v postfixu a vytvari instrukce pro interpret
-int read_postfix(TOKEN *array);
+int read_postfix(TOKEN *array, int type);
 
 // funkce pro vytvoreni jmena do tabulky symbolu
 char* makeName(TOKEN unit);

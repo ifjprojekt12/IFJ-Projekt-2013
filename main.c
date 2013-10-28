@@ -33,17 +33,21 @@ int main(int argc, char *argv[])
 
 /*
     // kontrola listu instrukci pro skoky (c) Kuba
-    for( INSTRUCT aux = list.first; aux != NULL; aux = aux->right )
+    for( INSTRUCT a = list.first; a != NULL; a = a->right )
     {
-        printf("%d", aux->id);
-        if( (aux->id >= 10 && aux->id <= 15 ) || aux->id == 32 )   // porovnani nebo skok
-            printf(" (-> %d), ", aux->jump->id);
+        printf("%d", a->id);
+        if( (a->id >= 10 && a->id <= 15 ) || a->id == 32 )   // porovnani nebo skok
+        {
+            if( a->jump != NULL )
+                printf(" (-> %d), ", a->jump->id);
+            else
+                printf(" (-> null), ");
+        }
         else
             printf(", ");
     }
     printf("\n");
 */
-
 
     /* Po kontrole validace vstupu prechazime do interpretu */
     eCode = interpret( &list );

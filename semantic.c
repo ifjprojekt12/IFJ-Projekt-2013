@@ -28,9 +28,12 @@ int semantixer(TOKEN *array)
     NODE assist1 = NULL;
     char *name = NULL;
 
-    int n=0, top, last;
+    int n=0, top = 0;
     if( array[n].type_token == 36 )     // promenna
     {
+        if( aux2 != NULL )
+            aux2 = NULL;
+
         name = makeName(array[n]);
         if( name == NULL )
             return EXIT_FAILURE;
@@ -59,81 +62,59 @@ int semantixer(TOKEN *array)
     }
     else if( array[n].type_token == 2 )     // else
     {
-        new_instr( &list, iJUMP, NULL, NULL, NULL, NULL);
-        PUSHInstr( &InstrStack, list.last );
+        if( aux2 != NULL )
+            PUSHInstr( &InstrStack, aux2, 0 );      // mela by to byt instrukce skoku
     }
     else if( array[n].type_token == 43 )    // }
     {
-        TOP( &SemStack, &last );
-        printf("na vrcholu semantickeho zasobniku je: %d\n", last);
-        if( last == cREADY )
-        {
-            POP( &SemStack );
-            TOP( &SemStack, &top );
-        }
-        else
-            top = last;
-        POP( &SemStack );
-        if( top == cIF || top == cELSEIF )
-            PUSH( &SemStack, cREADY);
+        if( aux2 != NULL )
+            aux2 = NULL;
 
-        POPInstr( &InstrStack, &aux );
+        TOPInstr( &InstrStack, &top );
+        printf("na vrcholu semantickeho zasobniku je: %d\n", top);
+        switch( top )
+        {
+            case 0:     // skok (mel by to byt jen else)
+
+                break;
+
+            case 1:     // if
+            case 3:     // elseif
+
+                new_instr( &list, iJUMP, NULL, NULL, NULL, NULL );
+                aux2 = list.last;
+                if( aux != NULL )
+                    aux->jump = list.last;
+                POPInstr( &InstrStack, &aux, &top );
+                break;
+
+            case 4:     // while
+            case 5:     // for
+
+                POPInstr( &InstrStack, &aux2, &top );
+                new_instr( &list, iJUMP, NULL, NULL, NULL, aux2 );
+                if( aux != NULL )
+                    aux->jump = list.last;
+                aux = aux2;
+                aux2 = NULL;
+                break;
+
+            default:
+                fprintf(stderr, "Na vrcholu zasobniku instrukci je neco spatne.\n");
+                return EXIT_FAILURE;
+        }
     }
-    else if( array[n].type_token == 5 )     // for
-    {}
+    else if( array[n].type_token == 50 )    // EOF
+    {
+        new_instr(&list, iEND, NULL, NULL, NULL, NULL);
+        if( aux != NULL )
+            aux->jump = list.last;
+    }
     else
     {
         printf("nedodelana semantika? token: %d\n",array[n].type_token);
         return EXIT_FAILURE;
     }
-
-    // zasobnik pro psani skokovych instrukci - nejspis potreba ? TODO
-    switch(array[0].type_token) {
-        case 1:     // if 
-        case 4:     // while
-        case 5:     // for
-        case 6:     // function
-                if( !SEmpty( &SemStack ) )
-                {
-                    TOP( &SemStack, &top );
-                    if( top == cREADY )
-                        POP( &SemStack );
-                }
-                if( array[0].type_token == 1 )
-                    PUSH( &SemStack, cIF );
-                else if( array[0].type_token == 4 )
-                    PUSH( &SemStack, cWHILE);
-                else if( array[0].type_token == 6 )
-                    PUSH( &SemStack, cFUNCTION );
-                else
-                    PUSH( &SemStack, cFOR);
-                break;
-
-        case 2:     // else
-        case 3:     // elseif
-                TOP( &SemStack, &top );
-                POP( &SemStack );
-                if( array[0].type_token == 2 )
-                    PUSH( &SemStack, cELSE );
-                else
-                    PUSH( &SemStack, cELSEIF );
-    }
-
-/*
-    // vypis celeho zasobniku typu int
-    if( !SEmpty( &SemStack ) )
-    {
-        tElemPtr aux = SemStack.Last;
-        while( aux != NULL )
-        {
-            printf("| %d ", aux->Elem);
-            aux = aux->ptr;
-        }
-        printf("|\n");
-    }
-    else
-        printf("Zasobnik je prazdny.\n");
-*/
 
     return EXIT_SUCCESS;
 }
@@ -145,6 +126,7 @@ int functions(TOKEN *array, int n)
         return EXIT_FAILURE;
     NODE assist1, assist2 = searchIdent(name, &root);
     n = 4;      // zacatek vyctu argumentu funkce
+    bool first = true;
 
     // zjisteni typu funkce a odecteni jeji hodnoty pro odpovidajici hodnotu id pro instrukce
     int type = array[2].type_token - 40;    // vestavena funkce
@@ -173,6 +155,15 @@ int functions(TOKEN *array, int n)
 
         // vytvoreni instrukce
         new_instr(&list, type, &assist1, NULL, &assist2, NULL);
+        if( first )
+        {
+            if( aux != NULL )
+            {
+                aux->jump = list.last;
+                aux = NULL;
+            }
+            first = false;
+        }
     }
 
     return EXIT_SUCCESS;
@@ -187,7 +178,7 @@ int expression_sem(TOKEN *array, int n, int end)
 
     // pomocne pole tokenu (zatim velikost N_MAX -> udelat dynamicky !!! ) TODO
     TOKEN array_expr[N_MAX];
-    int i, new = 0, old = 0, precedent = 0;
+    int i, new = 0, old = 0, precedent = 0, type = array[0].type_token;
 
     for( i=0; i<N_MAX; i++)
     {
@@ -295,11 +286,11 @@ int expression_sem(TOKEN *array, int n, int end)
         POP( &leStack );
     }
 
-    return read_postfix(array_expr);
+    return read_postfix(array_expr, type);
 }
 
 // funkce pro cteni postfixove notace vyrazu a odesilani instrukci interpretu
-int read_postfix(TOKEN *array)
+int read_postfix(TOKEN *array, int type)
 {
     int i=0;
     char *name = NULL;
@@ -377,33 +368,49 @@ int read_postfix(TOKEN *array)
                     break;
                 case 16:    // ===
                     new_instr(&list, iEQ, &assist1, &assist2, &assist3, NULL);
-                    PUSHInstr( &InstrStack, list.last );
+                    if( type == 3 )
+                        PUSHInstr( &InstrStack, aux2, 0 );      // 0 = od ted znaci skok :D
+                    PUSHInstr( &InstrStack, list.last, type );
                     break;
                 case 17:    // !==
                     new_instr(&list, iNEQ, &assist1, &assist2, &assist3, NULL);
-                    PUSHInstr( &InstrStack, list.last );
+                    if( type == 3 )
+                        PUSHInstr( &InstrStack, aux2, 0 );
+                    PUSHInstr( &InstrStack, list.last, type );
                     break;
                 case 18:    // >
                     new_instr(&list, iHIGH, &assist1, &assist2, &assist3, NULL);
-                    PUSHInstr( &InstrStack, list.last );
+                    if( type == 3 )
+                        PUSHInstr( &InstrStack, aux2, 0 );
+                    PUSHInstr( &InstrStack, list.last, type );
                     break;
                 case 19:    // >=
                     new_instr(&list, iHEQ, &assist1, &assist2, &assist3, NULL);
-                    PUSHInstr( &InstrStack, list.last );
+                    if( type == 3 )
+                        PUSHInstr( &InstrStack, aux2, 0 );
+                    PUSHInstr( &InstrStack, list.last, type );
                     break;
                 case 20:    // <
                     new_instr(&list, iLOW, &assist1, &assist2, &assist3, NULL);
-                    PUSHInstr( &InstrStack, list.last );
+                    if( type == 3 )
+                        PUSHInstr( &InstrStack, aux2, 0 );
+                    PUSHInstr( &InstrStack, list.last, type );
                     break;
                 case 21:    // <=
                     new_instr(&list, iLEQ, &assist1, &assist2, &assist3, NULL);
-                    PUSHInstr( &InstrStack, list.last );
+                    if( type == 3 )
+                        PUSHInstr( &InstrStack, aux2, 0 );
+                    PUSHInstr( &InstrStack, list.last, type );
             }
 
             if( aux != NULL )
             {
                 aux->jump = list.last;
                 aux = NULL;
+            }
+            if( aux2 != NULL )
+            {
+                aux2 = NULL;
             }
 
             PUSHNode( &nodeStack, assist3);

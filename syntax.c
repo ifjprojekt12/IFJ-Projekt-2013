@@ -23,8 +23,8 @@ int syntaxer()
 
     // inicializace pomocneho ukazatele na instrukci a zasobniku
     aux = NULL;
+    aux2 = NULL;
     initInstr( &InstrStack );
-    init( &SemStack );
  
     // pomocne promenne
     int type = 0;
@@ -35,7 +35,7 @@ int syntaxer()
     /* -------------------------------- */
     
     // cyklus zajistujici nacitani tokenu
-    while(unit.type_token > 0 && unit.type_token != 100 && unit.type_token != 50 )    // konec pri chybe nebo EOF
+    while(unit.type_token > 0 && unit.type_token != 100 )    // konec pri chybe nebo EOF
     {
         // pole pro ukladani tokenu celeho jednoho radku
         array[i++] = unit;
@@ -627,6 +627,12 @@ int syntaxer()
                 }
             }
         }
+        else if( unit.type_token == 50 )        // EOF
+        {
+            type = unit.type_token;
+            semantixer(array);
+            break;
+        }
         else
         {
             // token, ktery se nesmi nalezat na zacatku radku
@@ -641,6 +647,7 @@ int syntaxer()
             case 4:     // while
             case 5:     // for
             case 6:     // function
+
                     if( !SEmpty( &leStack ) )
                     {
                         TOP( &leStack, &top );
@@ -659,6 +666,7 @@ int syntaxer()
 
             case 2:     // else
             case 3:     // elseif
+
                     if( SEmpty( &leStack ) )
                     {
                         // prazdny zasobnik ( == else(if) bez IF ?)
@@ -712,7 +720,6 @@ int syntaxer()
     
         unit = get_token(); // nacteni dalsiho tokenu
     }
-    // array[i] = unit;     // ukladame do pole i tokeny 0, 50, 100 ?? proc ?? TODO
 
     if( super_brackets != 0 )
     {
@@ -721,12 +728,11 @@ int syntaxer()
         eCode = sSyn;
         return EXIT_FAILURE;
     }
-
-    new_instr( &list, iEND, NULL, NULL, NULL, NULL );
-    if( aux != NULL )
+    else if( !SEmpty(&leStack) )
     {
-        aux->jump = list.last;
-        aux = NULL;
+        fprintf(stderr, "Zasobnik neni prazdny!!\n");
+        eCode = sSyn;
+        return EXIT_FAILURE;
     }
 
 /*
