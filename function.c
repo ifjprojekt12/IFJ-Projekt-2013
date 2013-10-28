@@ -313,7 +313,7 @@ char * my_get_string ()
     char buffer[BUFFERSIZE] = {0};
     char *string;
     int c, i  = 0;
-    while ((c = getchar()) != EOF || c != '\n' || c != '\r') // cte se ze vstupu dokud se nenarazi na konec radku nebo EOF
+    while ((c = getchar()) != EOF && c != '\n' && c != '\r') // cte se ze vstupu dokud se nenarazi na konec radku nebo EOF
     {
         buffer[i] = c;
         i++;
