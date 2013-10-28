@@ -31,6 +31,7 @@ int syntaxer()
 
     // inicializace tabulky promennych
     treeInit( &root );
+    treeInit( &check_func );
 
     // vytvoreni instrukcniho listu
     new_instr_list( &list );
@@ -53,7 +54,7 @@ int syntaxer()
             // vycerpani staticke velikosti pole
             printERR(eIMAX);
             eCode = sINTERN;
-            break;
+            return EXIT_FAILURE;
         }
 
         // if, elseif, while
@@ -68,7 +69,7 @@ int syntaxer()
             {
                 printERR(eIMAX);
                 eCode = sINTERN;
-                break;
+                return EXIT_FAILURE;
             }
 
             if( unit.type_token == 40 ) // (
@@ -82,7 +83,7 @@ int syntaxer()
                         eCode = sSyn;
                     else
                         eCode = sINTERN;
-                    break;
+                    return EXIT_FAILURE;
                 }
 
                 unit = get_token();
@@ -91,7 +92,7 @@ int syntaxer()
                 {
                     printERR(eIMAX);
                     eCode = sINTERN;
-                    break;
+                    return EXIT_FAILURE;
                 }
 
                 if( unit.type_token != 42 ) // {
@@ -99,7 +100,7 @@ int syntaxer()
                     // chybejici znak {
                     printERR(eSBRACKETO);
                     eCode = sSyn;
-                    break;
+                    return EXIT_FAILURE;
                 }
 
                 // promenna pro kontrolu poctu slozenych zavorek
@@ -110,7 +111,7 @@ int syntaxer()
                 // chybejici znak (
                 printERR(eBRACKETO);
                 eCode = sSyn;
-                break;
+                return EXIT_FAILURE;
             }
         }
         else if( unit.type_token == 5 )   // for
@@ -123,7 +124,7 @@ int syntaxer()
             {
                 printERR(eIMAX);
                 eCode = sINTERN;
-                break;
+                return EXIT_FAILURE;
             }
 
             if( unit.type_token == 40 ) // (
@@ -135,7 +136,7 @@ int syntaxer()
                 {
                     printERR(eIMAX);
                     eCode = sINTERN;
-                    break;
+                    return EXIT_FAILURE;
                 }
 
                 // prvni cast je neprazdna
@@ -147,7 +148,7 @@ int syntaxer()
                     {
                         printERR(eIMAX);
                         eCode = sINTERN;
-                        break;
+                        return EXIT_FAILURE;
                     }
 
                     if( unit.type_token == 10 )     // =
@@ -161,7 +162,7 @@ int syntaxer()
                                 eCode = sSyn;
                             else
                                 eCode = sINTERN;
-                            break;
+                            return EXIT_FAILURE;
                         }                
                     }
                     else
@@ -169,7 +170,7 @@ int syntaxer()
                         // chybi znamenko '='
                         printERR(eWRONG);
                         eCode = sSyn;
-                        break;
+                        return EXIT_FAILURE;
                     }
                 }
                 else if( unit.type_token != 22 )     // pokud je prvni cast prazdna, musi nasledovat ';'
@@ -177,7 +178,7 @@ int syntaxer()
                     // chybi znamenko ';'
                     printERR(eWRONG);
                     eCode = sSyn;
-                    break;
+                    return EXIT_FAILURE;
                 }
 
                 // nacteni dalsiho tokenu - druha cast hlavicky
@@ -187,7 +188,7 @@ int syntaxer()
                 {
                     printERR(eIMAX);
                     eCode = sINTERN;
-                    break;
+                    return EXIT_FAILURE;
                 }
 
                 // druha cast je neprazdna
@@ -203,7 +204,7 @@ int syntaxer()
                         eCode = sSyn;
                         else
                         eCode = sINTERN;
-                        break;
+                        return EXIT_FAILURE;
                      }                
 
                 }
@@ -212,7 +213,7 @@ int syntaxer()
                     // chybi znamenko ';'
                     printERR(eWRONG);
                     eCode = sSyn;
-                    break;
+                    return EXIT_FAILURE;
                 }
 
                 // nacteni dalsiho tokenu - treti cast hlavicky
@@ -222,7 +223,7 @@ int syntaxer()
                 {
                     printERR(eIMAX);
                     eCode = sINTERN;
-                    break;
+                    return EXIT_FAILURE;
                 }
                
                 if( unit.type_token == 36 )     // promenna
@@ -233,7 +234,7 @@ int syntaxer()
                     {
                         printERR(eIMAX);
                         eCode = sINTERN;
-                        break;
+                        return EXIT_FAILURE;
                     }
 
                     if( unit.type_token == 10 )     // =
@@ -247,7 +248,7 @@ int syntaxer()
                                 eCode = sSyn;
                             else
                                 eCode = sINTERN;
-                            break;
+                            return EXIT_FAILURE;
                         }                
                     }
                     else
@@ -255,7 +256,7 @@ int syntaxer()
                         // chybejici znak '='
                         printERR(eWRONG);
                         eCode = sSyn;
-                        break;
+                        return EXIT_FAILURE;
                     }
 
                 }
@@ -264,7 +265,7 @@ int syntaxer()
                     // chybi znamenko ';'
                     printERR(eWRONG);
                     eCode = sSyn;
-                    break;
+                    return EXIT_FAILURE;
                 }
 
                 unit = get_token();
@@ -273,7 +274,7 @@ int syntaxer()
                 {
                     printERR(eIMAX);
                     eCode = sINTERN;
-                    break;
+                    return EXIT_FAILURE;
                 }
 
                 if( unit.type_token != 42 )     // {
@@ -281,7 +282,7 @@ int syntaxer()
                     // chybejici znak '{'
                     printERR(eSBRACKETO);
                     eCode = sSyn;
-                    break;
+                    return EXIT_FAILURE;
                 }
 
                 // promenna pro kontrolu poctu slozenych zavorek
@@ -292,7 +293,7 @@ int syntaxer()
                 // chybejici znak '('
                 printERR(eBRACKETO);
                 eCode = sSyn;
-                break;
+                return EXIT_FAILURE;
             }
             inFOR = true;
         }
@@ -303,7 +304,7 @@ int syntaxer()
                 // prikaz break nebo continue se nenachazi uvnitr prikazu FOR
                 printERR(eFOR);
                 eCode = sSyn;
-                break;
+                return EXIT_FAILURE;
             }
 
             unit = get_token();
@@ -312,7 +313,7 @@ int syntaxer()
             {
                 printERR(eIMAX);
                 eCode = sINTERN;
-                break;
+                return EXIT_FAILURE;
             }
 
             if( unit.type_token != 22 )     // ;
@@ -320,7 +321,7 @@ int syntaxer()
                 // chybejici znak ';'
                 printERR(eWRONG);
                 eCode = sSyn;
-                break;
+                return EXIT_FAILURE;
             }
         }
         else if( unit.type_token == 7 )     // return
@@ -334,7 +335,7 @@ int syntaxer()
                     eCode = sSyn;
                 else
                     eCode = sINTERN;
-                break;
+                return EXIT_FAILURE;
             }
         }
         else if( unit.type_token == 2 )   // else
@@ -347,7 +348,7 @@ int syntaxer()
             {
                 printERR(eIMAX);
                 eCode = sINTERN;
-                break;
+                return EXIT_FAILURE;
             }
 
             if( unit.type_token != 42 ) // {
@@ -355,7 +356,7 @@ int syntaxer()
                 // chybejici znak {
                 printERR(eSBRACKETO);
                 eCode = sSyn;
-                break;
+                return EXIT_FAILURE;
             }
 
             // promenna pro kontrolu poctu slozenych zavorek
@@ -369,13 +370,107 @@ int syntaxer()
             { 
                 printERR(eIMAX);
                 eCode = sINTERN;
-                break;
+                return EXIT_FAILURE;
             }
-
             if( unit.type_token == 10 )     // =
             {
+                unit = get_token();
+                array[i++] = unit;
+                if( i == I_MAX )
+                { 
+                    printERR(eIMAX);
+                    eCode = sINTERN;
+                    return EXIT_FAILURE;
+                }
+
+                if((unit.type_token >= 60 && unit.type_token <= 69) || unit.type_token == 6)    // vestavene nebo uzivatelem definovane funkce
+                {
+                    unit = get_token();
+                    array[i++] = unit;
+                    if( i == I_MAX )
+                    { 
+                        printERR(eIMAX);
+                        eCode = sINTERN;
+                        return EXIT_FAILURE;
+                    }
+                   
+                    if( unit.type_token == 40 )     // (
+                    {
+                        unit = get_token(); 
+                        array[i++] = unit;
+                        if( i == I_MAX )
+                        {
+                            printERR(eIMAX);
+                            eCode = sINTERN;
+                            return EXIT_FAILURE;
+                        }
+
+                        bool empty = true;  // seznam parametru je prazdny
+                        bool term = true;
+                        // kontrola posloupnosti zapisu parametru funkci
+                        while( unit.type_token != 41 )  // )
+                        {
+                            // seznam parametru neni prazdny
+                            if( empty )
+                                empty = false;
+
+                            if( term && ((unit.type_token >= 30 && unit.type_token <= 34) || unit.type_token == 36) )
+                            // ocekavame term && prijde term
+                                term = false;
+                            else if( !term && unit.type_token == 23 )     // neocekavame promennou && prijde ','
+                                term = true;
+                            else
+                            {
+                                // nespravny token ci posloupnost
+                                eCode = sSyn;
+                                printERR(ePARAM);
+                                return EXIT_FAILURE;
+                            }
+
+                            unit = get_token();
+                            array[i++] = unit;
+                            if( i == I_MAX )
+                            {
+                                eCode = sINTERN;
+                                printERR(eIMAX);
+                                return EXIT_FAILURE;
+                            }
+                        }
+                        if( term && !empty )
+                        {
+                            // spatna posloupnost argumentu funkce
+                            printERR(ePARAM);
+                            eCode = sSyn;
+                            return EXIT_FAILURE;
+                        }
+
+                        unit = get_token();
+                        array[i++] = unit;
+                        if( i == I_MAX )
+                        {
+                            printERR(eIMAX);
+                            eCode = sINTERN;
+                            return EXIT_FAILURE;
+                        }
+
+                        if( unit.type_token != 22 ) // ;
+                        {
+                            // chybejici znak ';'
+                            printERR(eWRONG);
+                            eCode = sSyn;
+                            return EXIT_FAILURE;
+                        }
+                    }
+                    else
+                    {
+                        // chybejici znak '('
+                        printERR(eWRONG);
+                        eCode = sSyn;
+                        return EXIT_FAILURE;
+                    }
+                }
+                else if( (i = expression(array, i-1, unit, END_S)) < 0 )    // vyraz
                 // zpracovani vyrazu, END_S = vyraz konci strednikem
-                if( (i = expression(array, i, get_token(), END_S)) < 0 )
                 {
                     // chyba ve vyrazu
                     printERR(eEXPR);
@@ -383,7 +478,7 @@ int syntaxer()
                         eCode = sSyn;
                     else
                         eCode = sINTERN;
-                    break;
+                    return EXIT_FAILURE;
                 }
             }
             else
@@ -391,7 +486,7 @@ int syntaxer()
                 // chybejici znak =
                 printERR(eASSIGN);
                 eCode = sSyn;
-                break;
+                return EXIT_FAILURE;
             }
         }
         else if( unit.type_token == 6 )     // function
@@ -404,7 +499,7 @@ int syntaxer()
             {
                 printERR(eIMAX);
                 eCode = sINTERN;
-                break;
+                return EXIT_FAILURE;
             }
 
             if( unit.type_token == 35 )     // id
@@ -415,22 +510,26 @@ int syntaxer()
                 {
                     printERR(eIMAX);
                     eCode = sINTERN;
-                    break;
+                    return EXIT_FAILURE;
                 }
 
                 if( unit.type_token == 40 )     // (
                 {
                     unit = get_token(); 
                     array[i++] = unit;
+                    if( i == I_MAX )
+                    {
+                        printERR(eIMAX);
+                        eCode = sINTERN;
+                        return EXIT_FAILURE;
+                    }
                     
                     bool empty = true;  // seznam parametru je prazdny
                     bool id = true;
-                    bool err = false;
-                    int err_type = ePARAM;
                     // kontrola posloupnosti zapisu parametru funkci
                     while( unit.type_token != 41 )  // )
                     {
-                        // seznama parametru neni prazdny
+                        // seznam parametru neni prazdny
                         if( empty )
                             empty = false;
 
@@ -442,10 +541,8 @@ int syntaxer()
                         {
                             // nespravny token ci posloupnost
                             eCode = sSyn;
-                            // priznak znacici vyskyt chyby
-                            err = true;
-                            err_type = ePARAM;
-                            break;
+                            printERR(ePARAM);
+                            return EXIT_FAILURE;
                         }
 
                         unit = get_token();
@@ -453,18 +550,16 @@ int syntaxer()
                         if( i == I_MAX )
                         {
                             eCode = sINTERN;
-                            // priznak znacici vyskyt chyby
-                            err = true;
-                            err_type = eIMAX;
-                            break;
+                            printERR(eIMAX);
+                            return EXIT_FAILURE;
                         }
                     }
-                    if( (id && !empty)  || err )
+                    if( id && !empty )
                     {
-                        // spatna posloupnost parametru funkce nebo prokroceno I_MAX
-                        printERR(err_type);
+                        // spatna posloupnost parametru funkce
+                        printERR(ePARAM);
                         eCode = sSyn;
-                        break;
+                        return EXIT_FAILURE;
                     }
                     
                     unit = get_token();
@@ -473,7 +568,7 @@ int syntaxer()
                     {
                         printERR(eIMAX);
                         eCode = sINTERN;
-                        break;
+                        return EXIT_FAILURE;
                     }
 
                     if( unit.type_token != 42 ) // {
@@ -481,7 +576,7 @@ int syntaxer()
                         // chybejici znak {
                         printERR(eSBRACKETO);
                         eCode = sSyn;
-                        break;
+                        return EXIT_FAILURE;
                     }
 
                     // promenna pro kontrolu poctu slozenych zavorek
@@ -498,7 +593,7 @@ int syntaxer()
                 // vice '}' nez '{' zavorek
                 printERR(eWRONG);
                 eCode = sSyn;
-                break;
+                return EXIT_FAILURE;
             }
 
             if( SEmpty( &leStack ) )
@@ -506,7 +601,7 @@ int syntaxer()
                 // zavorka s prazdnym zasobnikem
                 printERR(eWRONG);
                 eCode = sSyn;
-                break;
+                return EXIT_FAILURE;
             }
 
             // vyjmeme ze zasobniku posledni otevreny prikaz
@@ -545,7 +640,7 @@ int syntaxer()
             // token, ktery se nesmi nalezat na zacatku radku
             printERR(eUNKNOWN);
             eCode = sSyn;
-            break;
+            return EXIT_FAILURE;
         }
 
         // ukladani na zasobnik, kontrola if-elseif-else
@@ -577,7 +672,7 @@ int syntaxer()
                         // prazdny zasobnik ( == else(if) bez IF ?)
                         printERR(eWRONG);
                         eCode = sSyn;
-                        break;
+                        return EXIT_FAILURE;
                     }
                     TOP( &leStack, &top );
                     if( top == cREADY )
@@ -593,7 +688,7 @@ int syntaxer()
                         // else(if) bez IF
                         printERR(eWRONG);
                         eCode = sSyn;
-                        break;
+                        return EXIT_FAILURE;
                     }
         }
         type = 0;
@@ -602,10 +697,9 @@ int syntaxer()
         if( semantixer(array) == EXIT_FAILURE )
             return EXIT_FAILURE;
 
-        // snad to nezpusobi chybu, ale novy radek -> nove pole TODO
-        // plus mazat pole!!
-        i = 0;
+        // po zpracovani jednoho radku si pripravime pole pro radek novy
         initialize_array(array);
+        i = 0;
     
         unit = get_token(); // nacteni dalsiho tokenu
     }
@@ -628,8 +722,6 @@ int syntaxer()
     printf("\n");
 */
 
-    if( eCode == sOK )
-        printf("vse ok!\n");
     return eCode;
 }
 

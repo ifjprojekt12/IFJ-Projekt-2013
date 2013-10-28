@@ -14,6 +14,8 @@
 #define END_SB  33	// semicolon or bracket
 #define I_MAX   512
 
+NODE check_func;
+
 extern NODE root;
 extern LIST_3AK list;
 extern int eCode;
