@@ -59,7 +59,7 @@ void insertVarToTree (char *key, TOKEN data, NODE *ptr)
         }
     }
 }
-// funkce vyhleda promennou ve stromu a vrati jeji podnotu, popr. NULL
+// funkce vyhleda promennou ve stromu a vrati jeji hodnotu, popr. NULL
 NODE searchIdent (char *key, NODE *ptr)
 {
     NODE node = *ptr;
@@ -127,6 +127,43 @@ NODE copyTree(NODE *ptr, NODE *ptrNew)
     return treeNew;
 }
 
+//////////////////////////////////////
+////////////// ZASOBNIK //////////////
+//////////////////////////////////////
+
+// inicializace zasobniku
+void stackInit(STACK *zasobnik)
+{
+    *zasobnik = NULL;
+}
+
+// vlozeni prvku na vrchol zasobniku
+void push(STACK *zasobnik, NODE *ptr)
+{
+    STACK stack = malloc(sizeof(STACK));
+    if (*zasobnik == NULL) // zasobnik je prazdny
+    {
+        stack->ptr = ptr;
+        stack->next = NULL;
+        *zasobnik = stack;
+    }
+    else
+    {
+        stack->ptr = ptr;
+        stack->next = *zasobnik;
+        *zasobnik = stack;
+    }
+}
+
+// funkce odstrani prvek z vrcholu zasobniku a vrati odkaz na nej
+NODE pop (STACK *zasobnik)
+{
+    STACK stack = *zasobnik;
+    NODE prvek;
+    prvek = *(stack->ptr);
+    *zasobnik = stack->next;
+    return prvek;
+}
 
 //////////////////////////////////////
 ////////// VESTAVENE FUNKCE //////////
