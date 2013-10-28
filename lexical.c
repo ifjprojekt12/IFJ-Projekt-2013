@@ -94,7 +94,10 @@ TOKEN get_token(){
   if(start == 0){
     char *o_w;
 
-    read_src();
+    if(read_src() == 1){
+      new_tok.type_token = 50;
+      return new_tok;
+    }
 
     if((o_w = strstr(buffer,"<?php")) != NULL){
       if(*o_w == buffer[0] && (isspace(buffer[5])) != 0){
@@ -131,7 +134,10 @@ TOKEN get_token(){
   //oddelavame komentare - radkove
   while(1){
     if(buffer[pos_buffer] == '/' && buffer[pos_buffer+1] == '/'){
-      read_src();
+      if(read_src() == 1){
+        new_tok.type_token = 50;
+        return new_tok;
+      }
       pos_buffer = 0;
     } else {break;}
   }
@@ -139,20 +145,24 @@ TOKEN get_token(){
   //oddelavame blokove komentare
   if(buffer[pos_buffer] == '/' && buffer[pos_buffer+1] == '*'){
     pos_buffer = pos_buffer + 2;
+    //printf("%c %c here",buffer[pos_buffer-2],buffer[pos_buffer-1]);
     while(1){
       if(buffer[pos_buffer] == '\n'){
         if(read_src() == 1){
-          new_tok.type_token = 0;
+          new_tok.type_token = 50;
           return new_tok;
         }
         pos_buffer = 0;
       }
       if(buffer[pos_buffer] == '*' && buffer[pos_buffer+1] == '/'){
+        //printf("%c %c here",buffer[pos_buffer-2],buffer[pos_buffer-1]);
         pos_buffer = pos_buffer + 2;
+        //printf("%c %c here",buffer[pos_buffer],buffer[pos_buffer-1]);
         break;
       }
       pos_buffer++;
     }
+
 
     //tak detekujeme posledni \n na radku... again
     if(buffer[pos_buffer] == '\n'){
@@ -606,8 +616,12 @@ TOKEN get_token(){
 
   //************************************************
   //kontrolujem zda mame konec radku po tokenu...
-  if(pos_buffer == (strlen(buffer)-1)){
+  if(pos_buffer == (strlen(buffer))){
     pos_buffer = 0;
+    if((read_src()) == 1){
+      new_tok.type_token = 50;
+      return new_tok;
+    }
   }
 
   return new_tok;
