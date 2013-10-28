@@ -193,13 +193,13 @@ char * my_get_substring (char *string, int start, int end)
     return new_string;
 }
 
-// funkce precte radek ze standartniho vstupu a vrati ho jako retezec
+// funkce precte radek ze standardniho vstupu a vrati ho jako retezec
 char * my_get_string ()
 {
     char buffer[BUFFERSIZE] = {0};
     char *string;
     int c, i  = 0;
-    while ((c = getchar()) != EOF || c != '\n' || c != '\r')
+    while ((c = getchar()) != EOF || c != '\n' || c != '\r') // cte se ze vstupu dokud se nenarazi na konec radku nebo EOF
     {
         buffer[i] = c;
         i++;
@@ -207,5 +207,29 @@ char * my_get_string ()
     string = malloc ((i+1) * sizeof (char));
     strncpy (string, buffer, i);
     string[i] = '\0';
+    return string;
+}
+
+char * my_sort_string (char *string)
+{
+    unsigned int length = strlen(string);
+    int increment = length / 2;
+    int j = 0; char pom;
+    while (increment > 0)
+    {
+        for (unsigned int i = 0; i < length - increment; i++)
+        {
+            j = i + increment;
+            pom = string [j];
+            while (j >= increment && pom > string [j - increment])
+            {
+                string[j] = string[j - increment];
+                j -= increment;
+            }
+            string[j] = pom;
+        }
+        if (increment == 2) increment = 1;
+        else increment /= 2.2;
+    }
     return string;
 }
