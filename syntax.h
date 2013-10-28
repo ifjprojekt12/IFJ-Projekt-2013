@@ -32,31 +32,6 @@ enum conditions {
 };
 
 
-enum finalCode {
-	sOK,		/* vse v poradku */
-	sSyn,		/* chyba syntakticke struktury programy */		
-	sSemFceDef, /* nedefinovana funkce nebo redefinovana */
-	sSemFceParam,	/* chybejici parametr pro volani funkce */
-	sSemVar,	/*  Nedeklarovana promenna */
-	sSynZero = 10,	/* Chyba deleni nulou */
-	sSynTypeConv,	/* pretypovani promenne na cislo funkce doubleval */
-	sSynCompatib,	/* chyba typove kompatibility v aritmetickych a relacnich vyrazech */
-	sSynRest,	/* ostatni chyby semantiky */
-	sINTERN = 99,   /* interni chyba interpretu tj. neovlivnena vstupnim programem */
-};
-
-enum error {
-	eIMAX,
-	eWRONG,
-	eEXPR,
-    eBRACKETO,
-    eSBRACKETO,
-    eASSIGN,
-    ePARAM,
-    eUNKNOWN,
-    eFOR,
-};
-
 // funkce pro vypis chybovych zprav
 void printERR(int err);
 

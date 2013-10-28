@@ -51,6 +51,34 @@ enum intstructions {
     iG_SUBSTR2 = 270,
 };
 
+enum error {
+    eINTERN,
+    eIMAX,
+    eWRONG,
+    eEXPR,
+    eBRACKETO,
+    eSBRACKETO,
+    eASSIGN,
+    ePARAM,
+    eUNKNOWN,
+    eFOR,
+    eVAR,
+    eCOMPATIBLE,
+};
+
+enum finalCode {
+	sOK,		/* vse v poradku */
+	sSyn,		/* chyba syntakticke struktury programy */		
+	sSemFceDef, /* nedefinovana funkce nebo redefinovana */
+	sSemFceParam,	/* chybejici parametr pro volani funkce */
+	sSemVar,	/*  Nedeklarovana promenna */
+	sSynZero = 10,	/* Chyba deleni nulou */
+	sSynTypeConv,	/* pretypovani promenne na cislo funkce doubleval */
+	sSynCompatib,	/* chyba typove kompatibility v aritmetickych a relacnich vyrazech */
+	sSynRest,	/* ostatni chyby semantiky */
+	sINTERN = 99,   /* interni chyba interpretu tj. neovlivnena vstupnim programem */
+};
+
 //jedna instrukce
 typedef struct instruct{
   int id;          //cislo dane 3AK instrukce
@@ -85,6 +113,8 @@ void destroy_instr_list(LIST_3AK *list);
 //korektne zrusime seznam
 void free_instr_list(LIST_3AK *);
 
+// vypis chyboveho hlaseni
+void printERR(int err);
 //*************************************
 
 #endif

@@ -9,6 +9,23 @@ Pomocne datove struktury
 
 int instr_number;
 
+// tabulka pro vypis chyboveho hlaseni
+const char*MESSAGE[]=
+{
+    "Interni chyba programu",
+    "Dosazena maximalni velikost pole tokenu",
+    "Chybna syntaxe struktury programu",
+    "Nespravne zapsany vyraz",
+    "Chybi oteviraci zavorka",
+    "Chybi slozena oteviraci zavorka",
+    "Nespravne zapsany tvar prirazeni",
+    "Spatna posloupnost parametru v definici funkce",
+    "Neznamy token",
+    "Prikaz break nebo continue mimo telo prikazu for",
+    "Nedeklarovana promenna",
+    "Chybne datove typy ve vyrazu",
+};
+
 //*************************************
 //inicializuje seznam instrukci
 void new_instr_list(LIST_3AK *new_list){
@@ -76,4 +93,9 @@ void free_instr_list(LIST_3AK *list){
   }
 }
 
+// vypis chyboveho hlaseni
+void printERR(int err)
+{
+    fprintf(stderr, "Chyba: %s.\n", MESSAGE[err]);
+}
 //*************************************

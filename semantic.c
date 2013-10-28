@@ -32,8 +32,11 @@ int semantixer(TOKEN *array)
     if( array[n].type_token == 36 )     // promenna
     {
         name = makeName(array[n]);
+        if( name == NULL )
+            return EXIT_FAILURE;
         if( (assist1 = searchIdent(name, &root)) == NULL )
             insertVarToTree(name, array[n], &root);
+
         if( array[n+2].type_token == 6 || (array[n+2].type_token >= 60 && array[n+2].type_token <= 69) )
             return functions(array,n);
         else
@@ -42,14 +45,12 @@ int semantixer(TOKEN *array)
     else if( array[n].type_token == 1 || array[n].type_token == 3 || array[n].type_token == 4 )  // if, elseif, while
     {
         n++;
-        if( expression_sem(array, n, BRACKET) == EXIT_FAILURE )
-            return EXIT_FAILURE;
+        return expression_sem(array, n, BRACKET);
     }
     else if( array[n].type_token == 7 )     // return
     {
         n++;
-        if( expression_sem(array, n, SEMICOLON) == EXIT_FAILURE )
-            return EXIT_FAILURE;
+        return expression_sem(array, n, SEMICOLON);
     }
     else
     {
@@ -63,6 +64,8 @@ int semantixer(TOKEN *array)
 int functions(TOKEN *array, int n)
 {
     char *name = makeName(array[n]);
+    if( name == NULL )
+        return EXIT_FAILURE;
     NODE assist1, assist2 = searchIdent(name, &root);
     n = 4;      // zacatek vyctu argumentu funkce
 
@@ -74,13 +77,16 @@ int functions(TOKEN *array, int n)
     while( array[n].type_token != 41 )   // )
     {
         name = makeName(array[n]);
+        if( name == NULL )
+            return EXIT_FAILURE;
         assist1 = searchIdent(name, &root);
         if(assist1 == NULL)
         {
             if(array[n].type_token == 36)
             {
-                fprintf(stderr, "ale pozor nedeklarovana promenna! nachystat chybovy kod\n");
-                return -111;
+                printERR(eVAR);
+                eCode = sSemVar;
+                return EXIT_FAILURE;
             }
 
             insertVarToTree(name, array[n], &root);
@@ -199,8 +205,9 @@ int expression_sem(TOKEN *array, int n, int end)
             }
             default:
             {
-                printf("switch default, type: %d.\n", array[n].type_token);
-                break;
+                fprintf(stderr, "semantika, switch default, type: %d.\n", array[n].type_token);
+                eCode = sSyn;
+                return EXIT_FAILURE;
             }
         }
     }
@@ -211,19 +218,7 @@ int expression_sem(TOKEN *array, int n, int end)
         POP( &leStack );
     }
 
-    i = read_postfix(array_expr);
-
-/*
-    for( i=0; i<N_MAX; i++)
-    {
-        if( array_expr[i].type_token == 0 )
-            break;
-        printf("%d ", array_expr[i].type_token);
-    }
-    printf("\n");
-*/
-
-    return EXIT_SUCCESS;
+    return read_postfix(array_expr);
 }
 
 // funkce pro cteni postfixove notace vyrazu a odesilani instrukci interpretu
@@ -244,13 +239,17 @@ int read_postfix(TOKEN *array)
         if(array[i].type_token == 36 || (array[i].type_token >= 30 && array[i].type_token <= 34))
         {
             name = makeName(array[i]);
+            if( name == NULL )
+                return EXIT_FAILURE;
             assist1 = searchIdent(name, &root);
             if(assist1 == NULL)
             {
                 
-                if(array[i].type_token == 36) {
-                    printf("ale pozor nedeklarovana promenna! nachystat chybovy kod\n");
-                    return -111;
+                if(array[i].type_token == 36)
+                {
+                    printERR(eVAR);
+                    eCode = sSemVar;
+                    return EXIT_FAILURE;
                 }
                 insertVarToTree(name, array[i], &root);
                 assist1 = searchIdent(name, &root);
@@ -266,13 +265,16 @@ int read_postfix(TOKEN *array)
 
             if( !Compatible(&assist1, &assist2, array[i].type_token) )
             {
-                printf("chybne datove typy.\n");
-                break;
+                printERR(eCOMPATIBLE);
+                eCode = sSynCompatib;
+                return EXIT_FAILURE;
             }
 
             token_init(&unit);
             unit.type_token = 37;   // vnitrni promenna semantiky
             name = makeName(unit);
+            if( name == NULL )
+                return EXIT_FAILURE;
             insertVarToTree(name, unit, &root);
             assist3 = searchIdent(name, &root);
 
@@ -344,9 +346,18 @@ int read_postfix(TOKEN *array)
 
         i++; assist1 = NULL; assist2 = NULL; assist3 = NULL;    // smazat nulovani assist* - rychlost
     }
-    if( name == NULL );
 
-    return 0;
+/*
+    for( i=0; i<N_MAX; i++)
+    {
+        if( array[i].type_token == 0 )
+            break;
+        printf("%d ", array[i].type_token);
+    }
+    printf("\n");
+*/
+
+    return EXIT_SUCCESS;
 }
 
 
@@ -368,8 +379,9 @@ char* makeName(TOKEN unit)
         // alokace retezce pro ulozeni nazvu
         if( (name = malloc((size+1) * sizeof(char))) == NULL )
         {
-            printf("spatny malloc\n");
-            // TODO nepovedeny malloc
+            printERR(eINTERN);
+            eCode = sINTERN;
+            return NULL;
         }
 
         n = unit.c_number;
@@ -402,8 +414,9 @@ char* makeName(TOKEN unit)
         // alokace retezce pro velikost nazvu
         if( (name = malloc((size+1) * sizeof(char))) == NULL )
         {
-            printf("chyba malloc\n");
-            // TODO
+            printERR(eINTERN);
+            eCode = sINTERN;
+            return NULL;
         }
 
         // skladani nazvu do retezce
@@ -430,8 +443,9 @@ char* makeName(TOKEN unit)
         // alokace retezce pro ulozeni nazvu
         if( (name = malloc((size+2) * sizeof(char))) == NULL )
         {
-            printf("spatny malloc\n");
-            // TODO nepovedeny malloc
+            printERR(eINTERN);
+            eCode = sINTERN;
+            return NULL;
         }
 
         name[0] = 0x06; //ACK
@@ -447,8 +461,9 @@ char* makeName(TOKEN unit)
         // alokace retezce pro ulozeni nazvu
         if( (name = malloc((size+2) * sizeof(char))) == NULL )
         {
-            printf("spatny malloc\n");
-            // TODO nepovedeny malloc
+            printERR(eINTERN);
+            eCode = sINTERN;
+            return NULL;
         }
 
         name[0] = 0x05; //ENQ
@@ -471,8 +486,9 @@ char* makeName(TOKEN unit)
 
         if( (name = malloc((size+2) * sizeof(char))) == NULL )
         {
-            printf("spatny malloc\n");
-            // TODO nepovedeny malloc
+            printERR(eINTERN);
+            eCode = sINTERN;
+            return NULL;
         }
         
         name[0] = 0x07;     // BELL

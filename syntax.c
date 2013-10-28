@@ -1,19 +1,5 @@
 #include "syntax.h"
 
-// tabulka pro vypis chyboveho hlaseni
-const char*MESSAGE[]=
-{
-    "Dosazena maximalni velikost pole tokenu",
-    "Chybna syntaxe struktury programu",
-    "Nespravne zapsany vyraz",
-    "Chybi oteviraci zavorka",
-    "Chybi slozena oteviraci zavorka",
-    "Nespravne zapsany tvar prirazeni",
-    "Spatna posloupnost parametru v definici funkce",
-    "Neznamy token",
-    "Prikaz break nebo continue mimo telo prikazu for",
-};
-
 // hlavni funkce syntaxe
 int syntaxer()
 {
@@ -710,6 +696,7 @@ int syntaxer()
         // vice '{' nez '}' v celem programu
         printERR(eWRONG);
         eCode = sSyn;
+        return EXIT_FAILURE;
     }
 
 /*
@@ -801,10 +788,4 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending)
     }
 
     return i;
-}
-
-// vypis chyboveho hlaseni
-void printERR(int err)
-{
-    fprintf(stderr, "Chyba: %s.\n", MESSAGE[err]);
 }
