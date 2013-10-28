@@ -12,6 +12,8 @@ Interpret
 #include "syntax.h"
 #include "function.h"
 
+extern int eCode;
+
 int interpret(LIST_3AK *);
 
 #endif
