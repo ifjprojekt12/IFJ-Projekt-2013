@@ -78,5 +78,6 @@ void init_front_3ak(FRONT_3AK *front);
 void insert_front_3ak(FRONT_3AK *front, INSTRUCT ins);
 void take_out_3ak(FRONT_3AK *front, INSTRUCT *ins);
 bool front_empty(FRONT_3AK *F);
+void Dispose_front (FRONT_3AK *F);
 
 #endif
