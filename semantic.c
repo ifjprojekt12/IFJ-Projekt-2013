@@ -34,8 +34,10 @@ int semantixer(TOKEN *array)
         name = makeName(array[n]);
         if( (assist1 = searchIdent(name, &root)) == NULL )
             insertVarToTree(name, array[n], &root);
-        if( expression_sem(array, n, SEMICOLON) == EXIT_FAILURE )
-            return EXIT_FAILURE;
+        if( array[n+2].type_token == 6 || (array[n+2].type_token >= 60 && array[n+2].type_token <= 69) )
+            return functions(array,n);
+        else
+            return expression_sem(array, n, SEMICOLON);
     }
     else if( array[n].type_token == 1 || array[n].type_token == 3 || array[n].type_token == 4 )  // if, elseif, while
     {
@@ -58,15 +60,49 @@ int semantixer(TOKEN *array)
     return EXIT_SUCCESS;
 }
 
+int functions(TOKEN *array, int n)
+{
+    char *name = makeName(array[n]);
+    NODE assist1, assist2 = searchIdent(name, &root);
+    n = 4;      // zacatek vyctu argumentu funkce
+
+    // zjisteni typu funkce a odecteni jeji hodnoty pro odpovidajici hodnotu id pro instrukce
+    int type = array[2].type_token - 40;    // vestavena funkce
+    if( type < 0 )
+        type = 6;       // uzivatelem definovana funkce TODO
+
+    while( array[n].type_token != 41 )   // )
+    {
+        name = makeName(array[n]);
+        assist1 = searchIdent(name, &root);
+        if(assist1 == NULL)
+        {
+            if(array[n].type_token == 36)
+            {
+                fprintf(stderr, "ale pozor nedeklarovana promenna! nachystat chybovy kod\n");
+                return -111;
+            }
+
+            insertVarToTree(name, array[n], &root);
+            assist1 = searchIdent(name, &root);
+        }
+        n++;
+
+        // vytvoreni instrukce
+        new_instr(&list, type, &assist1, NULL, &assist2, NULL);
+    }
+
+    return EXIT_SUCCESS;
+}
+
 // funkce pro zapis vyrazu do postfixove notace a odeslani instrukci
 int expression_sem(TOKEN *array, int n, int end)
 {
-
     // deklarace zasobniku a jeho inicializace
     tStack leStack;
     init(&leStack);
 
-    // pomocne pole tokenu (zatim velikost I_MAX -> udelat dynamicky nejspis) TODO
+    // pomocne pole tokenu (zatim velikost N_MAX -> udelat dynamicky !!! ) TODO
     TOKEN array_expr[N_MAX];
     int i, new = 0, old = 0, precedent = 0;
 
@@ -208,7 +244,6 @@ int read_postfix(TOKEN *array)
         if(array[i].type_token == 36 || (array[i].type_token >= 30 && array[i].type_token <= 34))
         {
             name = makeName(array[i]);
-            //printf("nazev: %s\n", name);
             assist1 = searchIdent(name, &root);
             if(assist1 == NULL)
             {

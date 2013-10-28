@@ -16,6 +16,7 @@
 #define ASCII       48      // prevod int -> char
 
 extern NODE root;
+extern NODE check_func;
 extern LIST_3AK list;
 extern int eCode;
 
@@ -48,9 +49,13 @@ enum tIndex {
 // hlavni funkce semantiky
 int semantixer(TOKEN *array);
 
+// funkce pro vytvoreni instrukci pro volani funkce
+int functions(TOKEN *array, int n);
+
 // funkce pro zpracovani vyrazu - prevod do postfixove notace a odeslani instrukci interpretu
 int expression_sem(TOKEN *array, int n, int end);
 
+// funkce zpracovava vyrazy v postfixu a vytvari instrukce pro interpret
 int read_postfix(TOKEN *array);
 
 // funkce pro vytvoreni jmena do tabulky symbolu
