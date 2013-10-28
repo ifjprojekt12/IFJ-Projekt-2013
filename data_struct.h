@@ -42,7 +42,7 @@ enum intstructions {
     iG_STR,
     iP_STR,
     iSTRLEN,
-    iG_SUSTR,
+    iG_SUBSTR,
     iF_STR,
     iS_STR,
     iFUNCTION,
@@ -71,7 +71,7 @@ enum error {
 // vyctovy typ pro navratovy kod programu
 enum finalCode {
 	sOK,		/* vse v poradku */
-	sSyn,		/* chyba syntakticke struktury programy */		
+	sSyn,		/* chyba syntakticke struktury programy */
 	sSemFceDef, /* nedefinovana funkce nebo redefinovana */
     sSemFceParam,	/* chybejici parametr pro volani funkce */
 	sSemVar,	/*  Nedeklarovana promenna */
