@@ -93,7 +93,7 @@ NODE searchIdent (char *key, NODE *ptr)
 
 // funkce zkopiruje puvodni strom promennych do noveho
 // novy strom MUSI byt inicializovany
-NODE copyTree(NODE *ptr, NODE *ptrNew)
+NODE copyTree (NODE *ptr, NODE *ptrNew)
 {
     NODE tree = *ptr;
     NODE treeNew = *ptrNew;
@@ -132,13 +132,13 @@ NODE copyTree(NODE *ptr, NODE *ptrNew)
 //////////////////////////////////////
 
 // inicializace zasobniku
-void stackInit(STACK *zasobnik)
+void stackInit (STACK *zasobnik)
 {
     *zasobnik = NULL;
 }
 
 // vlozeni prvku na vrchol zasobniku
-void push(STACK *zasobnik, NODE *ptr)
+void push (STACK *zasobnik, NODE *ptr)
 {
     STACK stack = malloc(sizeof(STACK));
     if (*zasobnik == NULL) // zasobnik je prazdny
@@ -191,4 +191,21 @@ char * my_get_substring (char *string, int start, int end)
     }
     new_string[end-start] = '\0';
     return new_string;
+}
+
+// funkce precte radek ze standartniho vstupu a vrati ho jako retezec
+char * my_get_string ()
+{
+    char buffer[BUFFERSIZE] = {0};
+    char *string;
+    int c, i  = 0;
+    while ((c = getchar()) != EOF || c != '\n' || c != '\r')
+    {
+        buffer[i] = c;
+        i++;
+    }
+    string = malloc ((i+1) * sizeof (char));
+    strncpy (string, buffer, i);
+    string[i] = '\0';
+    return string;
 }

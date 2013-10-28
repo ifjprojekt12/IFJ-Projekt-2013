@@ -10,6 +10,7 @@
 #define FALSE 0
 
 #define STACKSIZE 1024
+#define BUFFERSIZE 1024
 
 // linearni seznam pro parametry funkci
 typedef struct LIST
@@ -38,15 +39,18 @@ typedef struct STACK
 
 #endif // IAL_H_INCLUDED
 
-
+// tabulka symbolu
 void treeInit (NODE*);
 void insertVarToTree (char *, TOKEN, NODE*);
 NODE searchIdent (char *, NODE*);
 NODE copyTree (NODE*, NODE*);
 
+// zasobnik
 void stackInit (STACK*);
 void push (STACK*, NODE*);
 NODE pop (STACK*);
 
+// vestavene funkce
 unsigned int my_strlen (char *);
 char * my_get_substring (char *, int, int);
+char * my_get_string ()
