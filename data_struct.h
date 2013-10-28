@@ -20,6 +20,7 @@ Pomocne datova struktury
 //*************************************
 //struktury a funkce pro intepreret a 3AK
 
+// vyctovy typ pro id instrukci
 enum intstructions {
     iEND,
     iPLUS,
@@ -51,6 +52,7 @@ enum intstructions {
     iG_SUBSTR2 = 270,
 };
 
+// vyctovy typ pro vypis chyboveho hlaseni
 enum error {
     eINTERN,        // interni chyba, napr malloc
     eIMAX,          // prekrocena max velikost pole
@@ -66,6 +68,7 @@ enum error {
     eCOMPATIBLE,    // nekompatibilni datove typy ve vyrazu
 };
 
+// vyctovy typ pro navratovy kod programu
 enum finalCode {
 	sOK,		/* vse v poradku */
 	sSyn,		/* chyba syntakticke struktury programy */		
@@ -77,6 +80,17 @@ enum finalCode {
 	sSynCompatib,	/* chyba typove kompatibility v aritmetickych a relacnich vyrazech */
 	sSynRest,	/* ostatni chyby semantiky */
 	sINTERN = 99,   /* interni chyba interpretu tj. neovlivnena vstupnim programem */
+};
+
+// vyctovy typ pro ukladani stavu na zasobnik pro kontrolu spravnou posloupnost podminenych vyrazu
+enum conditions {
+    cIF,
+    cELSE,
+    cELSEIF,
+    cWHILE,
+    cFOR,
+    cFUNCTION,
+    cREADY,
 };
 
 //jedna instrukce
