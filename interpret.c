@@ -680,13 +680,35 @@ int interpret(LIST_3AK *list){
         return EXIT_FAILURE;
       }
     }
+
     //*******************************************
     //Jednoduchy skok
     //*******************************************
     if(list->actual->id == iJUMP){
-      list->actual = list->actual->jump;
-      continue;
+      if(list->actual->jump != NULL){
+        list->actual = list->actual->jump;
+        continue;
+      }
+      else {
+        list->actual = list->actual->right;
+        continue;
+      }
     }
+
+    //*******************************************
+    //Vestavene funkce
+    //*******************************************
+    //put_string
+    if(list->actual->id == iP_STR){
+      put_string(&op_1);
+      if(list->actual->left->id != iP_STR){
+        result->data.c_number = 1;
+      }
+      else {
+        result->data.c_number++;
+      }
+    }
+
 
 
     //nastavi dalsi instrukci v poradi

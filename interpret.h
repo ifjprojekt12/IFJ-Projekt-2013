@@ -10,6 +10,7 @@ Interpret
 
 #include "data_struct.h"
 #include "syntax.h"
+#include "function.h"
 
 int interpret(LIST_3AK *);
 
