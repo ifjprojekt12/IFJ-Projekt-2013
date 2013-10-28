@@ -28,7 +28,7 @@ int semantixer(TOKEN *array)
     NODE assist1 = NULL;
     char *name = NULL;
 
-    int n=0;
+    int n=0, top, last;
     if( array[n].type_token == 36 )     // promenna
     {
         name = makeName(array[n]);
@@ -38,19 +38,24 @@ int semantixer(TOKEN *array)
             insertVarToTree(name, array[n], &root);
 
         if( array[n+2].type_token == 6 || (array[n+2].type_token >= 60 && array[n+2].type_token <= 69) )
-            return functions(array,n);
-        else
-            return expression_sem(array, n, SEMICOLON);
+        {
+            if( functions(array,n) == EXIT_FAILURE )
+                return EXIT_FAILURE;
+        }
+        else if( expression_sem(array, n, SEMICOLON) == EXIT_FAILURE )
+                return EXIT_FAILURE;
     }
     else if( array[n].type_token == 1 || array[n].type_token == 3 || array[n].type_token == 4 )  // if, elseif, while
     {
         n++;
-        return expression_sem(array, n, BRACKET);
+        if( expression_sem(array, n, BRACKET) == EXIT_FAILURE )
+            return EXIT_FAILURE;
     }
     else if( array[n].type_token == 7 )     // return
     {
         n++;
-        return expression_sem(array, n, SEMICOLON);
+        if( expression_sem(array, n, SEMICOLON) == EXIT_FAILURE )
+            return EXIT_FAILURE;
     }
     else if( array[n].type_token == 2 )     // else
     {
@@ -59,13 +64,76 @@ int semantixer(TOKEN *array)
     }
     else if( array[n].type_token == 43 )    // }
     {
+        TOP( &SemStack, &last );
+        printf("na vrcholu semantickeho zasobniku je: %d\n", last);
+        if( last == cREADY )
+        {
+            POP( &SemStack );
+            TOP( &SemStack, &top );
+        }
+        else
+            top = last;
+        POP( &SemStack );
+        if( top == cIF || top == cELSEIF )
+            PUSH( &SemStack, cREADY);
+
         POPInstr( &InstrStack, &aux );
     }
+    else if( array[n].type_token == 5 )     // for
+    {}
     else
     {
         printf("nedodelana semantika? token: %d\n",array[n].type_token);
         return EXIT_FAILURE;
     }
+
+    // zasobnik pro psani skokovych instrukci - nejspis potreba ? TODO
+    switch(array[0].type_token) {
+        case 1:     // if 
+        case 4:     // while
+        case 5:     // for
+        case 6:     // function
+                if( !SEmpty( &SemStack ) )
+                {
+                    TOP( &SemStack, &top );
+                    if( top == cREADY )
+                        POP( &SemStack );
+                }
+                if( array[0].type_token == 1 )
+                    PUSH( &SemStack, cIF );
+                else if( array[0].type_token == 4 )
+                    PUSH( &SemStack, cWHILE);
+                else if( array[0].type_token == 6 )
+                    PUSH( &SemStack, cFUNCTION );
+                else
+                    PUSH( &SemStack, cFOR);
+                break;
+
+        case 2:     // else
+        case 3:     // elseif
+                TOP( &SemStack, &top );
+                POP( &SemStack );
+                if( array[0].type_token == 2 )
+                    PUSH( &SemStack, cELSE );
+                else
+                    PUSH( &SemStack, cELSEIF );
+    }
+
+/*
+    // vypis celeho zasobniku typu int
+    if( !SEmpty( &SemStack ) )
+    {
+        tElemPtr aux = SemStack.Last;
+        while( aux != NULL )
+        {
+            printf("| %d ", aux->Elem);
+            aux = aux->ptr;
+        }
+        printf("|\n");
+    }
+    else
+        printf("Zasobnik je prazdny.\n");
+*/
 
     return EXIT_SUCCESS;
 }

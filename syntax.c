@@ -17,7 +17,6 @@ int syntaxer()
 
     // inicializace tabulky promennych
     treeInit( &root );
-    treeInit( &check_func );
 
     // vytvoreni instrukcniho listu
     new_instr_list( &list );
@@ -25,6 +24,7 @@ int syntaxer()
     // inicializace pomocneho ukazatele na instrukci a zasobniku
     aux = NULL;
     initInstr( &InstrStack );
+    init( &SemStack );
  
     // pomocne promenne
     int type = 0;
@@ -613,9 +613,17 @@ int syntaxer()
                 inFOR = false;
                 if( !SEmpty( &leStack ) )
                 {
-                    TOP( &leStack, &top );
-                    if( top == cFOR )
-                        inFOR = true;
+                    tElemPtr aux = leStack.Last;
+                    // kontrola, zda se stale nachazime v otevrenem cyklu for - prochazime cely zasobnik
+                    while( aux != NULL )
+                    {
+                        if( aux->Elem == cFOR )
+                        {
+                            inFOR = true;
+                            break;
+                        }
+                        aux = aux->ptr;
+                    }
                 }
             }
         }
@@ -676,6 +684,23 @@ int syntaxer()
                     }
         }
         type = 0;
+
+/*
+        // vypis celeho zasobniku typu int
+        if( !SEmpty( &leStack ) )
+        {
+            printf("Zasobnik int:\ntop: ");
+            tElemPtr aux = leStack.Last;
+            while( aux != NULL )
+            {
+                printf("| %d ", aux->Elem);
+                aux = aux->ptr;
+            }
+            printf("|\n");
+        }
+        else
+            printf("Zasobnik je prazdny.\n");
+*/
 
         // po zpracovani jednoho radku volame funkci pro kontrolu semantiky
         if( semantixer(array) == EXIT_FAILURE )

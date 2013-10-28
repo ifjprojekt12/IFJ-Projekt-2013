@@ -11,25 +11,13 @@
 #define END_S   31	// semicolon
 #define I_MAX   512
 
-NODE check_func;
 INSTRUCT aux;
 tSInstr InstrStack;
+tStack SemStack;
 
 extern NODE root;
 extern LIST_3AK list;
 extern int eCode;
-
-// vyctovy typ pro ukladani stavu na zasobnik pro kontrolu spravnou posloupnost podminenych vyrazu
-enum conditions {
-    cIF,
-    cELSE,
-    cELSEIF,
-    cWHILE,
-    cFOR,
-    cFUNCTION,
-    cREADY,
-};
-
 
 // funkce pro vypis chybovych zprav
 void printERR(int err);

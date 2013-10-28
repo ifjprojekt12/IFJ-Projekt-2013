@@ -16,8 +16,10 @@
 #define ASCII       48      // prevod int -> char
 
 
+extern tStack SemStack;
+NODE check_func;
+
 extern NODE root;
-extern NODE check_func;
 extern LIST_3AK list;
 extern INSTRUCT aux;
 extern tSInstr InstrStack;
