@@ -15,9 +15,12 @@
 #define BRACKET     42      // type_token {
 #define ASCII       48      // prevod int -> char
 
+
 extern NODE root;
 extern NODE check_func;
 extern LIST_3AK list;
+extern INSTRUCT aux;
+extern tSInstr InstrStack;
 extern int eCode;
 
 // enum pro urceni priorit

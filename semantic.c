@@ -52,6 +52,15 @@ int semantixer(TOKEN *array)
         n++;
         return expression_sem(array, n, SEMICOLON);
     }
+    else if( array[n].type_token == 2 )     // else
+    {
+        new_instr( &list, iJUMP, NULL, NULL, NULL, NULL);
+        PUSHInstr( &InstrStack, list.last );
+    }
+    else if( array[n].type_token == 43 )    // }
+    {
+        POPInstr( &InstrStack, &aux );
+    }
     else
     {
         printf("nedodelana semantika? token: %d\n",array[n].type_token);
@@ -300,21 +309,33 @@ int read_postfix(TOKEN *array)
                     break;
                 case 16:    // ===
                     new_instr(&list, iEQ, &assist1, &assist2, &assist3, NULL);
+                    PUSHInstr( &InstrStack, list.last );
                     break;
                 case 17:    // !==
                     new_instr(&list, iNEQ, &assist1, &assist2, &assist3, NULL);
+                    PUSHInstr( &InstrStack, list.last );
                     break;
                 case 18:    // >
                     new_instr(&list, iHIGH, &assist1, &assist2, &assist3, NULL);
+                    PUSHInstr( &InstrStack, list.last );
                     break;
                 case 19:    // >=
                     new_instr(&list, iHEQ, &assist1, &assist2, &assist3, NULL);
+                    PUSHInstr( &InstrStack, list.last );
                     break;
                 case 20:    // <
                     new_instr(&list, iLOW, &assist1, &assist2, &assist3, NULL);
+                    PUSHInstr( &InstrStack, list.last );
                     break;
                 case 21:    // <=
                     new_instr(&list, iLEQ, &assist1, &assist2, &assist3, NULL);
+                    PUSHInstr( &InstrStack, list.last );
+            }
+
+            if( aux != NULL )
+            {
+                aux->jump = list.last;
+                aux = NULL;
             }
 
             PUSHNode( &nodeStack, assist3);

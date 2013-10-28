@@ -21,6 +21,10 @@ int syntaxer()
 
     // vytvoreni instrukcniho listu
     new_instr_list( &list );
+
+    // inicializace pomocneho ukazatele na instrukci a zasobniku
+    aux = NULL;
+    initInstr( &InstrStack );
  
     // pomocne promenne
     int type = 0;
@@ -614,12 +618,6 @@ int syntaxer()
                         inFOR = true;
                 }
             }
-   
-            // abychom neposilali semantice samostatny znak '}', urychlime beh programu 
-            i = 0;
-            initialize_array(array);
-            unit = get_token();
-            continue;
         }
         else
         {
@@ -697,6 +695,13 @@ int syntaxer()
         printERR(eWRONG);
         eCode = sSyn;
         return EXIT_FAILURE;
+    }
+
+    new_instr( &list, iEND, NULL, NULL, NULL, NULL );
+    if( aux != NULL )
+    {
+        aux->jump = list.last;
+        aux = NULL;
     }
 
 /*

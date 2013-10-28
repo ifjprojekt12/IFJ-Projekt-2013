@@ -7,14 +7,13 @@
 #include "lexical.h"
 #include "semantic.h"
 
-#define OK      0
 #define END_B   30	// bracket
 #define END_S   31	// semicolon
-#define END_CB  32	// comma or bracket
-#define END_SB  33	// semicolon or bracket
 #define I_MAX   512
 
 NODE check_func;
+INSTRUCT aux;
+tSInstr InstrStack;
 
 extern NODE root;
 extern LIST_3AK list;
