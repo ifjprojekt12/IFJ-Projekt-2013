@@ -211,7 +211,7 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 }
 
 //Funkce prevede retezec na int
-int intval(NODE node){ 
+int intval(NODE node){
 	int result = 0;
 	int i = 0;
 	if(node->data.type_token != 30){
@@ -220,16 +220,16 @@ int intval(NODE node){
 	}
 	char *string = node->data.string;
 	printf("%s\n",string);
-	
-	while ( string[i] == ' ' || string[i] == '\n' || string[i] == '\t' || string[i] == '\r' ) { //preskoci prazdna mista 
+
+	while ( string[i] == ' ' || string[i] == '\n' || string[i] == '\t' || string[i] == '\r' ) { //preskoci prazdna mista
 				i++;
-	}	
+	}
 	if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
 			while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
 				result *= 10;
 				result += (int) string[i]-48;
 				i++;
-				
+
 			}
 		}
 	return result;
@@ -240,14 +240,14 @@ char *strval(NODE node){ //TODO uvolneni malloc dodelat
 	char *result = malloc(100);
 	char *nulll = "";
 	char *True = "1";
-	switch( node->data.type_token) 
+	switch( node->data.type_token)
 		{
 			//----------------------------------------------
 			case 0:
 				printf("Chyba \n");
 				return 0;
 				break;
-			
+
 			case 30: //string to string
 				return node->data.string;
 				break;
@@ -264,17 +264,17 @@ char *strval(NODE node){ //TODO uvolneni malloc dodelat
 					return True;
 				} else {
 					return nulll;
-				}	
+				}
 				break;
 			case 34: // string to null
 				return nulll;
 				break;
-			
+
 			case 100:
 				printf("fce: chyba\n");
 				return 0;
 				break;
-			
+
 		}
 	return result;
 }
@@ -282,9 +282,8 @@ char *strval(NODE node){ //TODO uvolneni malloc dodelat
 // funkce vraci delku retezce
 unsigned int my_strlen (char *string)
 {
-    int i = 0;
     unsigned int length = 0;
-    while (string[i] != '\0')
+    while (string[length] != '\0')
     {
         length++;
     }
