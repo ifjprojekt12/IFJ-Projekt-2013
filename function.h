@@ -16,7 +16,7 @@ char *strval();
 unsigned int my_strlen (char *);
 char * my_get_substring (char *, int, int);
 char * my_get_string ();
-void put_string();
+void put_string(char *, ...);
 int find_string();
 
 #endif

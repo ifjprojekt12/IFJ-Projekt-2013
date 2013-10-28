@@ -250,3 +250,16 @@ char * my_get_string ()
     string[i] = '\0';
     return string;
 }
+
+// funkce vypisuje retezce na standartni vystup
+void put_string(char *string, ...)
+{
+    va_list strings; int c = 0;
+    va_start(strings, string);
+    printf("%s", string);
+    while ((c = vprintf( "%s", strings)) > 0)
+    {
+        // teoreticky by tady nic byt nemelo
+    }
+    va_end(strings);
+}
