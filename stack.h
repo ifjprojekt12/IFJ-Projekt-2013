@@ -61,23 +61,5 @@ void PUSHInstr(tSInstr *, INSTRUCT);
 void POPInstr(tSInstr *, INSTRUCT *);
 bool SEmptyInstr(tSInstr *);
 
-//fronta pro instrukce
-
-typedef struct tInstr {
-    	struct tInstr *ptr;	//ukazatel na nasledujici prvek
-    	INSTRUCT instr;			//hodnota na zasobniku
-} *tInstrPtr;
-
-
-typedef struct front_3ak{
-	tInstrPtr first;
-	tInstrPtr last;
-} FRONT_3AK;
-
-void init_front_3ak(FRONT_3AK *front);
-void insert_front_3ak(FRONT_3AK *front, INSTRUCT ins);
-void take_out_3ak(FRONT_3AK *front, INSTRUCT *ins);
-bool front_empty(FRONT_3AK *F);
-void Dispose_front (FRONT_3AK *F);
 
 #endif
