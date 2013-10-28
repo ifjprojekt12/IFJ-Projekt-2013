@@ -13,11 +13,10 @@ int intval();
 char *strval();
 
 //prace s retezci
-char *get_string();
+unsigned int my_strlen (char *);
+char * my_get_substring (char *, int, int);
+char * my_get_string ();
 void put_string();
-int our_strlen(); //proc our_? protoze to koliduje s knihovni funkci v C
-char *get_substring();
 int find_string();
-void sort_string();
 
 #endif

@@ -51,7 +51,7 @@ int boolval(NODE value){
 // 101 = e
 
 double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit napr 1.3e chyba
-		
+
 		if(node->data.type_token != 30){
 			fprintf(stderr, "Token neni tzpu string");
 			}
@@ -60,17 +60,17 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 		int i = 0;
 		double result = 0.0;
 		int exponent = 0;
-		while ( string[i] == ' ' || string[i] == '\n' || string[i] == '\t' || string[i] == '\r' ) { //preskoci prazdna mista 
+		while ( string[i] == ' ' || string[i] == '\n' || string[i] == '\t' || string[i] == '\r' ) { //preskoci prazdna mista
 				i++;
 			}
-			
+
 		if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
 			while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
 				result *= 10;
 				result += (double) string[i]-48;
 				i++;
-				
-			}		
+
+			}
 			if ( string[i] == '+' ){ //exponent
 				i++;
 				if ( string[i] == 'E' || string[i] == 'e' ){
@@ -91,8 +91,8 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 				}else{
 					fprintf(stderr,"Chyba spatny format cisla");
 				}
-				
-				
+
+
 			}else if ( string[i] == '-' ){
 				i++;
 				if ( string[i] == 'E' || string[i] == 'e' ){
@@ -133,15 +133,15 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 					if ( string[i] >= 48 && string[i] <= 57 ){
 						int count = 10;
 					while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
-						
+
 						result += ((double) string[i]-48)/ count;
 						count *= 10;
 						i++;
 					}
-					
+
 					if ( string[i] == '+' ){
 							i++;
-							if ( string[i] == 'E' || string[i] == 'e' ){ 
+							if ( string[i] == 'E' || string[i] == 'e' ){
 								i++;
 							}else{
 								fprintf(stderr,"Chyba spatny format cisla");
@@ -156,13 +156,13 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 									result*=10;
 								}
 								return result;	// odelslani vysledku Dodelat!!!!!!!!!!!!!!!
-	
+
 							}else{
 								fprintf(stderr,"Chyba spatny format cisla");
 							}
-							
-							
-						}else if ( string[i] == '-' ){ 
+
+
+						}else if ( string[i] == '-' ){
 							i++;
 							if ( string[i] == 'E' || string[i] == 'e' ){
 								i++;
@@ -202,11 +202,51 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 						fprintf(stderr,"Chyba spatny format cisla");
 					}
 			}
-			
-			
+
+
 		} else if ( string[i] < 49 || string[i] > 57 ){
 			return result;
 		}
 		return result;
 }
 
+// funkce vraci delku retezce
+unsigned int my_strlen (char *string)
+{
+    int i = 0;
+    unsigned int length = 0;
+    while (string[i] != '\0')
+    {
+        length++;
+    }
+    return length;
+}
+
+// funkce vraci podretezec z retezce ohraniceny indexy
+char * my_get_substring (char *string, int start, int end)
+{
+    char *new_string = malloc((end - start + 1) + sizeof (char));
+    for (int i = 0; i < (end-start); i++)
+    {
+        new_string[i] = string[i+start];
+    }
+    new_string[end-start] = '\0';
+    return new_string;
+}
+
+// funkce precte radek ze standardniho vstupu a vrati ho jako retezec
+char * my_get_string ()
+{
+    char buffer[BUFFERSIZE] = {0};
+    char *string;
+    int c, i  = 0;
+    while ((c = getchar()) != EOF || c != '\n' || c != '\r') // cte se ze vstupu dokud se nenarazi na konec radku nebo EOF
+    {
+        buffer[i] = c;
+        i++;
+    }
+    string = malloc ((i+1) * sizeof (char));
+    strncpy (string, buffer, i);
+    string[i] = '\0';
+    return string;
+}

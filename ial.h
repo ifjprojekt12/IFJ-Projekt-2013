@@ -51,7 +51,4 @@ void push (STACK*, NODE*);
 NODE pop (STACK*);
 
 // vestavene funkce
-unsigned int my_strlen (char *);
-char * my_get_substring (char *, int, int);
-char * my_get_string ();
 char * my_sort_string (char *);

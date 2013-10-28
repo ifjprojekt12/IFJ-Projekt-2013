@@ -169,47 +169,7 @@ NODE pop (STACK *zasobnik)
 ////////// VESTAVENE FUNKCE //////////
 //////////////////////////////////////
 
-// funkce vraci delku retezce
-unsigned int my_strlen (char *string)
-{
-    int i = 0;
-    unsigned int length = 0;
-    while (string[i] != '\0')
-    {
-        length++;
-    }
-    return length;
-}
-
-// funkce vraci podretezec z retezce ohraniceny indexy
-char * my_get_substring (char *string, int start, int end)
-{
-    char *new_string = malloc((end - start + 1) + sizeof (char));
-    for (int i = 0; i < (end-start); i++)
-    {
-        new_string[i] = string[i+start];
-    }
-    new_string[end-start] = '\0';
-    return new_string;
-}
-
-// funkce precte radek ze standardniho vstupu a vrati ho jako retezec
-char * my_get_string ()
-{
-    char buffer[BUFFERSIZE] = {0};
-    char *string;
-    int c, i  = 0;
-    while ((c = getchar()) != EOF || c != '\n' || c != '\r') // cte se ze vstupu dokud se nenarazi na konec radku nebo EOF
-    {
-        buffer[i] = c;
-        i++;
-    }
-    string = malloc ((i+1) * sizeof (char));
-    strncpy (string, buffer, i);
-    string[i] = '\0';
-    return string;
-}
-
+// funkce vrací seøazený øetìzec podle shell sortu
 char * my_sort_string (char *string)
 {
     unsigned int length = strlen(string);
