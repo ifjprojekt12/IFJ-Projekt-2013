@@ -32,6 +32,7 @@ typedef struct {
 typedef struct tInstr {
     struct tInstr *ptr; //ukazatel na predchozi prvek
     INSTRUCT Instr;  //hodnota na zasobniku
+    int type;
 } *tInstrPtr;
 
 typedef struct {
@@ -57,8 +58,8 @@ void DisposeStack (tStack *);   //Zrusi zasobnik
 bool SEmpty(tStack *);      // Je zasobnik prazdny
 
 void initInstr(tSInstr *);
-void PUSHInstr(tSInstr *, INSTRUCT);
-void POPInstr(tSInstr *, INSTRUCT *);
+void PUSHInstr(tSInstr *,INSTRUCT,int);
+void POPInstr(tSInstr *,INSTRUCT *,int *);
 bool SEmptyInstr(tSInstr *);
 
 

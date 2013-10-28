@@ -114,18 +114,20 @@ void initInstr(tSInstr *S)
     S->Last = NULL;
 }
 
-void PUSHInstr(tSInstr *S, INSTRUCT val)
+void PUSHInstr(tSInstr *S, INSTRUCT val, int t)
 {
     tInstrPtr ptr = NULL;
     ptr = malloc(sizeof(struct tInstr));
     ptr->Instr = val;
+	ptr->type = t;
     ptr->ptr=S->Last;
     S->Last = ptr;
 }
 
-void POPInstr(tSInstr *S, INSTRUCT *val)
+void POPInstr(tSInstr *S, INSTRUCT *val, int *t)
 {
     *val = S->Last->Instr;
+	*t = S->Last->type;
     tInstrPtr ptr = NULL;
     ptr = S->Last;
     S->Last = S->Last->ptr;
