@@ -51,32 +51,60 @@ int boolval(NODE value){
 // 101 = e
 
 double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit napr 1.3e chyba
-
-		if(node->data.type_token != 30){
-			fprintf(stderr, "Token neni tzpu string");
-			}
-		char *string = node->data.string;
-		printf("%s\n",string);
+		
 		int i = 0;
 		double result = 0.0;
 		int exponent = 0;
-		while ( string[i] == ' ' || string[i] == '\n' || string[i] == '\t' || string[i] == '\r' ) { //preskoci prazdna mista
+		
+		
+		switch(node->data.type_token){
+			case 30://string
+				break;
+			case 31://int
+				result = (double)node->data.c_number;
+				return result;
+				break;
+			case 32://double
+				result = node->data.d_number;
+				return result;
+				break;
+			case 33://bool
+				if ( node->data.boolean != 0 ){
+					result = 1.0;
+				} else {
+					result = 0.0;
+				}
+				return result;
+				break;
+			case 34://null
+				result = 0.0;
+				return result;
+				break;
+			default:	//chyba!!!!!!!!!!!!!!
+				eCode = 11;
+				return EXIT_FAILURE;
+				break;
+			}	
+		char *string = node->data.string;
+		
+		while ( string[i] == ' ' || string[i] == '\n' || string[i] == '\t' || string[i] == '\r' ) { //preskoci prazdna mista 
 				i++;
 			}
-
+			
 		if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
 			while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
 				result *= 10;
 				result += (double) string[i]-48;
 				i++;
-
-			}
+				
+			}		
 			if ( string[i] == '+' ){ //exponent
 				i++;
 				if ( string[i] == 'E' || string[i] == 'e' ){
 					i++;
 				}else{
-					fprintf(stderr,"Chyba spatny format cisla");
+					eCode = 11;
+					return EXIT_FAILURE;
 				}
 				if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
 					while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
@@ -87,18 +115,20 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 					for (int i = 1; i <exponent;i++ ){
 						result*=10;
 					}
-					return result; // odelslani vysledku Dodelat!!!!!!!!!!!!!!!
+					return result; //vysledek
 				}else{
-					fprintf(stderr,"Chyba spatny format cisla");
+					eCode = 11;
+					return EXIT_FAILURE;
 				}
-
-
+				
+				
 			}else if ( string[i] == '-' ){
 				i++;
 				if ( string[i] == 'E' || string[i] == 'e' ){
 					i++;
 				}else{
-					fprintf(stderr,"Chyba spatny format cisla");
+					eCode = 11;
+					return EXIT_FAILURE;
 				}
 				if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
 					while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
@@ -109,9 +139,10 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 					for (int i = 1; i <=exponent;i++ ){
 						result/=10;
 					}
-					return result; // odelslani vysledku Dodelat!!!!!!!!!!!!!!!
+					return result; // vysledek
 				}else{
-					fprintf(stderr,"Chyba spatny format cisla");
+					eCode = 11;
+					return EXIT_FAILURE;
 				}
 			} else if ( string[i] == 'E' || string[i] == 'e' ){
 				i++;
@@ -124,27 +155,29 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 					for (int i = 1; i <=exponent;i++ ){
 						result*=10;
 					}
-					return result; // odelslani vysledku Dodelat!!!!!!!!!!!!!!!
+					return result; // vysledek
 				}else{
-					fprintf(stderr,"Chyba spatny format cisla");
+					eCode = 11;
+					return EXIT_FAILURE;
 				}
 			} else if( string[i] == '.' ){	// nasleduje desetina cast
 					i++;
 					if ( string[i] >= 48 && string[i] <= 57 ){
 						int count = 10;
 					while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
-
+						
 						result += ((double) string[i]-48)/ count;
 						count *= 10;
 						i++;
 					}
-
+					
 					if ( string[i] == '+' ){
 							i++;
-							if ( string[i] == 'E' || string[i] == 'e' ){
+							if ( string[i] == 'E' || string[i] == 'e' ){ 
 								i++;
 							}else{
-								fprintf(stderr,"Chyba spatny format cisla");
+								eCode = 11;
+								return EXIT_FAILURE;
 							}
 							if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
 								while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
@@ -155,19 +188,21 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 								for (int i = 1; i <=exponent;i++ ){
 									result*=10;
 								}
-								return result;	// odelslani vysledku Dodelat!!!!!!!!!!!!!!!
-
+								return result;	// vysledek
+	
 							}else{
-								fprintf(stderr,"Chyba spatny format cisla");
+								eCode = 11;
+								return EXIT_FAILURE;
 							}
-
-
-						}else if ( string[i] == '-' ){
+							
+							
+						}else if ( string[i] == '-' ){ 
 							i++;
 							if ( string[i] == 'E' || string[i] == 'e' ){
 								i++;
 							}else{
-								fprintf(stderr,"Chyba spatny format cisla");
+								eCode = 11;
+								return EXIT_FAILURE;
 							}
 							if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
 								while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
@@ -178,9 +213,10 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 								for (int i = 1; i <=exponent;i++ ){
 									result/=10;
 								}
-								return result; // odelslani vysledku Dodelat!!!!!!!!!!!!!!!
+								return result; // vysledek
 							}else{
-								fprintf(stderr,"Chyba spatny format cisla");
+								eCode = 11;
+								return EXIT_FAILURE;
 							}
 						} else if ( string[i] == 'E' || string[i] == 'e' ){
 							i++;
@@ -193,17 +229,20 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 								for (int i = 1; i <=exponent;i++ ){
 									result*=10;
 								}
-								return result;	// odelslani vysledku Dodelat!!!!!!!!!!!!!!!
+								return result;	// vysledek
 							}else{
-								fprintf(stderr,"Chyba spatny format cisla");
+								eCode = 11;
+								return EXIT_FAILURE;
 							}
 						}
 					}else{
-						fprintf(stderr,"Chyba spatny format cisla");
+						eCode = 11;
+						
+						return EXIT_FAILURE;
 					}
 			}
-
-
+			
+			
 		} else if ( string[i] < 49 || string[i] > 57 ){
 			return result;
 		}
@@ -211,43 +250,60 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 }
 
 //Funkce prevede retezec na int
-int intval(NODE node){
+int intval(NODE node){ 
 	int result = 0;
 	int i = 0;
-	if(node->data.type_token != 30){
-			fprintf(stderr, "Token neni tzpu string");
+	switch( node->data.type_token) {
+		case 30:
+			break;
+		case 31: // int
+			result = node->data.c_number;
 			return result;
+			break;
+		case 32: // double
+			result = (int)node->data.d_number;
+			return result;
+			break;
+		case 33: // bool
+			if (node->data.boolean != 0) {
+					result = 1;
+				} else {
+					result = 0;
+				}	
+			return result;
+			break;
+		case 34: //null
+			result = 0;
+			return result;
+			break;
+		default: //chyba
+			eCode = 13;
+			return result;
+			break;
 	}
+	
 	char *string = node->data.string;
-	printf("%s\n",string);
-
-	while ( string[i] == ' ' || string[i] == '\n' || string[i] == '\t' || string[i] == '\r' ) { //preskoci prazdna mista
+	
+	while ( string[i] == ' ' || string[i] == '\n' || string[i] == '\t' || string[i] == '\r' ) { //preskoci prazdna mista 
 				i++;
-	}
+	}	
 	if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
 			while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
 				result *= 10;
 				result += (int) string[i]-48;
 				i++;
-
+				
 			}
 		}
 	return result;
 }
-
 // funkce prevede datove typy na retezec
 char *strval(NODE node){ //TODO uvolneni malloc dodelat
 	char *result = malloc(100);
 	char *nulll = "";
 	char *True = "1";
-	switch( node->data.type_token)
-		{
-			//----------------------------------------------
-			case 0:
-				printf("Chyba \n");
-				return 0;
-				break;
-
+	switch( node->data.type_token) 
+		{	
 			case 30: //string to string
 				return node->data.string;
 				break;
@@ -264,17 +320,14 @@ char *strval(NODE node){ //TODO uvolneni malloc dodelat
 					return True;
 				} else {
 					return nulll;
-				}
+				}	
 				break;
 			case 34: // string to null
 				return nulll;
 				break;
-
-			case 100:
-				printf("fce: chyba\n");
-				return 0;
+			default: //chyba
+				return result;
 				break;
-
 		}
 	return result;
 }
