@@ -71,11 +71,14 @@ int semantixer(TOKEN *array)
             aux2 = NULL;
 
         TOPInstr( &InstrStack, &top );
-        printf("na vrcholu semantickeho zasobniku je: %d\n", top);
+        //printf("na vrcholu semantickeho zasobniku je: %d\n", top);
         switch( top )
         {
             case 0:     // skok (mel by to byt jen else)
 
+                if( aux != NULL )
+                    aux->jump = list.last;
+                POPInstr( &InstrStack, &aux, &top );
                 break;
 
             case 1:     // if
@@ -328,8 +331,8 @@ int read_postfix(TOKEN *array, int type)
         // narazili jsme na znamenko
         else if(array[i].type_token >= 10 && array[i].type_token <= 21)
         {
-            TOPPOPNode(&nodeStack, &assist1);
             TOPPOPNode(&nodeStack, &assist2);
+            TOPPOPNode(&nodeStack, &assist1);
 
             if( !Compatible(&assist1, &assist2, array[i].type_token) )
             {
@@ -350,54 +353,66 @@ int read_postfix(TOKEN *array, int type)
             {
                 case 10:    // =
                     new_instr(&list, iASSIGN, &assist2, NULL, &assist1, NULL);
+                    //printf("ASSIGN\n\tco: %s (%d)\n\tkam: %s (%d)\n",assist2->key,assist2->data.type_token,assist1->key,assist1->data.type_token);
                     break;
                 case 11:    // -
                     new_instr(&list, iMINUS, &assist1, &assist2, &assist3, NULL);
+                    //printf("MINUS\n\t%s (%d) - %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     break;
                 case 12:    // *
                     new_instr(&list, iMUL, &assist1, &assist2, &assist3, NULL);
+                    //printf("MUL\n\t%s (%d) * %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     break;
                 case 13:    // /
                     new_instr(&list, iDIV, &assist1, &assist2, &assist3, NULL);
+                    //printf("DIV\n\t%s (%d) : %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     break;
                 case 14:    // +
                     new_instr(&list, iPLUS, &assist1, &assist2, &assist3, NULL);
+                    //printf("PLUS\n\t%s (%d) + %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     break;
                 case 15:    // .
                     new_instr(&list, iKONK, &assist1, &assist2, &assist3, NULL);
+                    //printf("KONK\n\t%s (%d) . %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     break;
                 case 16:    // ===
-                    new_instr(&list, iEQ, &assist1, &assist2, &assist3, NULL);
+                    new_instr(&list, iEQ, &assist1, &assist2, NULL, NULL);
+                    //printf("EQ\n\t%s (%d) === %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     if( type == 3 )
                         PUSHInstr( &InstrStack, aux2, 0 );      // 0 = od ted znaci skok :D
                     PUSHInstr( &InstrStack, list.last, type );
                     break;
                 case 17:    // !==
-                    new_instr(&list, iNEQ, &assist1, &assist2, &assist3, NULL);
+                    new_instr(&list, iNEQ, &assist1, &assist2, NULL, NULL);
+                    //printf("NEQ\n\t%s (%d) !== %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     if( type == 3 )
                         PUSHInstr( &InstrStack, aux2, 0 );
                     PUSHInstr( &InstrStack, list.last, type );
                     break;
                 case 18:    // >
-                    new_instr(&list, iHIGH, &assist1, &assist2, &assist3, NULL);
+                    new_instr(&list, iHIGH, &assist1, &assist2, NULL, NULL);
+                    //printf("HIGH\n\t%s (%d) > %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     if( type == 3 )
                         PUSHInstr( &InstrStack, aux2, 0 );
                     PUSHInstr( &InstrStack, list.last, type );
                     break;
                 case 19:    // >=
-                    new_instr(&list, iHEQ, &assist1, &assist2, &assist3, NULL);
+                    new_instr(&list, iHEQ, &assist1, &assist2, NULL, NULL);
+                    //printf("HEQ\n\t%s (%d) >= %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     if( type == 3 )
                         PUSHInstr( &InstrStack, aux2, 0 );
                     PUSHInstr( &InstrStack, list.last, type );
                     break;
                 case 20:    // <
-                    new_instr(&list, iLOW, &assist1, &assist2, &assist3, NULL);
+                    new_instr(&list, iLOW, &assist1, &assist2, NULL, NULL);
+                    //printf("LOW\n\t%s (%d) < %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     if( type == 3 )
                         PUSHInstr( &InstrStack, aux2, 0 );
                     PUSHInstr( &InstrStack, list.last, type );
                     break;
                 case 21:    // <=
-                    new_instr(&list, iLEQ, &assist1, &assist2, &assist3, NULL);
+                    new_instr(&list, iLEQ, &assist1, &assist2, NULL, NULL);
+                    //printf("LEQ\n\t%s (%d) <= %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     if( type == 3 )
                         PUSHInstr( &InstrStack, aux2, 0 );
                     PUSHInstr( &InstrStack, list.last, type );
@@ -413,7 +428,8 @@ int read_postfix(TOKEN *array, int type)
                 aux2 = NULL;
             }
 
-            PUSHNode( &nodeStack, assist3);
+            if( array[i].type_token >= 11 && array[i].type_token <= 15 )
+                PUSHNode( &nodeStack, assist3);
 
             /*doplnit assist3 a jedeme na znamenka*//*
             printf("---------------------------------------------------\n");
@@ -603,6 +619,8 @@ char* makeName(TOKEN unit)
 // funkce pro porovnani dvou datovych typu
 bool Compatible(NODE *a1, NODE *a2, int sign)
 {
+    //printf("Compatible?\t%s (%d) -%d- %s (%d)\n",(*a1)->key,(*a1)->data.type_token,sign,(*a2)->key,(*a2)->data.type_token);
+
     switch( sign )
     {
         case 11:    // -
@@ -619,7 +637,7 @@ bool Compatible(NODE *a1, NODE *a2, int sign)
 
         case 15:    // .
 
-            if( (*a1)->data.type_token != 30 || (*a1)->data.type_token != 36 || (*a1)->data.type_token != 37 )
+            if( (*a1)->data.type_token != 30 && (*a1)->data.type_token != 36 && (*a1)->data.type_token != 37 )
                 return false;
             break;
 
