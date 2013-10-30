@@ -354,6 +354,9 @@ int interpret(LIST_3AK *list){
     //Operator prirazeni
     //*******************************************
     if(list->actual->id == iASSIGN){
+
+      //printf("\n%s %d %s %d\n",result->data.string,result->data.type_token, op_1->data.string,op_1->data.type_token);
+
       if(op_1->data.type_token == 30){
         char *old_str = result->data.string;
         char *new_str;
@@ -727,7 +730,7 @@ int interpret(LIST_3AK *list){
     //put_string
     if(list->actual->id == iP_STR){
       put_string(&op_1);
-      if(list->actual->left->id != iP_STR){
+      if(list->actual->left != NULL && list->actual->left->id != iP_STR){
         result->data.type_token = 31;
         result->data.c_number = 1;
       }
