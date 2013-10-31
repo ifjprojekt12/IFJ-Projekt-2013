@@ -140,7 +140,7 @@ int functions(TOKEN *array, int n)
     {
         if( array[n].type_token == 23 )     // preskakovani carek
         {
-            n++
+            n++;
             continue;
         }
         name = makeName(array[n]);
