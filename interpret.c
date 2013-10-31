@@ -17,10 +17,21 @@ int interpret(LIST_3AK *list){
   list->actual = list->first;
 
   while(1){
-    //pro jistotu kontrola, ze instrukce neodkazuje na NULL
+    //*******************************************
+    //instrukce konce programu
+    //*******************************************
+    if(list->actual->id == iEND){
+      break;
+    }
+
+    //projistotu kontrola, ze instrukce neodkazuje na NULL
     if(list->actual == NULL){
       eCode = sINTERN;
       return EXIT_FAILURE;
+    }
+    //a pripadne preskakuje ty ciste pomocne instrukce
+    if(list->actual->id == iP_STR_NEW){
+      //list->actual = list->actual->right;
     }
 
     //ulozeni ukazatelu, ciste pro zjednoduseni konstrukci -> a .
@@ -28,13 +39,6 @@ int interpret(LIST_3AK *list){
     op_1 = searchIdent(list->actual->operand_1->key,&root);
     op_2 = list->actual->operand_2;
     result = list->actual->result;
-
-    //*******************************************
-    //instrukce konce programu
-    //*******************************************
-    if(list->actual->id == iEND){
-      break;
-    }
 
     //*******************************************
     //Aritmeticke a retezcove operatory
