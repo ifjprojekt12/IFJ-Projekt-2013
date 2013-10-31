@@ -41,6 +41,15 @@ int interpret(LIST_3AK *list){
     //*******************************************
     //scitani
     if(list->actual->id == iPLUS){
+      //kontrola zda pouzivame deklarovane promenne
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+      if(op_2->data.type_token < 30 || op_2->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
 
       //int a int
       if(op_1->data.type_token == 31 && op_2->data.type_token == 31){
@@ -75,6 +84,15 @@ int interpret(LIST_3AK *list){
     //-------------------------------------------
     //odcitani
     if(list->actual->id == iMINUS){
+      //kontrola zda pouzivame deklarovane promenne
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+      if(op_2->data.type_token < 30 || op_2->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
 
       //int a int
       if(op_1->data.type_token == 31 && op_2->data.type_token == 31){
@@ -109,6 +127,15 @@ int interpret(LIST_3AK *list){
     //-------------------------------------------
     //nasobeni
     if(list->actual->id == iMUL){
+      //kontrola zda pouzivame deklarovane promenne
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+      if(op_2->data.type_token < 30 || op_2->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
 
       //int a int
       if(op_1->data.type_token == 31 && op_2->data.type_token == 31){
@@ -143,6 +170,15 @@ int interpret(LIST_3AK *list){
     //-------------------------------------------
     //deleni
     if(list->actual->id == iDIV){
+      //kontrola zda pouzivame deklarovane promenne
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+      if(op_2->data.type_token < 30 || op_2->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
 
       //kontrola na deleni nulou
       if(op_2->data.type_token == 32){
@@ -191,6 +227,15 @@ int interpret(LIST_3AK *list){
     //-------------------------------------------
     //konkatenace
     if(list->actual->id == iKONK){
+      //kontrola zda pouzivame deklarovane promenne
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+      if(op_2->data.type_token < 30 || op_2->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
 
       //string a string
       if(op_1->data.type_token == 30 && op_2->data.type_token == 30){
@@ -362,6 +407,10 @@ int interpret(LIST_3AK *list){
       //op_1 = result;
       //result = pop;
       //printf(">%s\n",op_1->key);
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
 
       if(op_1->data.type_token == 30){
         char *old_str = result->data.string;
@@ -401,6 +450,16 @@ int interpret(LIST_3AK *list){
     //*******************************************
     // rovno
     if(list->actual->id == iEQ){
+      //kontrola zda pouzivame deklarovane promenne
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+      if(op_2->data.type_token < 30 || op_2->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+
       //odlisne typy
       if(op_1->data.type_token != op_2->data.type_token){
         list->actual = list->actual->jump;
@@ -466,6 +525,17 @@ int interpret(LIST_3AK *list){
         list->actual = list->actual->jump;
         continue;
       }*/
+
+      //kontrola zda pouzivame deklarovane promenne
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+      if(op_2->data.type_token < 30 || op_2->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+
       //string
       if(op_1->data.type_token == 30){
         if((strcmp(op_1->data.string,op_2->data.string)) != 0){
@@ -519,6 +589,16 @@ int interpret(LIST_3AK *list){
     //---------------------------------
     // vetsi
     if(list->actual->id == iHIGH){
+      //kontrola zda pouzivame deklarovane promenne
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+      if(op_2->data.type_token < 30 || op_2->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+
       if(op_1->data.type_token == 30 && op_2->data.type_token == 30){
         if((strcmp(op_1->data.string,op_2->data.string)) > 0){
           list->actual = list->actual->right;
@@ -563,6 +643,16 @@ int interpret(LIST_3AK *list){
     //---------------------------------
     // vetsi rovno
     if(list->actual->id == iHEQ){
+      //kontrola zda pouzivame deklarovane promenne
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+      if(op_2->data.type_token < 30 || op_2->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+
       if(op_1->data.type_token == 30 && op_2->data.type_token == 30){
         if((strcmp(op_1->data.string,op_2->data.string)) >= 0){
           list->actual = list->actual->right;
@@ -607,6 +697,16 @@ int interpret(LIST_3AK *list){
     //---------------------------------
     // mensi
     if(list->actual->id == iLOW){
+      //kontrola zda pouzivame deklarovane promenne
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+      if(op_2->data.type_token < 30 || op_2->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+
       if(op_1->data.type_token == 30 && op_2->data.type_token == 30){
         if((strcmp(op_1->data.string,op_2->data.string)) < 0){
           list->actual = list->actual->right;
@@ -651,6 +751,16 @@ int interpret(LIST_3AK *list){
     //---------------------------------
     // mensi rovno
     if(list->actual->id == iLEQ){
+      //kontrola zda pouzivame deklarovane promenne
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+      if(op_2->data.type_token < 30 || op_2->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+
       if(op_1->data.type_token == 30 && op_2->data.type_token == 30){
         if((strcmp(op_1->data.string,op_2->data.string)) <= 0){
           list->actual = list->actual->right;
@@ -714,16 +824,28 @@ int interpret(LIST_3AK *list){
     //konverzni funkce
     //strval
     if(list->actual->id == iSVAL){
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
       result->data.type_token = 30;
       result->data.string = strval(op_1);
     }
     //intval
     if(list->actual->id == iIVAL){
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
       result->data.type_token = 31;
       result->data.c_number = intval(op_1);
     }
     //doubleval
     if(list->actual->id == iDVAL){
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
       result->data.type_token = 32;
       if((result->data.d_number = doubleval(op_1)) == EXIT_FAILURE){
         return EXIT_FAILURE;
@@ -731,6 +853,10 @@ int interpret(LIST_3AK *list){
     }
     //boolval
     if(list->actual->id == iBVAL){
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
       result->data.type_token = 33;
       result->data.boolean = boolval(op_1);
     }
@@ -738,6 +864,10 @@ int interpret(LIST_3AK *list){
     //funkce pro praci s retezci
     //put_string
     if(list->actual->id == iP_STR){
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
       put_string(&op_1);
       if(list->actual->left != NULL && list->actual->left->id != iP_STR){
         result->data.type_token = 31;
@@ -754,6 +884,18 @@ int interpret(LIST_3AK *list){
     }
     //get_substring
     if(list->actual->id == iG_SUBSTR){
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+      if(op_2->data.type_token < 30 || op_2->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
+      if(result->data.type_token < 30 || result->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
       if(list->actual->right->id == iG_SUBSTR2){
         list->actual->right->result->data.type_token = 30;
         if((list->actual->right->result->data.string = my_get_substring(op_1->data.string,intval(op_2),intval(result))) == NULL){
@@ -768,6 +910,10 @@ int interpret(LIST_3AK *list){
     }
     //strlen
     if(list->actual->id == iSTRLEN){
+      if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
+        eCode = sSemVar;
+        return EXIT_FAILURE;
+      }
       result->data.type_token = 31;
       result->data.c_number = (int) my_strlen(strval(op_1));
     }
