@@ -136,6 +136,9 @@ int functions(TOKEN *array, int n)
     if( type < 0 )
         type = 6;       // uzivatelem definovana funkce TODO
 
+    if( type == 25 )
+        new_instr(&list, iP_STR_NEW, NULL, NULL, NULL, NULL);
+
     while( array[n].type_token != 41 )   // )
     {
         if( array[n].type_token == 23 )     // preskakovani carek
