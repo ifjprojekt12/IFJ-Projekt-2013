@@ -137,7 +137,7 @@ int functions(TOKEN *array, int n)
     if( type < 0 )
         type = 6;       // uzivatelem definovana funkce TODO
 
-    if( type == 25 )
+    if( type == iP_STR )
         new_instr(&list, iP_STR_NEW, NULL, NULL, NULL, NULL);
 
     while( array[n].type_token != 41 )   // )
@@ -167,7 +167,7 @@ int functions(TOKEN *array, int n)
         n++; params++;
 
         if( (((type >= iBVAL && type <= iSVAL) || type == iSTRLEN || type == iS_STR) && params <= 1 ) || (type == iG_SUBSTR && params <= 3 )
-            || (type == iF_STR && params <= 2) )
+            || (type == iF_STR && params <= 2) || type == iP_STR )
         {
             // vytvoreni instrukce
             new_instr(&list, type, &assist1, NULL, &assist2, NULL);
