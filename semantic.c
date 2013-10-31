@@ -138,6 +138,11 @@ int functions(TOKEN *array, int n)
 
     while( array[n].type_token != 41 )   // )
     {
+        if( array[n].type_token == 23 )     // preskakovani carek
+        {
+            n++
+            continue;
+        }
         name = makeName(array[n]);
         if( name == NULL )
             return EXIT_FAILURE;
