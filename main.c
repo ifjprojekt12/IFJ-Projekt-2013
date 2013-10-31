@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 */
 
     /* Po kontrole validace vstupu prechazime do interpretu */
-    eCode = interpret( &list );
+    interpret( &list );
 
     /* Odstraneni veskere pouzite pameti */
     // TODO
