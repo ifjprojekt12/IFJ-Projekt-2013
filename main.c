@@ -31,6 +31,7 @@ int main(int argc, char *argv[])
 	if( syntaxer() == EXIT_FAILURE )
     	return eCode;
 
+    //printf("syntaxe + semantika v poradku.\n");
 /*
     // kontrola listu instrukci pro skoky (c) Kuba
     for( INSTRUCT a = list.first; a != NULL; a = a->right )
