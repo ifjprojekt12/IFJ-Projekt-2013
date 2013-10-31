@@ -331,8 +331,8 @@ int read_postfix(TOKEN *array, int type)
         // narazili jsme na znamenko
         else if(array[i].type_token >= 10 && array[i].type_token <= 21)
         {
-            TOPPOPNode(&nodeStack, &assist2);
             TOPPOPNode(&nodeStack, &assist1);
+            TOPPOPNode(&nodeStack, &assist2);
 
             if( !Compatible(&assist1, &assist2, array[i].type_token) )
             {
