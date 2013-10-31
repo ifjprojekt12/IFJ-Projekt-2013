@@ -67,12 +67,13 @@ enum error {
     eFOR,           // break nebo continue mimo prikaz FOR
     eVAR,           // nedefinovana promenna
     eCOMPATIBLE,    // nekompatibilni datove typy ve vyrazu
+    eFCEPARAM,      // chybejici parametr pro volani funkce
 };
 
 // vyctovy typ pro navratovy kod programu
 enum finalCode {
     sOK,        /* vse v poradku */
-    sLex,
+    sLex,       /* chyba pri lexikalni analyze */
     sSyn,       /* chyba syntakticke struktury programy */
     sSemFceDef, /* nedefinovana funkce nebo redefinovana */
     sSemFceParam,   /* chybejici parametr pro volani funkce */

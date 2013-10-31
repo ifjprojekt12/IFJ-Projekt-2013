@@ -24,6 +24,7 @@ const char*MESSAGE[]=
     "Prikaz break nebo continue mimo telo prikazu for",
     "Nedeklarovana promenna",
     "Chybne datove typy ve vyrazu",
+    "Chybejici parametr pro volani funkce",
 };
 
 //*************************************
