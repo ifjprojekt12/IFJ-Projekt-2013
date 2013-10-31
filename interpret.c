@@ -24,7 +24,8 @@ int interpret(LIST_3AK *list){
     }
 
     //ulozeni ukazatelu, ciste pro zjednoduseni konstrukci -> a .
-    op_1 = list->actual->operand_1;
+    //po rozmysleni i pro funkci funkci a podobneho shitu
+    op_1 = searchIdent(list->actual->operand_1->key,&root);
     op_2 = list->actual->operand_2;
     result = list->actual->result;
 
@@ -356,6 +357,11 @@ int interpret(LIST_3AK *list){
     if(list->actual->id == iASSIGN){
 
       //printf("\n%s %d %s %d\n",result->data.string,result->data.type_token, op_1->data.string,op_1->data.type_token);
+      //NODE pop;
+      //pop = op_1;
+      //op_1 = result;
+      //result = pop;
+      //printf(">%s\n",op_1->key);
 
       if(op_1->data.type_token == 30){
         char *old_str = result->data.string;
@@ -377,12 +383,15 @@ int interpret(LIST_3AK *list){
 
       }
       if(op_1->data.type_token == 31){
+        result->data.type_token = 31;
         result->data.c_number = op_1->data.c_number;
       }
       if(op_1->data.type_token == 32){
+        result->data.type_token = 33;
         result->data.d_number = op_1->data.d_number;
       }
       if(op_1->data.type_token == 33){
+        result->data.type_token = 33;
         result->data.boolean = op_1->data.boolean;
       }
     }
