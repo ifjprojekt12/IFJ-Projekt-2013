@@ -70,16 +70,17 @@ enum error {
 
 // vyctovy typ pro navratovy kod programu
 enum finalCode {
-	sOK,		/* vse v poradku */
-	sSyn,		/* chyba syntakticke struktury programy */
-	sSemFceDef, /* nedefinovana funkce nebo redefinovana */
-    sSemFceParam,	/* chybejici parametr pro volani funkce */
-	sSemVar,	/*  Nedeklarovana promenna */
-	sSynZero = 10,	/* Chyba deleni nulou */
-	sSynTypeConv,	/* pretypovani promenne na cislo funkce doubleval */
-	sSynCompatib,	/* chyba typove kompatibility v aritmetickych a relacnich vyrazech */
-	sSynRest,	/* ostatni chyby semantiky */
-	sINTERN = 99,   /* interni chyba interpretu tj. neovlivnena vstupnim programem */
+    sOK,        /* vse v poradku */
+    sLex,
+    sSyn,       /* chyba syntakticke struktury programy */
+    sSemFceDef, /* nedefinovana funkce nebo redefinovana */
+    sSemFceParam,   /* chybejici parametr pro volani funkce */
+    sSemVar,    /*  Nedeklarovana promenna */
+    sSynZero = 10,  /* Chyba deleni nulou */
+    sSynTypeConv,   /* pretypovani promenne na cislo funkce doubleval */
+    sSynCompatib,   /* chyba typove kompatibility v aritmetickych a relacnich vyrazech */
+    sSynRest,   /* ostatni chyby semantiky */
+    sINTERN = 99,   /* interni chyba interpretu tj. neovlivnena vstupnim programem */
 };
 
 // vyctovy typ pro ukladani stavu na zasobnik pro kontrolu spravnou posloupnost podminenych vyrazu
