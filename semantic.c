@@ -25,12 +25,14 @@ int special_count = 0;
 // hlavni funkce semantiky
 int semantixer(TOKEN *array)
 {
+    // deklarace pomocnych promennych
     NODE assist1 = NULL;
     char *name = NULL;
-
     int n=0, top = 0;
+
     if( array[n].type_token == 36 )     // promenna
     {
+        // zajistuje skoky
         if( aux2 != NULL )
             aux2 = NULL;
 
@@ -38,26 +40,29 @@ int semantixer(TOKEN *array)
         if( name == NULL )
             return EXIT_FAILURE;
         if( (assist1 = searchIdent(name, &root)) == NULL )
+            // prvni vyskyt promenne, jeji zapis do stromu
             insertVarToTree(name, array[n], &root);
 
         if( array[n+2].type_token == 6 || (array[n+2].type_token >= 60 && array[n+2].type_token <= 69) )
         {
+            // volani vestavene nebo uzivatelem definovane funkce
             if( functions(array,n) == EXIT_FAILURE )
                 return EXIT_FAILURE;
         }
-        else if( expression_sem(array, n, SEMICOLON) == EXIT_FAILURE )
-                return EXIT_FAILURE;
+        else if( expression_sem(array, &n, SEMICOLON) == EXIT_FAILURE )
+            // vyraz prirazeni
+            return EXIT_FAILURE;
     }
     else if( array[n].type_token == 1 || array[n].type_token == 3 || array[n].type_token == 4 )  // if, elseif, while
     {
         n++;
-        if( expression_sem(array, n, BRACKET) == EXIT_FAILURE )
+        if( expression_sem(array, &n, BRACKET) == EXIT_FAILURE )
             return EXIT_FAILURE;
     }
     else if( array[n].type_token == 7 )     // return
     {
         n++;
-        if( expression_sem(array, n, SEMICOLON) == EXIT_FAILURE )
+        if( expression_sem(array, &n, SEMICOLON) == EXIT_FAILURE )
             return EXIT_FAILURE;
     }
     else if( array[n].type_token == 2 )     // else
@@ -113,6 +118,44 @@ int semantixer(TOKEN *array)
         if( aux != NULL )
             aux->jump = list.last;
     }
+    else if( array[n].type_token == 5 )     // for
+    {
+        n+=2;
+        if( array[n].type_token != 22 )     // prvni cast hlavicky neni prazdna
+        {
+            name = makeName(array[n]);
+            if( name == NULL )
+                return EXIT_FAILURE;
+            if( (assist1 = searchIdent(name, &root)) == NULL )
+                // prvni vyskyt promenne, jeji zapis do stromu
+                insertVarToTree(name, array[n], &root);
+
+            if( expression_sem(array, &n, SEMICOLON) == EXIT_FAILURE )     // ;
+                return EXIT_FAILURE;
+        }
+        n++;
+
+        if( array[n].type_token != 22 )     // druha cast hlavicky neni prazdna
+        {
+            if( expression_sem(array, &n, SEMICOLON) == EXIT_FAILURE )     // ;
+                return EXIT_FAILURE;
+        }
+        n++;
+
+        // TODO
+        // treti cast hlavicky se musi nekam ulozit a pridat az na konec tela cyklu, coz by slo jednoduse zasobnikem
+        // problem ale budou vnorene cykly FOR, takze asi zasobnik typu LIST_3AK (neco jako u funkci)
+    }
+    else if( array[n].type_token == 8 )     // break
+    {
+        // dost pravdepodobne se bude ukladat na zasobnik -> novy typ
+        new_instr(&list, iJUMP, NULL, NULL, NULL, NULL);
+    }
+    else if( array[n].type_token == 9 )     // continue
+    {
+        // najit v zasobniku posledni FOR a skocit na nej
+        new_instr(&list, iJUMP, NULL, NULL, NULL, NULL);
+    }
     else
     {
         printf("nedodelana semantika? token: %d\n",array[n].type_token);
@@ -138,7 +181,7 @@ int functions(TOKEN *array, int n)
         type = 6;       // uzivatelem definovana funkce TODO
 
     if( type == iP_STR )
-        new_instr(&list, iP_STR_NEW, NULL, NULL, NULL, NULL);
+        new_instr(&list, iP_STR_NEW, NULL, NULL, NULL, NULL);   // uvodni instrukce pro funkci put_string
 
     while( array[n].type_token != 41 )   // )
     {
@@ -156,6 +199,7 @@ int functions(TOKEN *array, int n)
         {
             if(array[n].type_token == 36)
             {
+                // nedeklarovana promenna
                 printERR(eVAR);
                 eCode = sSemVar;
                 return EXIT_FAILURE;
@@ -164,8 +208,10 @@ int functions(TOKEN *array, int n)
             insertVarToTree(name, array[n], &root);
             assist1 = searchIdent(name, &root);
         }
-        n++; params++;
+        n++;
+        params++;   // pocitame pocet parametru
 
+        // ignorovani prebytecnych parametru pro jednotlive vestavene funkce
         if( (((type >= iBVAL && type <= iSVAL) || type == iSTRLEN || type == iS_STR) && params <= 1 ) || (type == iG_SUBSTR && params <= 3 )
             || (type == iF_STR && params <= 2) || type == iP_STR )
         {
@@ -183,6 +229,7 @@ int functions(TOKEN *array, int n)
         }
     }
 
+    // kontrola chybejicich parametru pro jednotlive vestavene funkce
     if( (((type >= iBVAL && type <= iSVAL) || type == iSTRLEN || type == iS_STR) && params < 1 ) || (type == iG_SUBSTR && params < 3 )
         || (type == iF_STR && params < 2) )
     {
@@ -195,7 +242,7 @@ int functions(TOKEN *array, int n)
 }
 
 // funkce pro zapis vyrazu do postfixove notace a odeslani instrukci
-int expression_sem(TOKEN *array, int n, int end)
+int expression_sem(TOKEN *array, int *m, int end)
 {
     // deklarace zasobniku a jeho inicializace
     tStack leStack;
@@ -203,7 +250,7 @@ int expression_sem(TOKEN *array, int n, int end)
 
     // pomocne pole tokenu (zatim velikost N_MAX -> udelat dynamicky !!! ) TODO
     TOKEN array_expr[N_MAX];
-    int i, new = 0, old = 0, precedent = 0, type = array[0].type_token;
+    int i, new = 0, old = 0, precedent = 0, type = array[0].type_token, n = *m;
 
     for( i=0; i<N_MAX; i++)
     {
@@ -311,6 +358,7 @@ int expression_sem(TOKEN *array, int n, int end)
         POP( &leStack );
     }
 
+    *m = n;
     return read_postfix(array_expr, type);
 }
 

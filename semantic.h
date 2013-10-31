@@ -56,7 +56,7 @@ int semantixer(TOKEN *array);
 int functions(TOKEN *array, int n);
 
 // funkce pro zpracovani vyrazu - prevod do postfixove notace a odeslani instrukci interpretu
-int expression_sem(TOKEN *array, int n, int end);
+int expression_sem(TOKEN *array, int *m, int end);
 
 // funkce zpracovava vyrazy v postfixu a vytvari instrukce pro interpret
 int read_postfix(TOKEN *array, int type);
