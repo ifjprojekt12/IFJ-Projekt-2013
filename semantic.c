@@ -130,6 +130,7 @@ int functions(TOKEN *array, int n)
     NODE assist1, assist2 = searchIdent(name, &root);
     n = 4;      // zacatek vyctu argumentu funkce
     bool first = true;
+    int params = 0;     // pocitani argumentu pro kontrolu nedostatku ci prebytku
 
     // zjisteni typu funkce a odecteni jeji hodnoty pro odpovidajici hodnotu id pro instrukce
     int type = array[2].type_token - 40;    // vestavena funkce
@@ -146,6 +147,7 @@ int functions(TOKEN *array, int n)
             n++;
             continue;
         }
+
         name = makeName(array[n]);
         if( name == NULL )
             return EXIT_FAILURE;
@@ -162,19 +164,31 @@ int functions(TOKEN *array, int n)
             insertVarToTree(name, array[n], &root);
             assist1 = searchIdent(name, &root);
         }
-        n++;
+        n++; params++;
 
-        // vytvoreni instrukce
-        new_instr(&list, type, &assist1, NULL, &assist2, NULL);
-        if( first )
+        if( (((type >= iBVAL && type <= iSVAL) || type == iSTRLEN || type == iS_STR) && params <= 1 ) || (type == iG_SUBSTR && params <= 3 )
+            || (type == iF_STR && params <= 2) )
         {
-            if( aux != NULL )
+            // vytvoreni instrukce
+            new_instr(&list, type, &assist1, NULL, &assist2, NULL);
+            if( first )
             {
-                aux->jump = list.last;
-                aux = NULL;
+                if( aux != NULL )
+                {
+                    aux->jump = list.last;
+                    aux = NULL;
+                }
+                first = false;
             }
-            first = false;
         }
+    }
+
+    if( (((type >= iBVAL && type <= iSVAL) || type == iSTRLEN || type == iS_STR) && params < 1 ) || (type == iG_SUBSTR && params < 3 )
+        || (type == iF_STR && params < 2) )
+    {
+        printERR(eFCEPARAM);
+        eCode = sSemFceParam;
+        return EXIT_FAILURE;
     }
 
     return EXIT_SUCCESS;
