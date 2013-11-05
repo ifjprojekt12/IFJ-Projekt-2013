@@ -21,10 +21,13 @@ int syntaxer()
     // vytvoreni instrukcniho listu
     new_instr_list( &list );
 
-    // inicializace pomocneho ukazatele na instrukci a zasobniku
+    // inicializace pomocnych ukazatelu na instrukci, zasobniku, stromu pro funkce
     aux = NULL;
     aux2 = NULL;
+    func = NULL;
     initInstr( &InstrStack );
+    initInstr( &InstrFor );
+    treeInit( &check_func );
  
     // pomocne promenne
     int type = 0;

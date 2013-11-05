@@ -17,10 +17,13 @@
 
 extern NODE check_func;
 extern NODE root;
+extern NODE tree;
+extern NODE func;
 extern LIST_3AK list;
 extern INSTRUCT aux;
 extern INSTRUCT aux2;
 extern tSInstr InstrStack;
+extern tSInstr InstrFor;
 extern int eCode;
 
 // enum pro urceni priorit
