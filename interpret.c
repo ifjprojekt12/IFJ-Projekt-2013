@@ -32,6 +32,7 @@ int interpret(LIST_3AK *list){
       eCode = sINTERN;
       return EXIT_FAILURE;
     }
+
     //a pripadne preskakuje ty ciste pomocne instrukce
     if(list->actual->id == iP_STR_NEW){
       list->actual = list->actual->right;
@@ -39,9 +40,15 @@ int interpret(LIST_3AK *list){
 
     //ulozeni ukazatelu, ciste pro zjednoduseni konstrukci -> a .
     //po rozmysleni i pro funkci funkci a podobneho shitu
-    op_1 = searchIdent(list->actual->operand_1->key,&root);
-    op_2 = list->actual->operand_2;
-    result = list->actual->result;
+    if(list->actual->operand_1 != NULL){
+      op_1 = searchIdent(list->actual->operand_1->key,&root);
+    } else op_1 = NULL;
+    if(list->actual->operand_2 != NULL){
+      op_2 = searchIdent(list->actual->operand_2->key,&root);
+    } else op_2 = NULL;
+    if(list->actual->result != NULL){
+      result = searchIdent(list->actual->result->key,&root);
+    } else result = NULL;
 
     //*******************************************
     //Aritmeticke a retezcove operatory
