@@ -14,8 +14,11 @@
 INSTRUCT aux;
 INSTRUCT aux2;
 tSInstr InstrStack;
+tSInstr InstrFor;
 NODE check_func;
+NODE func;
 
+extern NODE tree;
 extern NODE root;
 extern LIST_3AK list;
 extern int eCode;

@@ -142,6 +142,11 @@ int semantixer(TOKEN *array)
         }
         n++;
 
+        if( array[n].type_token != 41 )     // )
+        {
+            
+        }
+
         // TODO
         // treti cast hlavicky se musi nekam ulozit a pridat az na konec tela cyklu, coz by slo jednoduse zasobnikem
         // problem ale budou vnorene cykly FOR, takze asi zasobnik typu LIST_3AK (neco jako u funkci)
@@ -156,6 +161,15 @@ int semantixer(TOKEN *array)
         // najit v zasobniku posledni FOR a skocit na nej
         new_instr(&list, iJUMP, NULL, NULL, NULL, NULL);
     }
+/*
+    else if( array[n].type_token == 6 )     // function
+    {
+        n++;
+        insertVarToTree(&(array[n].string), array[n], &tree);
+        func = searchIdent(&(array[n].string), &tree);
+        // zpracovat parametry
+    }
+*/
     else
     {
         printf("nedodelana semantika? token: %d\n",array[n].type_token);
