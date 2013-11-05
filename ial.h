@@ -6,6 +6,7 @@
 #include<stdlib.h>
 #include<stdarg.h>
 #include "lexical.h"
+//#include "data_struct.h"
 
 #define TRUE 1
 #define FALSE 0
