@@ -728,12 +728,14 @@ int syntaxer()
         eCode = sSyn;
         return EXIT_FAILURE;
     }
+/*
     else if( !SEmpty(&leStack) )
     {
         fprintf(stderr, "Zasobnik neni prazdny!!\n");
         eCode = sSyn;
         return EXIT_FAILURE;
     }
+*/
 
 /*
     // vypis pole tokenu
