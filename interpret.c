@@ -16,7 +16,10 @@ int interpret(LIST_3AK *list){
 
   list->actual = list->first;
 
+  //int f=0;  // inkrement pro kontrolu, pri kolikatem cyklu to pada
+
   while(1){
+    //printf("%d, ",f++); fflush(stdout); // vypis cisla cyklu a inkrementace
     //*******************************************
     //instrukce konce programu
     //*******************************************
@@ -31,7 +34,7 @@ int interpret(LIST_3AK *list){
     }
     //a pripadne preskakuje ty ciste pomocne instrukce
     if(list->actual->id == iP_STR_NEW){
-      //list->actual = list->actual->right;
+      list->actual = list->actual->right;
     }
 
     //ulozeni ukazatelu, ciste pro zjednoduseni konstrukci -> a .

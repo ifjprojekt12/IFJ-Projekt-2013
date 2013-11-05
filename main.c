@@ -9,6 +9,7 @@
 
 int eCode;
 NODE root;
+NODE tree;
 LIST_3AK list;
 
 int main(int argc, char *argv[])
@@ -47,6 +48,7 @@ int main(int argc, char *argv[])
             printf(", jump: %d", a->jump->number);
         printf("\n");
         fflush(stdout);
+    }
 */
 /*        if( (a->id >= 10 && a->id <= 15 ) || a->id == 32 )   // porovnani nebo skok
         {
