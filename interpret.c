@@ -16,10 +16,8 @@ int interpret(LIST_3AK *list){
 
   list->actual = list->first;
 
-  //int f=0;  // inkrement pro kontrolu, pri kolikatem cyklu to pada
-
   while(1){
-    //printf("%d, ",f++); fflush(stdout); // vypis cisla cyklu a inkrementace
+    //printf("%d, ",list->actual->number); fflush(stdout); // vypis unikatni cislo ctene instrukce
     //*******************************************
     //instrukce konce programu
     //*******************************************
