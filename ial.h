@@ -26,7 +26,7 @@ typedef struct NODE
 	char *key; // klic = jmeno promenne / funkce
 	TOKEN data; // struktura s daty
     LIST *params; // linearni seznam parametru pro funkce
-    LIST_3AK list;
+    //LIST_3AK list;
 
 	struct NODE *LPtr;                                    // levy podstrom
 	struct NODE *RPtr;                                   // pravy podstrom
