@@ -158,8 +158,15 @@ int semantixer(TOKEN *array)
     }
     else if( array[n].type_token == 9 )     // continue
     {
+        tInstrPtr h = InstrStack.Last;
+        while( h != NULL )
+        {
+            if( h->type == 5 )  // for
+                break;
+            h = h->ptr;
+        }
         // najit v zasobniku posledni FOR a skocit na nej
-        new_instr(&list, iJUMP, NULL, NULL, NULL, NULL);
+        new_instr(&list, iJUMP, NULL, NULL, NULL, h->Instr);
     }
 /*
     else if( array[n].type_token == 6 )     // function
