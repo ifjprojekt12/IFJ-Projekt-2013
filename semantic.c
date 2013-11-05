@@ -181,7 +181,15 @@ int functions(TOKEN *array, int n)
         type = 6;       // uzivatelem definovana funkce TODO
 
     if( type == iP_STR )
+    {
         new_instr(&list, iP_STR_NEW, NULL, NULL, NULL, NULL);   // uvodni instrukce pro funkci put_string
+        if( aux != NULL )
+        {
+            aux->jump = list.last;
+            aux = NULL;
+        }
+        first = false;
+    }
 
     while( array[n].type_token != 41 )   // )
     {
@@ -434,6 +442,12 @@ int read_postfix(TOKEN *array, int type)
                     //printf("MUL\n\t%s (%d) * %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     break;
                 case 13:    // /
+                    if( assist2->data.c_number == 0 || assist2->data.d_number == 0.0 )
+                    {
+                        printERR(eEXPR);        // napsat hlaseni pro deleni nulou !! TODO
+                        eCode = sSynZero;
+                        return EXIT_FAILURE;
+                    }
                     new_instr(&list, iDIV, &assist1, &assist2, &assist3, NULL);
                     //printf("DIV\n\t%s (%d) : %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     break;
