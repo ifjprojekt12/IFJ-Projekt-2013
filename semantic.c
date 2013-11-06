@@ -89,10 +89,10 @@ int semantixer(TOKEN *array)
                 aux = NULL;
             }
             POPInstr( &InstrStack, &aux, &top );
-            //printf("na vrcholu semantickeho zasobniku je: %d\n", top);
 
             while( !quit )
             {
+                printf("na vrcholu semantickeho zasobniku je: %d\n", top);
                 switch( top )
                 {
                     case 43:    // }
@@ -125,7 +125,11 @@ int semantixer(TOKEN *array)
         new_instr(dest, iEND, NULL, NULL, NULL, NULL);
         if( aux != NULL )
             aux->jump = list.last;
-        // TODO asi to chce cyklus while TOP == 43
+        while( !SEmptyInstr( &InstrStack ) )
+        {
+            POPInstr( &InstrStack, &aux, &top );
+            aux->jump = dest->last;
+        }
     }
     else if( array[n].type_token == 5 )     // for
     {
@@ -579,6 +583,7 @@ int read_postfix(TOKEN *array, int type)
             if( type == 1 || (type >= 3 && type <= 5) )     // if, elseif, while, for
             {
                 PUSHInstr( &InstrStack, dest->last, type );
+                type = 0;
             }
             else if( !SEmptyInstr( &InstrStack ) )
             {
