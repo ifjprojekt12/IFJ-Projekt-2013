@@ -6,13 +6,14 @@
 #include<stdlib.h>
 #include<stdarg.h>
 #include "lexical.h"
-//#include "data_struct.h"
 
 #define TRUE 1
 #define FALSE 0
 
 #define STACKSIZE 1024
 #define BUFFERSIZE 1024
+
+struct list3_ak;
 
 // linearni seznam pro parametry funkci
 typedef struct LIST
@@ -27,7 +28,7 @@ typedef struct NODE
 	char *key; // klic = jmeno promenne / funkce
 	TOKEN data; // struktura s daty
     LIST *params; // linearni seznam parametru pro funkce
-    //LIST_3AK list;
+    struct list_3ak *body;
 
 	struct NODE *LPtr;                                    // levy podstrom
 	struct NODE *RPtr;                                   // pravy podstrom
