@@ -92,7 +92,7 @@ int semantixer(TOKEN *array)
 
             while( !quit )
             {
-                printf("na vrcholu semantickeho zasobniku je: %d\n", top);
+                //printf("na vrcholu semantickeho zasobniku je: %d\n", top);
                 switch( top )
                 {
                     case 43:    // }
