@@ -21,10 +21,10 @@ extern NODE tree;
 extern NODE func;
 extern LIST_3AK list;
 extern INSTRUCT aux;
-extern INSTRUCT aux2;
 extern tSInstr InstrStack;
 extern tSInstr InstrFor;
 extern int eCode;
+extern bool func_end;
 
 // enum pro urceni priorit
 enum table {

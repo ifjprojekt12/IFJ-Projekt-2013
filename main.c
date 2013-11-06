@@ -34,6 +34,12 @@ int main(int argc, char *argv[])
 
     //printf("syntaxe + semantika v poradku.\n"); fflush(stdout);
 /*
+    if( list.first == NULL )
+    {
+        printf("prazdny list instrukci!!\n");fflush(stdout);
+    }
+    else
+    {
     // kontrola listu instrukci pro skoky (c) Kuba
     for( INSTRUCT a = list.first; a != NULL; a = a->right )
     {
@@ -49,19 +55,7 @@ int main(int argc, char *argv[])
         printf("\n");
         fflush(stdout);
     }
-*/
-/*        if( (a->id >= 10 && a->id <= 15 ) || a->id == 32 )   // porovnani nebo skok
-        {
-            if( a->jump != NULL )
-                printf(" (-> %d), ", a->jump->number);
-            else
-                printf(" (-> null), ");
-        }
-        else
-            printf(", ");
-*//*
     }
-    printf("\n");
 */
 
     /* Po kontrole validace vstupu prechazime do interpretu */

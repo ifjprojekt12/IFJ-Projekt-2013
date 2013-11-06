@@ -23,8 +23,8 @@ int syntaxer()
 
     // inicializace pomocnych ukazatelu na instrukci, zasobniku, stromu pro funkce
     aux = NULL;
-    aux2 = NULL;
     func = NULL;
+    func_end = false;
     initInstr( &InstrStack );
     initInstr( &InstrFor );
     treeInit( &check_func );
@@ -611,6 +611,8 @@ int syntaxer()
             if( top == cIF || top == cELSEIF )
                 // pokud byl tento prikaz IF nebo ELSEIF, ulozime do zasobniku cREADY - umiznime prikaz ELSE
                 PUSH( &leStack, cREADY );
+            else if( top == cFUNCTION )
+                func_end = true;
             else if( top == cFOR )
             {
                 inFOR = false;

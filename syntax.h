@@ -12,11 +12,11 @@
 #define I_MAX   512
 
 INSTRUCT aux;
-INSTRUCT aux2;
 tSInstr InstrStack;
 tSInstr InstrFor;
 NODE check_func;
 NODE func;
+bool func_end;
 
 extern NODE tree;
 extern NODE root;
