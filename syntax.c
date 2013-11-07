@@ -17,6 +17,7 @@ int syntaxer()
 
     // inicializace tabulky promennych
     treeInit( &root );
+    treeInit( &tree );
 
     // vytvoreni instrukcniho listu
     new_instr_list( &list );
