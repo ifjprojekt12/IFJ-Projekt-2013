@@ -25,10 +25,16 @@ int special_count = 0;
 // hlavni funkce semantiky
 int semantixer(TOKEN *array)
 {
+    printf("semantixer\n");
     // deklarace pomocnych promennych
     LIST_3AK *dest = &list;
+    NODE *dest_root = &root;
     if( func != NULL )
+    {
         dest = func->body;
+        dest_root = &(func->params);
+    }
+
     NODE assist1 = NULL;
     char *name = NULL;
     int n=0, top = 0;
@@ -38,9 +44,9 @@ int semantixer(TOKEN *array)
         name = makeName(array[n]);
         if( name == NULL )
             return EXIT_FAILURE;
-        if( (assist1 = searchIdent(name, &root)) == NULL )
+        if( (assist1 = searchIdent(name, dest_root)) == NULL )
             // prvni vyskyt promenne, jeji zapis do stromu
-            insertVarToTree(name, array[n], &root);
+            insertVarToTree(name, array[n], dest_root);
 
         if( array[n+2].type_token == 6 || (array[n+2].type_token >= 60 && array[n+2].type_token <= 69) )
         {
@@ -76,6 +82,23 @@ int semantixer(TOKEN *array)
         {
             // TODO asi bude potreba vytvorit praznou skokovou instrukci v pripade, kdy funkce konci
             // neuplnym ifem bez prikazu return !!! promyslet
+            new_instr(dest, iJUMP, NULL, NULL, NULL, NULL );
+            if( aux != NULL )
+                aux->jump = dest->last;
+            if( !SEmptyInstr( &InstrStack ) )
+            {
+                TOPInstr( &InstrStack, &top );
+                while( top == 43 )
+                {
+                    POPInstr( &InstrStack, &aux, &top );
+                    aux->jump = dest->last;
+                    if( !SEmptyInstr( &InstrStack) )
+                        TOPInstr( &InstrStack, &top);
+                    else
+                        break;
+                }
+            }
+            aux = NULL;
             func = NULL;
             func_end = false;
         }
@@ -139,9 +162,9 @@ int semantixer(TOKEN *array)
             name = makeName(array[n]);
             if( name == NULL )
                 return EXIT_FAILURE;
-            if( (assist1 = searchIdent(name, &root)) == NULL )
+            if( (assist1 = searchIdent(name, dest_root)) == NULL )
                 // prvni vyskyt promenne, jeji zapis do stromu
-                insertVarToTree(name, array[n], &root);
+                insertVarToTree(name, array[n], dest_root);
 
             if( expression_sem(array, &n, SEMICOLON) == EXIT_FAILURE )     // ;
                 return EXIT_FAILURE;
@@ -193,10 +216,22 @@ int semantixer(TOKEN *array)
     else if( array[n].type_token == 6 )     // function
     {
         n++;
-        insertVarToTree(array[n].string, array[n], &tree);
+        assist1 = searchIdent(array[n].id_name, &tree);
+        if( assist1 != NULL )
+        {
+            //TODO redefinice funkce
+            return EXIT_FAILURE;
+        }
+        insertVarToTree(array[n].id_name, array[n], &tree);
 
         // ulozime si uzel pro funkci, v niz se budeme nachazet
-        func = searchIdent(array[n].string, &tree);
+        func = searchIdent(array[n].id_name, &tree);
+        if( (func->body = malloc(sizeof(struct list_3ak))) == NULL )
+        {
+            // TODO chyba malloc
+            return EXIT_FAILURE;
+        }
+        new_instr_list( func->body );
 
         // ukladame veskere parametry do stromu k dane funkci
         n+=2;
@@ -205,7 +240,7 @@ int semantixer(TOKEN *array)
             if( array[n].type_token != 23 )     // ,
             {
                 name = makeName(array[n]);
-                insertVarToTree(name, array[n], &(tree->params));
+                insertVarToTree(name, array[n], &(func->params));
             }
             n++;
         }
@@ -222,13 +257,17 @@ int semantixer(TOKEN *array)
 int functions(TOKEN *array, int n)
 {
     LIST_3AK *dest = &list;
+    NODE *dest_root = &root;
     if( func != NULL )
+    {
         dest = func->body;
+        dest_root = &(func->params);
+    }
 
     char *name = makeName(array[n]);
     if( name == NULL )
         return EXIT_FAILURE;
-    NODE assist1, assist2 = searchIdent(name, &root);
+    NODE assist1, assist2 = searchIdent(name, dest_root);
     n = 4;      // zacatek vyctu argumentu funkce
     bool first = true;
     int params = 0, top;     // pocitani argumentu pro kontrolu nedostatku ci prebytku
@@ -275,7 +314,7 @@ int functions(TOKEN *array, int n)
         name = makeName(array[n]);
         if( name == NULL )
             return EXIT_FAILURE;
-        assist1 = searchIdent(name, &root);
+        assist1 = searchIdent(name, dest_root);
         if(assist1 == NULL)
         {
             if(array[n].type_token == 36)
@@ -286,8 +325,8 @@ int functions(TOKEN *array, int n)
                 return EXIT_FAILURE;
             }
 
-            insertVarToTree(name, array[n], &root);
-            assist1 = searchIdent(name, &root);
+            insertVarToTree(name, array[n], dest_root);
+            assist1 = searchIdent(name, dest_root);
         }
         n++;
         params++;   // pocitame pocet parametru
@@ -465,9 +504,14 @@ int read_postfix(TOKEN *array, int type)
 
     NODE assist1 = NULL, assist2 = NULL, assist3 = NULL;
     TOKEN unit;
+
     LIST_3AK *dest = &list;
+    NODE *dest_root = &root;
     if( func != NULL )
+    {
         dest = func->body;
+        dest_root = &(func->params);
+    }
 
     tSNode nodeStack;
     initNode( &nodeStack );
@@ -480,7 +524,7 @@ int read_postfix(TOKEN *array, int type)
             name = makeName(array[i]);
             if( name == NULL )
                 return EXIT_FAILURE;
-            assist1 = searchIdent(name, &root);
+            assist1 = searchIdent(name, dest_root);
             if(assist1 == NULL)
             {
                 
@@ -490,8 +534,8 @@ int read_postfix(TOKEN *array, int type)
                     eCode = sSemVar;
                     return EXIT_FAILURE;
                 }
-                insertVarToTree(name, array[i], &root);
-                assist1 = searchIdent(name, &root);
+                insertVarToTree(name, array[i], dest_root);
+                assist1 = searchIdent(name, dest_root);
             } 
 
             PUSHNode( &nodeStack, assist1);
@@ -514,8 +558,8 @@ int read_postfix(TOKEN *array, int type)
             name = makeName(unit);
             if( name == NULL )
                 return EXIT_FAILURE;
-            insertVarToTree(name, unit, &root);
-            assist3 = searchIdent(name, &root);
+            insertVarToTree(name, unit, dest_root);
+            assist3 = searchIdent(name, dest_root);
 
             switch( array[i].type_token )
             {
