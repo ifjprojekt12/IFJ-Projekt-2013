@@ -641,6 +641,7 @@ int syntaxer()
         }
         else
         {
+            //printf("token: %d\n", unit.type_token);
             // token, ktery se nesmi nalezat na zacatku radku
             printERR(eUNKNOWN);
             eCode = sSyn;
