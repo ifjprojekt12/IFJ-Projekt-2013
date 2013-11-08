@@ -25,7 +25,7 @@ int special_count = 0;
 // hlavni funkce semantiky
 int semantixer(TOKEN *array)
 {
-    printf("semantixer\n");
+    //printf("semantixer\n");
     // deklarace pomocnych promennych
     LIST_3AK *dest = &list;
     NODE *dest_root = &root;
