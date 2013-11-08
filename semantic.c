@@ -256,6 +256,15 @@ int semantixer(TOKEN *array)
 
 int functions(TOKEN *array, int n)
 {
+
+    for( int c=0; c<512; c++)
+    {
+        if(array[c].type_token == 0)
+            break;
+        printf("%d, ",array[c].type_token);
+    }
+    printf("\n");
+
     LIST_3AK *dest = &list;
     NODE *dest_root = &root;
     if( func != NULL )
@@ -301,6 +310,10 @@ int functions(TOKEN *array, int n)
             }
         }
         first = false;
+    }
+    else if( type == iG_STR )   // get_string()
+    {
+        new_instr(dest, type, NULL, NULL, &assist2, NULL);
     }
 
     while( array[n].type_token != 41 )   // )
