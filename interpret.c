@@ -17,7 +17,6 @@ int interpret(LIST_3AK *list){
   list->actual = list->first;
 
   while(1){
-    //printf("%d, ",list->actual->number); fflush(stdout); // vypis unikatni cislo ctene instrukce
     //*******************************************
     //instrukce konce programu
     //*******************************************
@@ -35,6 +34,7 @@ int interpret(LIST_3AK *list){
     if(list->actual->id == iP_STR_NEW){
       list->actual = list->actual->right;
     }
+
 
     //ulozeni ukazatelu, ciste pro zjednoduseni konstrukci -> a .
     //po rozmysleni i pro funkci funkci a podobneho shitu
@@ -339,7 +339,7 @@ int interpret(LIST_3AK *list){
       }
 
       //neco a string
-      else if(op_2->data.type_token == 30){
+      /*else if(op_2->data.type_token == 30){
 
         result->data.type_token = 30;
 
@@ -399,7 +399,7 @@ int interpret(LIST_3AK *list){
           free(buffer);
         }
 
-      }
+      }*/
 
       //cokoliv jineho - chyba
       else {
