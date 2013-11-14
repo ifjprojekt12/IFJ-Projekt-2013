@@ -7,9 +7,11 @@ int syntaxer()
     TOKEN unit;
     unit = get_token();
 
-    // vytvoreni statickeho pole tokenu a jeho inicializace
-    TOKEN array[I_MAX];
-    initialize_array(array);
+    // vytvoreni statickeho pole tokenu
+    TOKEN *array=NULL;
+	m = 64;			// pocatecni velikost pole
+	i = 0;			// index
+    initialize_array(&array);
 
     // vytvoreni zasobniku a jeho inicializace
     tStack leStack;
@@ -33,23 +35,17 @@ int syntaxer()
     // pomocne promenne
     int type = 0;
     int top = 0;
-    int i = 0;
     int super_brackets = 0;
     bool inFOR = false;
     /* -------------------------------- */
-    
+
     // cyklus zajistujici nacitani tokenu
     while(unit.type_token > 0 && unit.type_token != 100 )    // konec pri chybe nebo EOF
     {
         // pole pro ukladani tokenu celeho jednoho radku
         array[i++] = unit;
-        if( i == I_MAX )
-        {
-            // vycerpani staticke velikosti pole
-            printERR(eIMAX);
-            eCode = sINTERN;
-            return EXIT_FAILURE;
-        }
+        if( i == m && realloc_array(array) == EXIT_FAILURE )
+			return EXIT_FAILURE;
 
         // if, elseif, while
         if( unit.type_token == 1 || unit.type_token == 3 || unit.type_token == 4 )
@@ -59,12 +55,8 @@ int syntaxer()
 
             unit = get_token();
             array[i++] = unit;
-            if( i == I_MAX )
-            {
-                printERR(eIMAX);
-                eCode = sINTERN;
-                return EXIT_FAILURE;
-            }
+    	    if( i == m && realloc_array(array) == EXIT_FAILURE )
+				return EXIT_FAILURE;
 
             if( unit.type_token == 40 ) // (
             {
@@ -82,12 +74,8 @@ int syntaxer()
 
                 unit = get_token();
                 array[i++] = unit;
-                if( i == I_MAX )
-                {
-                    printERR(eIMAX);
-                    eCode = sINTERN;
-                    return EXIT_FAILURE;
-                }
+    		    if( i == m && realloc_array(array) == EXIT_FAILURE )
+					return EXIT_FAILURE;
 
                 if( unit.type_token != 42 ) // {
                 {
@@ -114,36 +102,24 @@ int syntaxer()
             type = unit.type_token;
             unit = get_token();
             array[i++] = unit;
-            if( i == I_MAX )
-            {
-                printERR(eIMAX);
-                eCode = sINTERN;
-                return EXIT_FAILURE;
-            }
+	        if( i == m && realloc_array(array) == EXIT_FAILURE )
+				return EXIT_FAILURE;
 
             if( unit.type_token == 40 ) // (
             {
                 // nacteni dalsiho tokenu - prvni cast hlavicky
                 unit = get_token();
                 array[i++] = unit;
-                if( i == I_MAX )
-                {
-                    printERR(eIMAX);
-                    eCode = sINTERN;
-                    return EXIT_FAILURE;
-                }
+    		    if( i == m && realloc_array(array) == EXIT_FAILURE )
+					return EXIT_FAILURE;
 
                 // prvni cast je neprazdna
                 if( unit.type_token == 36 )     // promenna
                 {
                     unit = get_token();
                     array[i++] = unit;
-                    if( i == I_MAX )
-                    {
-                        printERR(eIMAX);
-                        eCode = sINTERN;
-                        return EXIT_FAILURE;
-                    }
+	    	    	if( i == m && realloc_array(array) == EXIT_FAILURE )
+						return EXIT_FAILURE;
 
                     if( unit.type_token == 10 )     // =
                     {
@@ -178,12 +154,8 @@ int syntaxer()
                 // nacteni dalsiho tokenu - druha cast hlavicky
                 unit = get_token();
                 array[i++] = unit;
-                if( i == I_MAX )
-                {
-                    printERR(eIMAX);
-                    eCode = sINTERN;
-                    return EXIT_FAILURE;
-                }
+		        if( i == m && realloc_array(array) == EXIT_FAILURE )
+					return EXIT_FAILURE;
 
                 // druha cast je neprazdna
                 if( (unit.type_token >= 30 && unit.type_token <= 34) || unit.type_token == 36 )
@@ -213,23 +185,15 @@ int syntaxer()
                 // nacteni dalsiho tokenu - treti cast hlavicky
                 unit = get_token();
                 array[i++] = unit;
-                if( i == I_MAX )
-                {
-                    printERR(eIMAX);
-                    eCode = sINTERN;
-                    return EXIT_FAILURE;
-                }
+        		if( i == m && realloc_array(array) == EXIT_FAILURE )
+					return EXIT_FAILURE;
                
                 if( unit.type_token == 36 )     // promenna
                 {
                     unit = get_token();
                     array[i++] = unit;
-                    if( i == I_MAX )
-                    {
-                        printERR(eIMAX);
-                        eCode = sINTERN;
-                        return EXIT_FAILURE;
-                    }
+        			if( i == m && realloc_array(array) == EXIT_FAILURE )
+						return EXIT_FAILURE;
 
                     if( unit.type_token == 10 )     // =
                     {
@@ -264,12 +228,8 @@ int syntaxer()
 
                 unit = get_token();
                 array[i++] = unit;
-                if( i == I_MAX )
-                {
-                    printERR(eIMAX);
-                    eCode = sINTERN;
-                    return EXIT_FAILURE;
-                }
+		        if( i == m && realloc_array(array) == EXIT_FAILURE )
+					return EXIT_FAILURE;
 
                 if( unit.type_token != 42 )     // {
                 {
@@ -303,12 +263,8 @@ int syntaxer()
 
             unit = get_token();
             array[i++] = unit;
-            if( i == I_MAX )
-            {
-                printERR(eIMAX);
-                eCode = sINTERN;
-                return EXIT_FAILURE;
-            }
+	        if( i == m && realloc_array(array) == EXIT_FAILURE )
+				return EXIT_FAILURE;
 
             if( unit.type_token != 22 )     // ;
             {
@@ -338,12 +294,8 @@ int syntaxer()
             type = unit.type_token;
             unit = get_token();
             array[i++] = unit;
-            if( i == I_MAX )
-            {
-                printERR(eIMAX);
-                eCode = sINTERN;
-                return EXIT_FAILURE;
-            }
+    	    if( i == m && realloc_array(array) == EXIT_FAILURE )
+				return EXIT_FAILURE;
 
             if( unit.type_token != 42 ) // {
             {
@@ -360,44 +312,29 @@ int syntaxer()
         {
             unit = get_token();
             array[i++] = unit;
-            if( i == I_MAX )
-            { 
-                printERR(eIMAX);
-                eCode = sINTERN;
-                return EXIT_FAILURE;
-            }
+    	    if( i == m && realloc_array(array) == EXIT_FAILURE )
+				return EXIT_FAILURE;
+
             if( unit.type_token == 10 )     // =
             {
                 unit = get_token();
                 array[i++] = unit;
-                if( i == I_MAX )
-                { 
-                    printERR(eIMAX);
-                    eCode = sINTERN;
-                    return EXIT_FAILURE;
-                }
+		        if( i == m && realloc_array(array) == EXIT_FAILURE )
+					return EXIT_FAILURE;
 
                 if((unit.type_token >= 60 && unit.type_token <= 69) || unit.type_token == 6)    // vestavene nebo uzivatelem definovane funkce
                 {
                     unit = get_token();
                     array[i++] = unit;
-                    if( i == I_MAX )
-                    { 
-                        printERR(eIMAX);
-                        eCode = sINTERN;
-                        return EXIT_FAILURE;
-                    }
+			        if( i == m && realloc_array(array) == EXIT_FAILURE )
+						return EXIT_FAILURE;
                    
                     if( unit.type_token == 40 )     // (
                     {
                         unit = get_token(); 
                         array[i++] = unit;
-                        if( i == I_MAX )
-                        {
-                            printERR(eIMAX);
-                            eCode = sINTERN;
-                            return EXIT_FAILURE;
-                        }
+				        if( i == m && realloc_array(array) == EXIT_FAILURE )
+							return EXIT_FAILURE;
 
                         bool empty = true;  // seznam parametru je prazdny
                         bool term = true;
@@ -423,12 +360,8 @@ int syntaxer()
 
                             unit = get_token();
                             array[i++] = unit;
-                            if( i == I_MAX )
-                            {
-                                eCode = sINTERN;
-                                printERR(eIMAX);
-                                return EXIT_FAILURE;
-                            }
+      						if( i == m && realloc_array(array) == EXIT_FAILURE )
+								return EXIT_FAILURE;
                         }
                         if( term && !empty )
                         {
@@ -440,12 +373,8 @@ int syntaxer()
 
                         unit = get_token();
                         array[i++] = unit;
-                        if( i == I_MAX )
-                        {
-                            printERR(eIMAX);
-                            eCode = sINTERN;
-                            return EXIT_FAILURE;
-                        }
+				        if( i == m && realloc_array(array) == EXIT_FAILURE )
+							return EXIT_FAILURE;
 
                         if( unit.type_token != 22 ) // ;
                         {
@@ -489,34 +418,22 @@ int syntaxer()
             type = unit.type_token;
             unit = get_token();
             array[i++] = unit;
-            if( i == I_MAX )
-            {
-                printERR(eIMAX);
-                eCode = sINTERN;
-                return EXIT_FAILURE;
-            }
+		    if( i == m && realloc_array(array) == EXIT_FAILURE )
+				return EXIT_FAILURE;
 
             if( unit.type_token == 35 )     // id
             {
                 unit = get_token();
                 array[i++] = unit;
-                if( i == I_MAX )
-                {
-                    printERR(eIMAX);
-                    eCode = sINTERN;
-                    return EXIT_FAILURE;
-                }
+		        if( i == m && realloc_array(array) == EXIT_FAILURE )
+					return EXIT_FAILURE;
 
                 if( unit.type_token == 40 )     // (
                 {
                     unit = get_token(); 
                     array[i++] = unit;
-                    if( i == I_MAX )
-                    {
-                        printERR(eIMAX);
-                        eCode = sINTERN;
-                        return EXIT_FAILURE;
-                    }
+				    if( i == m && realloc_array(array) == EXIT_FAILURE )
+						return EXIT_FAILURE;
                     
                     bool empty = true;  // seznam parametru je prazdny
                     bool id = true;
@@ -541,12 +458,8 @@ int syntaxer()
 
                         unit = get_token();
                         array[i++] = unit;
-                        if( i == I_MAX )
-                        {
-                            eCode = sINTERN;
-                            printERR(eIMAX);
-                            return EXIT_FAILURE;
-                        }
+				        if( i == m && realloc_array(array) == EXIT_FAILURE )
+							return EXIT_FAILURE;
                     }
                     if( id && !empty )
                     {
@@ -558,12 +471,8 @@ int syntaxer()
                     
                     unit = get_token();
                     array[i++] = unit;
-                    if( i == I_MAX )
-                    {
-                        printERR(eIMAX);
-                        eCode = sINTERN;
-                        return EXIT_FAILURE;
-                    }
+			        if( i == m && realloc_array(array) == EXIT_FAILURE )
+						return EXIT_FAILURE;
 
                     if( unit.type_token != 42 ) // {
                     {
@@ -722,7 +631,7 @@ int syntaxer()
             return EXIT_FAILURE;
 
         // po zpracovani jednoho radku si pripravime pole pro radek novy
-        initialize_array(array);
+        initialize_array(&array);
         i = 0;
     
         unit = get_token(); // nacteni dalsiho tokenu
@@ -758,12 +667,41 @@ int syntaxer()
 }
 
 // funkce pro inicializaci pole tokenu
-void initialize_array(TOKEN*array)
+int initialize_array(TOKEN**array)
 {
-    for(int x=0; x<512; x++)
+	if( i == 0 && (*array = (TOKEN*) malloc(m*sizeof(TOKEN))) == NULL )
+	{
+		printERR(eINTERN);
+		eCode = sINTERN;
+		return EXIT_FAILURE;
+	}
+
+    for(int x=0; x<m; x++)
     {
-        token_init(&array[x]);
+        token_init(&((*array)[x]));
     }
+	return EXIT_SUCCESS;
+}
+
+int realloc_array(TOKEN*array)
+{
+	TOKEN *aux = NULL;
+	if( (aux = realloc(array,m*2*sizeof(TOKEN))) == NULL )
+	{
+		free(array);
+		printERR(eINTERN);
+		eCode = sINTERN;
+		return EXIT_FAILURE;
+	}
+	array = aux;
+
+	for(int x=m; x<m*2; x++)
+	{
+		token_init(&array[x]);
+	}
+	m*=2;
+
+	return EXIT_SUCCESS;
 }
 
 // funkce pro kontrolu vyrazu
@@ -777,11 +715,8 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending)
     while( unit.type_token > 0 && unit.type_token != 100 && unit.type_token != 50 ) // chyba nebo EOF
     {
         array[i++] = unit;
-        if( i == I_MAX )
-        {
-            printERR(eIMAX);
-            return -2;
-        }
+        if( i == m && realloc_array(array) == EXIT_FAILURE )
+			return -2;
 
         if( wasSign && unit.type_token == 40 )  // (
         {
