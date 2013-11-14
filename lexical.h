@@ -5,7 +5,6 @@ Lexikalni analyzator
 
 */
 
-
 #ifndef _LEXICAL_H
 #define _LEXICAL_H
 
@@ -16,6 +15,9 @@ Lexikalni analyzator
 
 //datove typy pro lex.analyzator ...
 FILE *source;
+
+//chybova promena
+extern int eCode;
 
 //struktura tokenu -> typ tokenu, dale pripadne hodnota cisla, text. retezec atd.
 typedef struct {
