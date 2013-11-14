@@ -108,6 +108,7 @@ TOKEN get_token(){
     }
 
     if(start == 0){
+      eCode = 2;
       new_tok.type_token = 0;
       return new_tok;
     }
