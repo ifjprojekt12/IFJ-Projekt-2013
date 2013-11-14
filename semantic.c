@@ -226,11 +226,16 @@ int semantixer(TOKEN *array)
 
         // ulozime si uzel pro funkci, v niz se budeme nachazet
         func = searchIdent(array[n].id_name, &tree);
+        LIST_3AK new;
+        func->body = &new;
+/*
         if( (func->body = malloc(sizeof(struct list_3ak))) == NULL )
         {
-            // TODO chyba malloc
+            printERR(eINTERN);
+            eCode = sINTERN;
             return EXIT_FAILURE;
         }
+*/
         new_instr_list( func->body );
 
         // ukladame veskere parametry do stromu k dane funkci
@@ -247,7 +252,7 @@ int semantixer(TOKEN *array)
     }
     else
     {
-        printf("nedodelana semantika? token: %d\n",array[n].type_token);
+        fprintf(stderr,"nedodelana semantika? token: %d\n",array[n].type_token);
         return EXIT_FAILURE;
     }
 
@@ -861,7 +866,6 @@ char* makeName(TOKEN unit)
 bool Compatible(NODE *a1, NODE *a2, int sign)
 {
     //printf("Compatible?\t%s (%d) -%d- %s (%d)\n",(*a1)->key,(*a1)->data.type_token,sign,(*a2)->key,(*a2)->data.type_token);
-
     switch( sign )
     {
         case 11:    // -
