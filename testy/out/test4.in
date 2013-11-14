@@ -1,9 +1,0 @@
-<?php
-
-	$str1 = "Ahoj";
-	$str2 = $str1 . ", ktery jeste trochu obohatime";
-	$x = put_string($str1, "\n", $str2, "\n");
-	$p = find_string($str2, "text");
-	//dsa
-	$x = put_string("Zadejte posloupnost vsech malych pismen a-h, ");
-	$x = put_string("aby se pismena v posloupnosti neopakovala:\n");
