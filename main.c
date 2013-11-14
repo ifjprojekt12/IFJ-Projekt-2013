@@ -12,6 +12,33 @@ NODE root;
 NODE tree;
 LIST_3AK list;
 
+// funkce pro kontrolni vypis obsahu stromu promennych/funkci
+void print_tree(NODE a1, NODE a2)
+{
+    if( a1 != NULL )
+    {
+        if(a1->params != NULL)
+        {
+            printf("%s: %s, ", a1->key,a1->params->key);
+            print_tree(a1->params->LPtr, a1->params->RPtr);
+        }
+        else
+            printf("%s, ",a1->key);
+        print_tree(a1->LPtr,a1->RPtr);
+    }
+    if( a2 != NULL )
+    {
+        if(a2->params != NULL)
+        {
+            printf("%s: %s, ", a2->key,a2->params->key);
+            print_tree(a2->params->LPtr, a2->params->RPtr);
+        }
+        else
+            printf("%s, ",a2->key);
+        print_tree(a2->LPtr,a2->RPtr);
+    }
+}
+
 int main(int argc, char *argv[])
 {
 	eCode = sOK;
@@ -57,6 +84,31 @@ int main(int argc, char *argv[])
         fflush(stdout);
     }
     }
+*/
+/*
+    printf("strom promennych obsahuje:\n");
+    if( root != NULL )
+    {
+        printf("%s, ",root->key);
+        print_tree(root->LPtr,root->RPtr);
+    }
+    else
+        printf("prazdny");
+    printf("\nstrom funkci obsahuje:\n");
+    if( tree != NULL )
+    {
+        if(tree->params != NULL)
+        {
+            printf("%s: %s, ", tree->key,tree->params->key);
+            print_tree(tree->params->LPtr, tree->params->RPtr);
+        }
+        else
+            printf("%s, ",tree->key);
+        print_tree(tree->LPtr,tree->RPtr);
+    }
+    else
+        printf("prazdny");
+    printf("\n");
 */
 
     /* Po kontrole validace vstupu prechazime do interpretu */
