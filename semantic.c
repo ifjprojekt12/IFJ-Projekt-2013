@@ -48,7 +48,7 @@ int semantixer(TOKEN *array)
             // prvni vyskyt promenne, jeji zapis do stromu
             insertVarToTree(name, array[n], dest_root);
 
-        if( array[n+2].type_token == 6 || (array[n+2].type_token >= 60 && array[n+2].type_token <= 69) )
+        if( array[n+2].type_token == 35 || (array[n+2].type_token >= 60 && array[n+2].type_token <= 69) )
         {
             // volani vestavene nebo uzivatelem definovane funkce
             if( functions(array,n) == EXIT_FAILURE )
@@ -277,112 +277,123 @@ int functions(TOKEN *array, int n)
     if( name == NULL )
         return EXIT_FAILURE;
     NODE assist1, assist2 = searchIdent(name, dest_root);
-    n = 4;      // zacatek vyctu argumentu funkce
+    n = 2;      // zacatek vyctu argumentu funkce
     bool first = true;
     int params = 0, top;     // pocitani argumentu pro kontrolu nedostatku ci prebytku
 
     // zjisteni typu funkce a odecteni jeji hodnoty pro odpovidajici hodnotu id pro instrukce
-    int type = array[2].type_token - 40;    // vestavena funkce
-    if( type < 0 )
-        type = 6;       // uzivatelem definovana funkce TODO
-
-    if( type == iP_STR )
+    int type = array[n].type_token - 40;    // vestavena funkce
+    if( type < 0 )      // uzivatelem definovana funkce TODO
     {
-        new_instr(dest, iP_STR_NEW, NULL, NULL, NULL, NULL);   // uvodni instrukce pro funkci put_string
-        if( aux != NULL )
+        assist1 = searchIdent(array[n].id_name, &tree);
+        if( assist1 == NULL )
         {
-            aux->jump = list.last;
-            aux = NULL;
-        }
-
-        if( !SEmptyInstr( &InstrStack ) )
-        {
-            TOPInstr( &InstrStack, &top );
-            while( top == 43 )  // }
-            {
-                POPInstr( &InstrStack, &aux, &top );
-                aux->jump = dest->last;
-                aux = NULL;
-                if( !SEmptyInstr( &InstrStack ) )
-                    TOPInstr( &InstrStack, &top );
-                else
-                    break;
-            }
-        }
-        first = false;
-    }
-    else if( type == iG_STR )   // get_string()
-    {
-        new_instr(dest, type, NULL, NULL, &assist2, NULL);
-    }
-
-    while( array[n].type_token != 41 )   // )
-    {
-        if( array[n].type_token == 23 )     // preskakovani carek
-        {
-            n++;
-            continue;
-        }
-
-        name = makeName(array[n]);
-        if( name == NULL )
+            // TODO nedefinovana funkce
             return EXIT_FAILURE;
-        assist1 = searchIdent(name, dest_root);
-        if(assist1 == NULL)
-        {
-            if(array[n].type_token == 36)
-            {
-                // nedeklarovana promenna
-                printERR(eVAR);
-                eCode = sSemVar;
-                return EXIT_FAILURE;
-            }
-
-            insertVarToTree(name, array[n], dest_root);
-            assist1 = searchIdent(name, dest_root);
         }
-        n++;
-        params++;   // pocitame pocet parametru
-
-        // ignorovani prebytecnych parametru pro jednotlive vestavene funkce
-        if( (((type >= iBVAL && type <= iSVAL) || type == iSTRLEN || type == iS_STR) && params <= 1 ) || (type == iG_SUBSTR && params <= 3 )
-            || (type == iF_STR && params <= 2) || type == iP_STR )
-        {
-            // vytvoreni instrukce
-            new_instr(dest, type, &assist1, NULL, &assist2, NULL);
-            if( first )
-            {
-                if( aux != NULL )
-                {
-                    aux->jump = list.last;
-                    aux = NULL;
-                }
-                if( !SEmptyInstr( &InstrStack ) )
-                {
-                    TOPInstr( &InstrStack, &top );
-                    while( top == 43 )
-                    {
-                        POPInstr( &InstrStack, &aux, &top );
-                        aux->jump = dest->last;
-                        aux = NULL;
-                        if( !SEmptyInstr( &InstrStack ) )
-                            TOPInstr( &InstrStack, &top );
-                        else
-                            break;
-                    }
-                }
-                first = false;
-            }
-        }
+        new_instr(dest, iASSIGN, &assist2, NULL, &assist1, NULL);
     }
-
-    // kontrola chybejicich parametru pro jednotlive vestavene funkce
-    if( (((type >= iBVAL && type <= iSVAL) || type == iSTRLEN || type == iS_STR) && params < 1 ) || (type == iG_SUBSTR && params < 3 )
-        || (type == iF_STR && params < 2) )
+    else
     {
-        printERR(eFCEPARAM);
-        eCode = sSemFceParam;
-        return EXIT_FAILURE;
+        n = 4;
+        if( type == iP_STR )
+        {
+            new_instr(dest, iP_STR_NEW, NULL, NULL, NULL, NULL);   // uvodni instrukce pro funkci put_string
+            if( aux != NULL )
+            {
+                aux->jump = list.last;
+                aux = NULL;
+            }
+
+            if( !SEmptyInstr( &InstrStack ) )
+            {
+                TOPInstr( &InstrStack, &top );
+                while( top == 43 )  // }
+                {
+                    POPInstr( &InstrStack, &aux, &top );
+                    aux->jump = dest->last;
+                    aux = NULL;
+                    if( !SEmptyInstr( &InstrStack ) )
+                        TOPInstr( &InstrStack, &top );
+                    else
+                        break;
+                }
+            }
+            first = false;
+        }
+        else if( type == iG_STR )   // get_string()
+        {
+            new_instr(dest, type, NULL, NULL, &assist2, NULL);
+        }
+
+        while( array[n].type_token != 41 )   // )
+        {
+            if( array[n].type_token == 23 )     // preskakovani carek
+            {
+                n++;
+                continue;
+            }
+
+            name = makeName(array[n]);
+            if( name == NULL )
+                return EXIT_FAILURE;
+            assist1 = searchIdent(name, dest_root);
+            if(assist1 == NULL)
+            {
+                if(array[n].type_token == 36)
+                {
+                    // nedeklarovana promenna
+                    printERR(eVAR);
+                    eCode = sSemVar;
+                    return EXIT_FAILURE;
+                }
+
+                insertVarToTree(name, array[n], dest_root);
+                assist1 = searchIdent(name, dest_root);
+            }
+            n++;
+            params++;   // pocitame pocet parametru
+
+            // ignorovani prebytecnych parametru pro jednotlive vestavene funkce
+            if( (((type >= iBVAL && type <= iSVAL) || type == iSTRLEN || type == iS_STR) && params <= 1 ) || (type == iG_SUBSTR && params <= 3 )
+                || (type == iF_STR && params <= 2) || type == iP_STR )
+            {
+                // vytvoreni instrukce
+                new_instr(dest, type, &assist1, NULL, &assist2, NULL);
+                if( first )
+                {
+                    if( aux != NULL )
+                    {
+                        aux->jump = list.last;
+                        aux = NULL;
+                    }
+                    if( !SEmptyInstr( &InstrStack ) )
+                    {
+                        TOPInstr( &InstrStack, &top );
+                        while( top == 43 )
+                        {
+                            POPInstr( &InstrStack, &aux, &top );
+                            aux->jump = dest->last;
+                            aux = NULL;
+                            if( !SEmptyInstr( &InstrStack ) )
+                                TOPInstr( &InstrStack, &top );
+                            else
+                                break;
+                        }
+                    }
+                    first = false;
+                }
+            }
+        }
+
+        // kontrola chybejicich parametru pro jednotlive vestavene funkce
+        if( (((type >= iBVAL && type <= iSVAL) || type == iSTRLEN || type == iS_STR) && params < 1 ) || (type == iG_SUBSTR && params < 3 )
+            || (type == iF_STR && params < 2) )
+        {
+            printERR(eFCEPARAM);
+            eCode = sSemFceParam;
+            return EXIT_FAILURE;
+        }
     }
 
     return EXIT_SUCCESS;

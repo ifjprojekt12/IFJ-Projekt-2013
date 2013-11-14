@@ -322,7 +322,7 @@ int syntaxer()
 		        if( i == m && realloc_array(array) == EXIT_FAILURE )
 					return EXIT_FAILURE;
 
-                if((unit.type_token >= 60 && unit.type_token <= 69) || unit.type_token == 6)    // vestavene nebo uzivatelem definovane funkce
+                if((unit.type_token >= 60 && unit.type_token <= 69) || unit.type_token == 35)    // vestavene nebo uzivatelem definovane funkce
                 {
                     unit = get_token();
                     array[i++] = unit;
@@ -395,6 +395,17 @@ int syntaxer()
                 else if( (i = expression(array, i-1, unit, END_S)) < 0 )    // vyraz
                 // zpracovani vyrazu, END_S = vyraz konci strednikem
                 {
+                    printf("tady\n");
+
+    printf("$x = funkce()\n");
+    // vypis pole tokenu
+    for(int x=0; x<m; x++)
+    {
+        if(array[x].type_token == 0)    break;
+        printf("%d ", array[x].type_token);
+    }
+    printf("\n");
+
                     // chyba ve vyrazu
                     printERR(eEXPR);
                     if(i == -1)
@@ -637,21 +648,18 @@ int syntaxer()
         unit = get_token(); // nacteni dalsiho tokenu
     }
 
-    if( super_brackets != 0 )
+    if( unit.type_token == 0 || unit.type_token == 100 )
+    {
+        printERR(eWRONG);
+        return EXIT_FAILURE;
+    }
+    else if( super_brackets != 0 )
     {
         // vice '{' nez '}' v celem programu
         printERR(eWRONG);
         eCode = sSyn;
         return EXIT_FAILURE;
     }
-/*
-    else if( !SEmpty(&leStack) )
-    {
-        fprintf(stderr, "Zasobnik neni prazdny!!\n");
-        eCode = sSyn;
-        return EXIT_FAILURE;
-    }
-*/
 
 /*
     // vypis pole tokenu
