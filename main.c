@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
 
     //printf("syntaxe + semantika v poradku.\n"); fflush(stdout);
 /*
+    printf("Seznam instrukci:\n");
     if( list.first == NULL )
     {
         printf("prazdny list instrukci!!\n");fflush(stdout);
