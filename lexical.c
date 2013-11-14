@@ -83,7 +83,8 @@ void token_init(TOKEN *token){
 //------------------------------------------------
 TOKEN get_token(){
   TOKEN new_tok;
-
+  //radek control
+  while(1){
   //nastaveni vychazich hodnot noveho tokenu
   token_init(&new_tok);
 
@@ -131,24 +132,21 @@ TOKEN get_token(){
   }
 
   //------------------------------------------------
-  //prebytecna bila mista
-  while(1){
-    if((isspace(buffer[pos_buffer])) != 0 && buffer[pos_buffer] != '\n'){
-      pos_buffer++;
-      //a toto nacte novy radek, pokud jsou prebytecna bila mista na konci radku
-      if(buffer[pos_buffer] == '\n'){
-        if(read_src() == 1){
-          new_tok.type_token = 50;
-          return new_tok;
-        }
-        pos_buffer = 0;
-      }
-
-    } else break;
-  }
-
   //oddelavame komentare - radkove
   while(1){
+    //prebytecna bila mista
+    while(1){
+      if((isspace(buffer[pos_buffer])) != 0 && buffer[pos_buffer] != '\n'){
+        pos_buffer++;
+        if(buffer[pos_buffer] == '\n'){
+          if(read_src() == 1){
+            new_tok.type_token = 50;
+            return new_tok;
+          }
+          pos_buffer = 0;
+        }
+      } else break;
+    }
     if(buffer[pos_buffer] == '/' && buffer[pos_buffer+1] == '/'){
       if(read_src() == 1){
         new_tok.type_token = 50;
@@ -161,7 +159,6 @@ TOKEN get_token(){
   //oddelavame blokove komentare
   if(buffer[pos_buffer] == '/' && buffer[pos_buffer+1] == '*'){
     pos_buffer = pos_buffer + 2;
-    //printf("%c %c here",buffer[pos_buffer-2],buffer[pos_buffer-1]);
     while(1){
       if(buffer[pos_buffer] == '\n'){
         if(read_src() == 1){
@@ -171,9 +168,7 @@ TOKEN get_token(){
         pos_buffer = 0;
       }
       if(buffer[pos_buffer] == '*' && buffer[pos_buffer+1] == '/'){
-        //printf("%c %c here",buffer[pos_buffer-2],buffer[pos_buffer-1]);
         pos_buffer = pos_buffer + 2;
-        //printf("%c %c here",buffer[pos_buffer],buffer[pos_buffer-1]);
         break;
       }
       pos_buffer++;
@@ -639,7 +634,7 @@ TOKEN get_token(){
       return new_tok;
     }
   }
-
+  }//zavorka ke control while
   return new_tok;
 }
 
