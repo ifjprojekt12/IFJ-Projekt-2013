@@ -131,6 +131,22 @@ TOKEN get_token(){
   }
 
   //------------------------------------------------
+  //prebytecna bila mista
+  while(1){
+    if((isspace(buffer[pos_buffer])) != 0 && buffer[pos_buffer] != '\n'){
+      pos_buffer++;
+      //a toto nacte novy radek, pokud jsou prebytecna bila mista na konci radku
+      if(buffer[pos_buffer] == '\n'){
+        if(read_src() == 1){
+          new_tok.type_token = 50;
+          return new_tok;
+        }
+        pos_buffer = 0;
+      }
+
+    } else break;
+  }
+
   //oddelavame komentare - radkove
   while(1){
     if(buffer[pos_buffer] == '/' && buffer[pos_buffer+1] == '/'){
@@ -172,22 +188,6 @@ TOKEN get_token(){
       }
       pos_buffer = 0;
     }
-  }
-
-  //prebytecna bila mista
-  while(1){
-    if((isspace(buffer[pos_buffer])) != 0 && buffer[pos_buffer] != '\n'){
-      pos_buffer++;
-      //a toto nacte novy radek, pokud jsou prebytecna bila mista na konci radku
-      if(buffer[pos_buffer] == '\n'){
-        if(read_src() == 1){
-          new_tok.type_token = 50;
-          return new_tok;
-        }
-        pos_buffer = 0;
-      }
-
-    } else break;
   }
 
   //-------------------------------------------------
