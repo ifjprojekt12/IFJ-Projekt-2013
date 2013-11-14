@@ -190,6 +190,22 @@ TOKEN get_token(){
     }
   }
 
+  //prebytecna bila mista
+  while(1){
+    if((isspace(buffer[pos_buffer])) != 0 && buffer[pos_buffer] != '\n'){
+      pos_buffer++;
+      //a toto nacte novy radek, pokud jsou prebytecna bila mista na konci radku
+      if(buffer[pos_buffer] == '\n'){
+        if(read_src() == 1){
+          new_tok.type_token = 50;
+          return new_tok;
+        }
+        pos_buffer = 0;
+      }
+
+    } else break;
+  }
+
   //-------------------------------------------------
   //konecny automat...
   //-------------------------------------------------
