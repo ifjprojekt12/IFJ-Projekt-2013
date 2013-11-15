@@ -16,6 +16,7 @@ int interpret(LIST_3AK *list){
 
   list->actual = list->first;
 
+
   while(1){
     //*******************************************
     //instrukce konce programu
@@ -35,18 +36,34 @@ int interpret(LIST_3AK *list){
       list->actual = list->actual->right;
     }
 
-
     //ulozeni ukazatelu, ciste pro zjednoduseni konstrukci -> a .
     //po rozmysleni i pro funkci funkci a podobneho shitu
     if(list->actual->operand_1 != NULL){
-      op_1 = searchIdent(list->actual->operand_1->key,&root);
+      //printf("OP_1: %d_%d_%s\n",list->actual->operand_1->data.type_token,list->actual->id,list->actual->operand_1->data.id_name);
+      //printf("RES:  %d_%d_%s\n",list->actual->result->data.type_token,list->actual->id,list->actual->result->data.id_name);
+      if(list->actual->operand_1->data.type_token == 35){
+        op_1 = searchIdent(list->actual->operand_1->key,&tree);
+      } else {
+        op_1 = searchIdent(list->actual->operand_1->key,&root);
+      }
     } else op_1 = NULL;
+
     if(list->actual->operand_2 != NULL){
       op_2 = searchIdent(list->actual->operand_2->key,&root);
     } else op_2 = NULL;
+
     if(list->actual->result != NULL){
       result = searchIdent(list->actual->result->key,&root);
     } else result = NULL;
+
+    //*******************************************
+    //Instrukce pro funkce
+    //*******************************************
+    if(list->actual->id == iASSIGN && list->actual->operand_1->data.type_token == 35){
+      //tady bude jina instrukce nez nasledujici
+      list->actual = list->actual->right;
+      continue;
+    }
 
     //*******************************************
     //Aritmeticke a retezcove operatory
@@ -413,12 +430,6 @@ int interpret(LIST_3AK *list){
     //*******************************************
     if(list->actual->id == iASSIGN){
 
-      //printf("\n%s %d %s %d\n",result->data.string,result->data.type_token, op_1->data.string,op_1->data.type_token);
-      //NODE pop;
-      //pop = op_1;
-      //op_1 = result;
-      //result = pop;
-      //printf(">%s\n",op_1->key);
       if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
         eCode = sSemVar;
         return EXIT_FAILURE;
@@ -448,7 +459,7 @@ int interpret(LIST_3AK *list){
         result->data.c_number = op_1->data.c_number;
       }
       if(op_1->data.type_token == 32){
-        result->data.type_token = 33;
+        result->data.type_token = 32;
         result->data.d_number = op_1->data.d_number;
       }
       if(op_1->data.type_token == 33){
