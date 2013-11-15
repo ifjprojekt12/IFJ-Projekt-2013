@@ -68,6 +68,8 @@ enum error {
     eVAR,           // nedefinovana promenna
     eCOMPATIBLE,    // nekompatibilni datove typy ve vyrazu
     eFCEPARAM,      // chybejici parametr pro volani funkce
+    eFCEREDEF,      // pokus o redefinici funkce
+    eFCENEDEF,      // nedefinovana funkce
 };
 
 // vyctovy typ pro navratovy kod programu

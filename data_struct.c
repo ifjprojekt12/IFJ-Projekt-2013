@@ -25,6 +25,8 @@ const char*MESSAGE[]=
     "Nedeklarovana promenna",
     "Chybne datove typy ve vyrazu",
     "Chybejici parametr pro volani funkce",
+    "Pokus o redefinici funkce",
+    "Volana funkce neni definovana",
 };
 
 //*************************************
