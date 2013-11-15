@@ -84,7 +84,7 @@ void token_init(TOKEN *token){
 TOKEN get_token(){
   TOKEN new_tok;
   //radek control
-  while(1){
+  //while(1){
   //nastaveni vychazich hodnot noveho tokenu
   token_init(&new_tok);
 
@@ -635,7 +635,7 @@ TOKEN get_token(){
       return new_tok;
     }
   }
-  }//zavorka ke control while
+  //}//zavorka ke control while
   return new_tok;
 }
 
