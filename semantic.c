@@ -296,7 +296,7 @@ int functions(TOKEN *array, int n)
             // TODO nedefinovana funkce
             return EXIT_FAILURE;
         }
-        new_instr(dest, iASSIGN, &assist2, NULL, &assist1, NULL);
+        new_instr(dest, iASSIGN, &assist1, NULL, &assist2, NULL);
     }
     else
     {
