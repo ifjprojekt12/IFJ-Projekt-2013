@@ -219,7 +219,9 @@ int semantixer(TOKEN *array)
         assist1 = searchIdent(array[n].id_name, &tree);
         if( assist1 != NULL )
         {
-            //TODO redefinice funkce
+            // redefinice funkce
+            printERR(eFCEREDEF);
+            eCode = sSemFceDef;
             return EXIT_FAILURE;
         }
         insertVarToTree(array[n].id_name, array[n], &tree);
@@ -289,8 +291,8 @@ int functions(TOKEN *array, int n)
         assist1 = searchIdent(array[n].id_name, &tree);
         if( assist1 == NULL )
         {
-            // TODO nedefinovana funkce
-            return EXIT_FAILURE;
+            // definice funkce se nachazi az za jejim volanim
+            insertVarToTree(array[n].id_name, array[n], &check_func);
         }
         new_instr(dest, iASSIGN, &assist1, NULL, &assist2, NULL);
     }

@@ -660,6 +660,8 @@ int syntaxer()
     if( unit.type_token == 0 || unit.type_token == 100 )
     {
         printERR(eWRONG);
+        if( eCode == 0 )
+            eCode = sSyn;
         return EXIT_FAILURE;
     }
     else if( super_brackets != 0 )
@@ -669,8 +671,38 @@ int syntaxer()
         eCode = sSyn;
         return EXIT_FAILURE;
     }
+    else if( func_defined(check_func, NULL) != EXIT_SUCCESS )
+    {
+        // kontrola, zda vsechny volane funkce byly definovany
+        printERR(eFCENEDEF);
+        eCode = sSemFceDef;
+        return EXIT_FAILURE;
+    }
 
+    return EXIT_SUCCESS;
+}
 
+int func_defined(NODE a1, NODE a2)
+{
+    NODE ass;
+    if( a1 != NULL )
+    {
+        ass = searchIdent(a1->key, &tree);
+        if( ass == NULL )
+            // nektera z volanych funkci nebyla v programu definovana
+            return EXIT_FAILURE;
+        if( func_defined(a1->LPtr, a1->RPtr) == EXIT_FAILURE )
+            return EXIT_FAILURE;
+    }
+    if( a2 != NULL )
+    {
+        ass = searchIdent(a2->key, &tree);
+        if( ass == NULL )
+            // nektera z volanych funkci nebyla v programu definovana
+            return EXIT_FAILURE;
+        if( func_defined(a2->LPtr, a2->RPtr) == EXIT_FAILURE )
+            return EXIT_FAILURE;
+    }
     return EXIT_SUCCESS;
 }
 
