@@ -226,17 +226,13 @@ int semantixer(TOKEN *array)
 
         // ulozime si uzel pro funkci, v niz se budeme nachazet
         func = searchIdent(array[n].id_name, &tree);
-        LIST_3AK new;
-        func->body = &new;
-/*
         if( (func->body = malloc(sizeof(struct list_3ak))) == NULL )
         {
             printERR(eINTERN);
             eCode = sINTERN;
             return EXIT_FAILURE;
         }
-*/
-        new_instr_list( func->body );
+        new_instr_list(func->body);
 
         // ukladame veskere parametry do stromu k dane funkci
         n+=2;

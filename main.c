@@ -17,25 +17,69 @@ void print_tree(NODE a1, NODE a2)
 {
     if( a1 != NULL )
     {
+        printf("%s:\n\t",a1->key);
         if(a1->params != NULL)
         {
-            printf("%s: %s, ", a1->key,a1->params->key);
+            printf("%s, ", a1->params->key);
             print_tree(a1->params->LPtr, a1->params->RPtr);
         }
         else
             printf("%s, ",a1->key);
         print_tree(a1->LPtr,a1->RPtr);
+        printf("\n");
+
+        if( a1->body->first != NULL )
+        {
+            for( INSTRUCT a = list.first; a != NULL; a = a->right )
+            {
+                printf("\tid: %d, typ: %d", a->number, a->id);
+                if( a->operand_1 != NULL )
+                    printf(", ass1: %s", a->operand_1->key);
+                if( a->operand_2 != NULL )
+                    printf(", ass2: %s", a->operand_2->key);
+                if( a->result != NULL )
+                    printf(", ass3: %s", a->result->key);
+                if( a->jump != NULL )
+                    printf(", jump: %d", a->jump->number);
+                printf("\n");
+                fflush(stdout);
+            }   
+        }
+        else
+            printf("seznam instrukci je prazdny\n");
     }
     if( a2 != NULL )
     {
+        printf("%s:\n\t",a2->key);
         if(a2->params != NULL)
         {
-            printf("%s: %s, ", a2->key,a2->params->key);
+            printf("%s, ", a2->params->key);
             print_tree(a2->params->LPtr, a2->params->RPtr);
         }
         else
             printf("%s, ",a2->key);
         print_tree(a2->LPtr,a2->RPtr);
+        printf("\n");
+
+        if( a2->body->first != NULL )
+        {
+            for( INSTRUCT a = list.first; a != NULL; a = a->right )
+            {
+                printf("\tid: %d, typ: %d", a->number, a->id);
+                if( a->operand_1 != NULL )
+                    printf(", ass1: %s", a->operand_1->key);
+                if( a->operand_2 != NULL )
+                    printf(", ass2: %s", a->operand_2->key);
+                if( a->result != NULL )
+                    printf(", ass3: %s", a->result->key);
+                if( a->jump != NULL )
+                    printf(", jump: %d", a->jump->number);
+                printf("\n");
+                fflush(stdout);
+            }   
+        }
+        else
+            printf("seznam instrukci je prazdny\n");
     }
 }
 
@@ -94,16 +138,41 @@ int main(int argc, char *argv[])
     }
     else
         printf("prazdny");
+*/
+/*
     printf("\nstrom funkci obsahuje:\n");
     if( tree != NULL )
     {
+        printf("%s:\n\t",tree->key);
         if(tree->params != NULL)
         {
-            printf("%s: %s, ", tree->key,tree->params->key);
+            printf("%s, ", tree->params->key);
             print_tree(tree->params->LPtr, tree->params->RPtr);
         }
         else
             printf("%s, ",tree->key);
+        print_tree(tree->LPtr,tree->RPtr);
+        printf("\n");
+
+        if( tree->body->first != NULL )
+        {
+            for( INSTRUCT a = tree->body->first; a != NULL; a = a->right )
+            {
+                printf("\tid: %d, typ: %d", a->number, a->id);
+                if( a->operand_1 != NULL )
+                    printf(", ass1: %s", a->operand_1->key);
+                if( a->operand_2 != NULL )
+                    printf(", ass2: %s", a->operand_2->key);
+                if( a->result != NULL )
+                    printf(", ass3: %s", a->result->key);
+                if( a->jump != NULL )
+                    printf(", jump: %d", a->jump->number);
+                printf("\n");
+                fflush(stdout);
+            }   
+        }
+        else
+            printf("seznam instrukci je prazdny\n");
         print_tree(tree->LPtr,tree->RPtr);
     }
     else

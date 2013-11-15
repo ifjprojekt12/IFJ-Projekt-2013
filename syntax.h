@@ -24,9 +24,6 @@ extern NODE root;
 extern LIST_3AK list;
 extern int eCode;
 
-// funkce pro vypis chybovych zprav
-void printERR(int err);
-
 // hlavni funkce syntaxe
 int syntaxer();
 

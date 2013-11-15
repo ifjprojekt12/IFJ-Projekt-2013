@@ -395,7 +395,7 @@ int syntaxer()
                 else if( (i = expression(array, i-1, unit, END_S)) < 0 )    // vyraz
                 // zpracovani vyrazu, END_S = vyraz konci strednikem
                 {
-                    printf("tady\n");
+/*                    printf("tady\n");
 
     printf("$x = funkce()\n");
     // vypis pole tokenu
@@ -405,7 +405,7 @@ int syntaxer()
         printf("%d ", array[x].type_token);
     }
     printf("\n");
-
+*/
                     // chyba ve vyrazu
                     printERR(eEXPR);
                     if(i == -1)
@@ -636,6 +636,15 @@ int syntaxer()
         else
             printf("Zasobnik je prazdny.\n");
 */
+/*
+    // vypis pole tokenu
+    for(int x=0; x<I_MAX; x++)
+    {
+        if(array[x].type_token == 0)    break;
+        printf("%d ", array[x].type_token);
+    }
+    printf("\n");
+*/
 
         // po zpracovani jednoho radku volame funkci pro kontrolu semantiky
         if( semantixer(array) == EXIT_FAILURE )
@@ -661,17 +670,8 @@ int syntaxer()
         return EXIT_FAILURE;
     }
 
-/*
-    // vypis pole tokenu
-    for(int x=0; x<I_MAX; x++)
-    {
-        if(array[x].type_token == 0)    break;
-        printf("%d ", array[x].type_token);
-    }
-    printf("\n");
-*/
 
-    return eCode;
+    return EXIT_SUCCESS;
 }
 
 // funkce pro inicializaci pole tokenu
