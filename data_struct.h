@@ -49,6 +49,7 @@ enum intstructions {
     iRETURN,
     iJUMP,
     iSAVE_PAR,
+    iEND_FCE,
     iP_STR_NEW = 250,
     iG_SUBSTR2 = 270,
 };
