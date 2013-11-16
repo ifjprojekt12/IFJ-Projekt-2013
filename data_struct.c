@@ -103,7 +103,7 @@ void printERR(int err)
 }
 
 //zasobnik instrukci
-void stack_3ak_init(STACK_3AK *stack){
+/*void stack_3ak_init(STACK_3AK *stack){
   stack->top = NULL;
   stack->prev = NULL;
 }
@@ -118,6 +118,6 @@ INSTRUCT pop_3ak(STACK_3AK *stack){
   stack->top = stack->prev->top;
   stack = stack->prev;
   return ret;
-}
+}*/
 
 //*************************************

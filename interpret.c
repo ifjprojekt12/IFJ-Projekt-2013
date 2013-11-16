@@ -15,10 +15,10 @@ int interpret(LIST_3AK *list){
   NODE op_1, op_2, result;
 
   STACK symbol_tables;
-  STACK_3AK next_instr;
+  tSInstr next_instr;
 
   stackInit(&symbol_tables);
-  stack_3ak_init(&next_instr);
+  initInstr(&next_instr);
 
   push(&symbol_tables,&root);
 
@@ -70,7 +70,7 @@ int interpret(LIST_3AK *list){
       //defaultni navratovy typ
       result->data.type_token = 34;
       //ulozeni instrukce nasledujici po funkci
-      push_3ak(&next_instr,list->actual->right);
+      PUSHInstr(&next_instr,list->actual->right,0);
 
       //jaka dalsi instrukce se bude vykonavat
       //list->actual = op_1->body->first;
@@ -83,7 +83,7 @@ int interpret(LIST_3AK *list){
     //skoncilo telo funkce
     if(list->actual->id == iEND_FCE){
 
-      list->actual = pop_3ak(&next_instr);
+      POPInstr(&next_instr,&list->actual,NULL);
     }
     //jedny parametry prosim pekne
 
