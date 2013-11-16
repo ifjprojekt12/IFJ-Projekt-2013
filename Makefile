@@ -7,4 +7,4 @@ interpret: data_struct.o ial.o function.o stack.o lexical.o interpret.o semantic
 	$(CC) data_struct.o ial.o function.o stack.o lexical.o interpret.o semantic.o syntax.o main.o -lm -o interpret
 
 clean:
-	$(RM)   *.o interpret
+	$(RM)   *.o interpret 2>/dev/null
