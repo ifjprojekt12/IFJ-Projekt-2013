@@ -135,6 +135,17 @@ void free_instr_list(LIST_3AK *);
 
 // vypis chyboveho hlaseni
 void printERR(int err);
+
+//zasobnik instrukci
+typedef struct stack_3ak{
+  INSTRUCT top;
+  struct stack_3ak *prev;
+} STACK_3AK;
+
+void stack_3ak_init(STACK_3AK*);
+void push_3ak(STACK_3AK*,INSTRUCT);
+INSTRUCT pop_3ak(STACK_3AK*);
+
 //*************************************
 
 #endif

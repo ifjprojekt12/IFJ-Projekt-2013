@@ -101,4 +101,23 @@ void printERR(int err)
 {
     fprintf(stderr, "Chyba: %s.\n", MESSAGE[err]);
 }
+
+//zasobnik instrukci
+void stack_3ak_init(STACK_3AK *stack){
+  stack->top = NULL;
+  stack->prev = NULL;
+}
+
+void push_3ak(STACK_3AK *stack, INSTRUCT instr){
+  stack->top = instr;
+  stack->prev = stack;
+}
+
+INSTRUCT pop_3ak(STACK_3AK *stack){
+  INSTRUCT ret = stack->top;
+  stack->top = stack->prev->top;
+  stack = stack->prev;
+  return ret;
+}
+
 //*************************************

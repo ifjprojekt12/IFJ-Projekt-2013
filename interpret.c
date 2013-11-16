@@ -14,6 +14,14 @@ int interpret(LIST_3AK *list){
 
   NODE op_1, op_2, result;
 
+  STACK symbol_tables;
+  STACK_3AK next_instr;
+
+  stackInit(&symbol_tables);
+  stack_3ak_init(&next_instr);
+
+  push(&symbol_tables,&root);
+
   list->actual = list->first;
 
 
@@ -36,34 +44,48 @@ int interpret(LIST_3AK *list){
       list->actual = list->actual->right;
     }
 
-    //ulozeni ukazatelu, ciste pro zjednoduseni konstrukci -> a .
-    //po rozmysleni i pro funkci funkci a podobneho shitu
+    //vyhledavame v prislusnych tabulkach prislusne zaznamy
     if(list->actual->operand_1 != NULL){
-      //printf("OP_1: %d_%d_%s\n",list->actual->operand_1->data.type_token,list->actual->id,list->actual->operand_1->data.id_name);
-      //printf("RES:  %d_%d_%s\n",list->actual->result->data.type_token,list->actual->id,list->actual->result->data.id_name);
       if(list->actual->operand_1->data.type_token == 35){
-        op_1 = searchIdent(list->actual->operand_1->key,&tree);
+        op_1 = list->actual->operand_1;
       } else {
-        op_1 = searchIdent(list->actual->operand_1->key,&root);
+        op_1 = searchIdent(list->actual->operand_1->key,symbol_tables->ptr);
       }
     } else op_1 = NULL;
 
     if(list->actual->operand_2 != NULL){
-      op_2 = searchIdent(list->actual->operand_2->key,&root);
+      op_2 = searchIdent(list->actual->operand_2->key,symbol_tables->ptr);
     } else op_2 = NULL;
 
     if(list->actual->result != NULL){
-      result = searchIdent(list->actual->result->key,&root);
+      result = searchIdent(list->actual->result->key,symbol_tables->ptr);
     } else result = NULL;
 
     //*******************************************
-    //Instrukce pro funkce
+    //Instrukce pro implementaci funkci
     //*******************************************
     if(list->actual->id == iASSIGN && list->actual->operand_1->data.type_token == 35){
-      //tady bude jina instrukce nez nasledujici
+      printf("--%d %s\n",op_1->body->last->id,op_1->key);
+
+      //defaultni navratovy typ
+      result->data.type_token = 34;
+      //ulozeni instrukce nasledujici po funkci
+      push_3ak(&next_instr,list->actual->right);
+
+      //jaka dalsi instrukce se bude vykonavat
+      //list->actual = op_1->body->first;
       list->actual = list->actual->right;
+
       continue;
     }
+
+    //jeden return prosin
+    //skoncilo telo funkce
+    if(list->actual->id == iEND_FCE){
+
+      list->actual = pop_3ak(&next_instr);
+    }
+    //jedny parametry prosim pekne
 
     //*******************************************
     //Aritmeticke a retezcove operatory
