@@ -51,12 +51,12 @@ int boolval(NODE value){
 // 101 = e
 
 double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit napr 1.3e chyba
-		
+
 		int i = 0;
 		double result = 0.0;
 		int exponent = 0;
-		
-		
+
+
 		switch(node->data.type_token){
 			case 30://string
 				break;
@@ -84,20 +84,20 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 				eCode = 11;
 				return EXIT_FAILURE;
 				break;
-			}	
+			}
 		char *string = node->data.string;
-		
-		while ( string[i] == ' ' || string[i] == '\n' || string[i] == '\t' || string[i] == '\r' ) { //preskoci prazdna mista 
+
+		while ( string[i] == ' ' || string[i] == '\n' || string[i] == '\t' || string[i] == '\r' ) { //preskoci prazdna mista
 				i++;
 			}
-			
+
 		if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
 			while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
 				result *= 10;
 				result += (double) string[i]-48;
 				i++;
-				
-			}		
+
+			}
 			if ( string[i] == '+' ){ //exponent
 				i++;
 				if ( string[i] == 'E' || string[i] == 'e' ){
@@ -120,8 +120,8 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 					eCode = 11;
 					return EXIT_FAILURE;
 				}
-				
-				
+
+
 			}else if ( string[i] == '-' ){
 				i++;
 				if ( string[i] == 'E' || string[i] == 'e' ){
@@ -165,15 +165,15 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 					if ( string[i] >= 48 && string[i] <= 57 ){
 						int count = 10;
 					while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
-						
+
 						result += ((double) string[i]-48)/ count;
 						count *= 10;
 						i++;
 					}
-					
+
 					if ( string[i] == '+' ){
 							i++;
-							if ( string[i] == 'E' || string[i] == 'e' ){ 
+							if ( string[i] == 'E' || string[i] == 'e' ){
 								i++;
 							}else{
 								eCode = 11;
@@ -189,14 +189,14 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 									result*=10;
 								}
 								return result;	// vysledek
-	
+
 							}else{
 								eCode = 11;
 								return EXIT_FAILURE;
 							}
-							
-							
-						}else if ( string[i] == '-' ){ 
+
+
+						}else if ( string[i] == '-' ){
 							i++;
 							if ( string[i] == 'E' || string[i] == 'e' ){
 								i++;
@@ -237,12 +237,12 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 						}
 					}else{
 						eCode = 11;
-						
+
 						return EXIT_FAILURE;
 					}
 			}
-			
-			
+
+
 		} else if ( string[i] < 49 || string[i] > 57 ){
 			return result;
 		}
@@ -250,7 +250,7 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 }
 
 //Funkce prevede retezec na int
-int intval(NODE node){ 
+int intval(NODE node){
 	int result = 0;
 	int i = 0;
 	switch( node->data.type_token) {
@@ -269,7 +269,7 @@ int intval(NODE node){
 					result = 1;
 				} else {
 					result = 0;
-				}	
+				}
 			return result;
 			break;
 		case 34: //null
@@ -281,18 +281,18 @@ int intval(NODE node){
 			return result;
 			break;
 	}
-	
+
 	char *string = node->data.string;
-	
-	while ( string[i] == ' ' || string[i] == '\n' || string[i] == '\t' || string[i] == '\r' ) { //preskoci prazdna mista 
+
+	while ( string[i] == ' ' || string[i] == '\n' || string[i] == '\t' || string[i] == '\r' ) { //preskoci prazdna mista
 				i++;
-	}	
+	}
 	if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
 			while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
 				result *= 10;
 				result += (int) string[i]-48;
 				i++;
-				
+
 			}
 		}
 	return result;
@@ -302,8 +302,8 @@ char *strval(NODE node){ //TODO uvolneni malloc dodelat
 	char *result = malloc(100);
 	char *nulll = "";
 	char *True = "1";
-	switch( node->data.type_token) 
-		{	
+	switch( node->data.type_token)
+		{
 			case 30: //string to string
 				return node->data.string;
 				break;
@@ -320,7 +320,7 @@ char *strval(NODE node){ //TODO uvolneni malloc dodelat
 					return True;
 				} else {
 					return nulll;
-				}	
+				}
 				break;
 			case 34: // string to null
 				return nulll;
@@ -346,7 +346,7 @@ unsigned int my_strlen (char *string)
 // funkce vraci podretezec z retezce ohraniceny indexy
 char * my_get_substring (char *string, int start, int end)
 {
-    if (start < 0 || end < 0 || start > end || start >= strlen(string) || end > strlen(string))
+    if (start < 0 || end < 0 || start > end || start >= (int)strlen(string) || end > (int)strlen(string))
     {
         eCode = 13;
         return NULL;
