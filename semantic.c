@@ -323,7 +323,9 @@ int functions(TOKEN *array, int n)
     char *name = makeName(array[n]);
     if( name == NULL )
         return EXIT_FAILURE;
-    NODE assist1, assist3, assist4, assist2 = searchIdent(name, dest_root);
+    NODE assist1, assist3, assist4;
+    NODE assist2 = searchIdent(name, dest_root);    // ulozeni uzlu odpovidajicimu promenne pro prirazeni
+    NODE substr1 = NULL, substr2 = NULL, substr3 = NULL;
     n = 2;      // zacatek vyctu argumentu funkce
     bool first = true;
     int params = 0, top;     // pocitani argumentu pro kontrolu nedostatku ci prebytku
@@ -366,20 +368,22 @@ int functions(TOKEN *array, int n)
                 break;      // prebytecne parametry jsou ignorovany
 
             name = makeName(array[n]);
-            assist3 = searchIdent(name, dest_root);
-            if( assist3 == NULL )
+            assist3 = searchIdent(name, dest_root);     // hledani hodnoty/promenne ve stromu
+            if( assist3 == NULL )                       // hledani neuspesne
             {
                 if( array[n].type_token == 36 )
                 {
+                    // nedefinovana promenna
                     printERR(eVAR);
                     eCode = sSemVar;
                     return EXIT_FAILURE;
                 }
-                insertVarToTree(name, array[n], dest_root);
+                insertVarToTree(name, array[n], dest_root);     // vlozeni hodnoty do stromu
                 assist3 = searchIdent(name, dest_root);
             }
-            new_instr(dest, iSAVE_PAR, &assist3, NULL, &assist4, NULL);
-            if( first )
+
+            new_instr(dest, iSAVE_PAR, &assist3, NULL, &assist4, NULL); // vytvoreni instrukce pro ulozeni hodnoty parametru
+            if( first )         // kontrola skokovych instrukci, ktere by odkazovali na nove vytvorenou
             {
                 if( aux != NULL )
                 {
@@ -438,6 +442,27 @@ int functions(TOKEN *array, int n)
         else if( type == iG_STR )   // get_string()
         {
             new_instr(dest, type, NULL, NULL, &assist2, NULL);
+            if( aux != NULL )
+            {
+                aux->jump = list.last;
+                aux = NULL;
+            }
+
+            if( !SEmptyInstr( &InstrStack ) )
+            {
+                TOPInstr( &InstrStack, &top );
+                while( top == 43 )  // }
+                {
+                    POPInstr( &InstrStack, &aux, &top );
+                    aux->jump = dest->last;
+                    aux = NULL;
+                    if( !SEmptyInstr( &InstrStack ) )
+                        TOPInstr( &InstrStack, &top );
+                    else
+                        break;
+                }
+            }
+            first = false;
         }
 
         while( array[n].type_token != 41 )   // )
@@ -472,30 +497,69 @@ int functions(TOKEN *array, int n)
             if( (((type >= iBVAL && type <= iSVAL) || type == iSTRLEN || type == iS_STR) && params <= 1 ) || (type == iG_SUBSTR && params <= 3 )
                 || (type == iF_STR && params <= 2) || type == iP_STR )
             {
-                // vytvoreni instrukce
-                new_instr(dest, type, &assist1, NULL, &assist2, NULL);
-                if( first )
+                if( type == iG_SUBSTR )
                 {
-                    if( aux != NULL )
+                    if( substr1 == NULL )
+                        substr1 = assist1;
+                    else if( substr2 == NULL )
+                        substr2 = assist1;
+                    else if( substr3 == NULL )
                     {
-                        aux->jump = list.last;
-                        aux = NULL;
-                    }
-                    if( !SEmptyInstr( &InstrStack ) )
-                    {
-                        TOPInstr( &InstrStack, &top );
-                        while( top == 43 )
+                        substr3 = assist1;
+                        new_instr(dest, type, &substr1, &substr2, &substr3, NULL);
+                        if( first )
                         {
-                            POPInstr( &InstrStack, &aux, &top );
-                            aux->jump = dest->last;
-                            aux = NULL;
+                            if( aux != NULL )
+                            {
+                                aux->jump = list.last;
+                                aux = NULL;
+                            }
                             if( !SEmptyInstr( &InstrStack ) )
+                            {
                                 TOPInstr( &InstrStack, &top );
-                            else
-                                break;
+                                while( top == 43 )
+                                {
+                                    POPInstr( &InstrStack, &aux, &top );
+                                    aux->jump = dest->last;
+                                    aux = NULL;
+                                    if( !SEmptyInstr( &InstrStack ) )
+                                        TOPInstr( &InstrStack, &top );
+                                    else
+                                        break;
+                                }
+                            }
+                            first = false;
                         }
+                        new_instr(dest, iG_SUBSTR2, NULL, NULL, &assist2, NULL);
                     }
-                    first = false;
+                }
+                else
+                {
+                    // vytvoreni instrukce
+                    new_instr(dest, type, &assist1, NULL, &assist2, NULL);
+                    if( first )
+                    {
+                        if( aux != NULL )
+                        {
+                            aux->jump = list.last;
+                            aux = NULL;
+                        }
+                        if( !SEmptyInstr( &InstrStack ) )
+                        {
+                            TOPInstr( &InstrStack, &top );
+                            while( top == 43 )
+                            {
+                                POPInstr( &InstrStack, &aux, &top );
+                                aux->jump = dest->last;
+                                aux = NULL;
+                                if( !SEmptyInstr( &InstrStack ) )
+                                    TOPInstr( &InstrStack, &top );
+                                else
+                                    break;
+                            }
+                        }
+                        first = false;
+                    }
                 }
             }
         }
