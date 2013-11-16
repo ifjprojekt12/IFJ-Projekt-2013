@@ -82,7 +82,7 @@ int semantixer(TOKEN *array)
         {
             // TODO asi bude potreba vytvorit praznou skokovou instrukci v pripade, kdy funkce konci
             // neuplnym ifem bez prikazu return !!! promyslet
-            new_instr(dest, iJUMP, NULL, NULL, NULL, NULL );
+            new_instr(dest, iEND_FCE, NULL, NULL, NULL, NULL );
             if( aux != NULL )
                 aux->jump = dest->last;
             if( !SEmptyInstr( &InstrStack ) )
@@ -235,17 +235,28 @@ int semantixer(TOKEN *array)
             return EXIT_FAILURE;
         }
         new_instr_list(func->body);
+        treeInit( &(func->params) );
 
-        // ukladame veskere parametry do stromu k dane funkci
-        n+=2;
-        while( array[n].type_token != 41 )  // )
+        NODE assist2 = searchIdent(array[n].id_name, &check_func);
+        if( assist2 == NULL )
         {
-            if( array[n].type_token != 23 )     // ,
+            // ukladame veskere parametry do stromu k dane funkci
+            n+=2;
+            while( array[n].type_token != 41 )  // )
             {
-                name = makeName(array[n]);
-                insertVarToTree(name, array[n], &(func->params));
+                if( array[n].type_token != 23 )     // ,
+                {
+                    name = makeName(array[n]);
+                    insertVarToTree(name, array[n], &(func->params));
+                }
+                n++;
             }
-            n++;
+        }
+        else
+        {
+            // tato funkce jiz byla volana, je tedy nutne spravne zkopirovat veskere jeji uzly, aby nedoslo k chybe pri
+            // provadeni instrukci a nalezite je pouze prejmenovat
+            // TODO
         }
     }
     else
@@ -279,21 +290,86 @@ int functions(TOKEN *array, int n)
     char *name = makeName(array[n]);
     if( name == NULL )
         return EXIT_FAILURE;
-    NODE assist1, assist2 = searchIdent(name, dest_root);
+    NODE assist1, assist3, assist4, assist2 = searchIdent(name, dest_root);
     n = 2;      // zacatek vyctu argumentu funkce
     bool first = true;
     int params = 0, top;     // pocitani argumentu pro kontrolu nedostatku ci prebytku
 
     // zjisteni typu funkce a odecteni jeji hodnoty pro odpovidajici hodnotu id pro instrukce
-    int type = array[n].type_token - 40;    // vestavena funkce
+    int type = array[n].type_token - 40;
+
     if( type < 0 )      // uzivatelem definovana funkce TODO
     {
+        bool def = true;
+        int x = 1;
+        TOKEN unit;
+        token_init(&unit);
+        unit.type_token = 31;
+
         assist1 = searchIdent(array[n].id_name, &tree);
         if( assist1 == NULL )
         {
             // definice funkce se nachazi az za jejim volanim
             insertVarToTree(array[n].id_name, array[n], &check_func);
+            assist1 = searchIdent(array[n].id_name, &check_func);
+            treeInit( &(check_func->params) );
+            def = false;
         }
+        n+=2;
+
+        // prirazeni hodnot parametrum
+        while(array[n].type_token != 41 )       // )
+        {
+            if( !def )
+            {
+                unit.c_number = x;
+                name = makeName(unit);
+                insertVarToTree(name, array[n], &(assist1->params));
+            }
+            assist4 = searchParam(x++, &(assist1->params));     // najde parametr na pozici x
+            if( assist4 == NULL )
+                break;      // prebytecne parametry jsou ignorovany
+
+            name = makeName(array[n]);
+            assist3 = searchIdent(name, dest_root);
+            if( assist3 == NULL )
+            {
+                if( array[n].type_token == 36 )
+                {
+                    printERR(eVAR);
+                    eCode = sSemVar;
+                    return EXIT_FAILURE;
+                }
+                insertVarToTree(name, array[n], dest_root);
+                assist3 = searchIdent(name, dest_root);
+            }
+            new_instr(dest, iSAVE_PAR, &assist3, NULL, &assist4, NULL);
+            if( first )
+            {
+                if( aux != NULL )
+                {
+                    aux->jump = list.last;
+                    aux = NULL;
+                }
+                if( !SEmptyInstr( &InstrStack ) )
+                {
+                    TOPInstr( &InstrStack, &top );
+                    while( top == 43 )
+                    {
+                        POPInstr( &InstrStack, &aux, &top );
+                        aux->jump = dest->last;
+                        aux = NULL;
+                        if( !SEmptyInstr( &InstrStack ) )
+                            TOPInstr( &InstrStack, &top );
+                        else
+                            break;
+                    }
+                }
+                first = false;
+            }
+        }
+
+        // prirazeni volani funkce do promenne
         new_instr(dest, iASSIGN, &assist1, NULL, &assist2, NULL);
     }
     else
