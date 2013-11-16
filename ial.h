@@ -29,6 +29,7 @@ typedef struct NODE
 	TOKEN data; // struktura s daty
     struct NODE *params; // linearni seznam parametru pro funkce
     struct list_3ak *body;
+    int position;
 
 	struct NODE *LPtr;                                    // levy podstrom
 	struct NODE *RPtr;                                   // pravy podstrom
