@@ -48,6 +48,7 @@ typedef struct STACK
 void treeInit (NODE*);
 void insertVarToTree (char *, TOKEN, NODE*);
 NODE searchIdent (char *, NODE*);
+NODE searchParam(int, NODE*);
 NODE copyTree (NODE*, NODE*);
 
 // zasobnik
