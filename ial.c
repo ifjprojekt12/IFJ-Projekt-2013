@@ -127,6 +127,26 @@ NODE copyTree (NODE *ptr, NODE *ptrNew)
     return treeNew;
 }
 
+NODE searchParam (int index, NODE *ptr)
+{
+    NODE tree = *ptr;
+    NODE treeSearched  = NULL;
+    if (tree->position == index) return tree;
+    else
+    {
+        if ((tree->LPtr == NULL) && (tree->RPtr == NULL)) return NULL;
+        if (tree->LPtr != NULL)
+        {
+            if ((treeSearched = searchParam(index, &tree->LPtr)) != NULL) return treeSearched;
+        }
+        if (tree->RPtr != NULL)
+        {
+            if ((treeSearched = searchParam(index, &tree->RPtr)) != NULL) return treeSearched;
+        }
+    }
+    return NULL;
+}
+
 //////////////////////////////////////
 ////////////// ZASOBNIK //////////////
 //////////////////////////////////////
