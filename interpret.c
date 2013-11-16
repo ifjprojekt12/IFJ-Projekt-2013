@@ -44,6 +44,20 @@ int interpret(LIST_3AK *list){
       list->actual = list->actual->right;
     }
 
+    //*******************************************
+    //konec funkce
+    //*******************************************
+    if(list->actual->id == 34){
+      int a;
+      INSTRUCT next;
+      POPInstr(&next_instr,&next,&a);
+      list->actual = next;
+      pop(&symbol_tables);
+      continue;
+    }
+    //*******************************************
+    //*******************************************
+
     //vyhledavame v prislusnych tabulkach prislusne zaznamy
     if(list->actual->operand_1 != NULL){
       if(list->actual->operand_1->data.type_token == 35){
@@ -65,7 +79,6 @@ int interpret(LIST_3AK *list){
     //Instrukce pro implementaci funkci
     //*******************************************
     if(list->actual->id == iASSIGN && list->actual->operand_1->data.type_token == 35){
-      printf("--%d %s\n",op_1->body->last->id,op_1->key);
 
       //defaultni navratovy typ
       result->data.type_token = 34;
@@ -73,18 +86,18 @@ int interpret(LIST_3AK *list){
       PUSHInstr(&next_instr,list->actual->right,0);
 
       //jaka dalsi instrukce se bude vykonavat
-      //list->actual = op_1->body->first;
-      list->actual = list->actual->right;
+      list->actual = op_1->body->first;
 
+      NODE plop;
+      NODE pop = op_1->params;
+      //copyTree(&pop,&plop);
+      //copyTree(&plop,&pop);
+      plop = op_1->params;
+      push(&symbol_tables,&plop);
       continue;
     }
 
     //jeden return prosin
-    //skoncilo telo funkce
-    if(list->actual->id == iEND_FCE){
-
-      POPInstr(&next_instr,&list->actual,NULL);
-    }
     //jedny parametry prosim pekne
 
     //*******************************************
