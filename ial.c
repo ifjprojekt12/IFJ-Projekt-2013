@@ -189,7 +189,7 @@ NODE pop (STACK *zasobnik)
 ////////// VESTAVENE FUNKCE //////////
 //////////////////////////////////////
 
-// funkce vrací seøazený øetìzec podle shell sortu
+// funkce vracï¿½ seï¿½azenï¿½ ï¿½etï¿½zec podle shell sortu
 char * my_sort_string (char *string)
 {
     unsigned int length = strlen(string);
@@ -212,4 +212,55 @@ char * my_sort_string (char *string)
         else increment /= 2.2;
     }
     return string;
+}
+// pomocna funkce pro find
+char *vypocitejPrefix (char podretezec[])
+{
+    int k = -1;
+    int delkaPodretezce = strlen(podretezec);
+    char *prefix = malloc(delkaPodretezce*sizeof(char));
+    prefix[0] = k;
+    for (int i = 1; i < delkaPodretezce; i++)
+    {
+        while (k > -1 && podretezec[k+1] != podretezec[i]) k = prefix[k];
+        if (podretezec[i] == podretezec[k+1]) k++;
+        prefix[i] = k;
+    }
+    return prefix;
+}
+
+// funkce hleda podretezec v retezci pomoci Knuth-Moris-Prattova algoritmu
+int find_string (char *retezec, char *podretezec)
+{
+    // malej hack pro ty nase retezce
+    if (strlen(retezec) == 512)
+	 for (int i = 0; i<512; i++)
+		 if (retezec[i] == 0)
+			retezec[i] = '\0';
+	
+    if (strlen(podretezec) == 512)
+	 for (int i = 0; i<512; i++)
+		 if (podretezec[i] == 0)
+			podretezec[i] = '\0';
+
+    int k = -1;
+    int delkaRetezce = strlen(retezec);
+    int delkaPodretezce = strlen(podretezec);
+    if (delkaPodretezce == 0)
+	return 0.0;
+    char *prefix = vypocitejPrefix(podretezec);
+
+    for (int i = 0; i < delkaRetezce; i++)
+    {
+        while (k > -1 && podretezec[k+1] != retezec[i]) k = prefix[k];
+        	if (retezec[i] == podretezec[k+1]) k++;
+
+	if (k == delkaPodretezce - 1)
+        {
+            free(prefix);
+            return (i-k);
+        }
+    }
+    free(prefix);
+    return -1.0;
 }
