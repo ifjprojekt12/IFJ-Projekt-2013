@@ -58,3 +58,4 @@ NODE pop (STACK*);
 
 // vestavene funkce
 char * my_sort_string (char *);
+int find_string (char *retezec, char *podretezec);
