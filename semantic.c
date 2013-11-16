@@ -228,6 +228,8 @@ int semantixer(TOKEN *array)
 
         // ulozime si uzel pro funkci, v niz se budeme nachazet
         func = searchIdent(array[n].id_name, &tree);
+
+        // vytvoreni a inicializace listu instrukci pro danou funkci
         if( (func->body = malloc(sizeof(struct list_3ak))) == NULL )
         {
             printERR(eINTERN);
@@ -235,28 +237,59 @@ int semantixer(TOKEN *array)
             return EXIT_FAILURE;
         }
         new_instr_list(func->body);
-        treeInit( &(func->params) );
+        //treeInit( &(func->params) );
 
+        // kontrola, zda byla funkce volana pred jeji definici
         NODE assist2 = searchIdent(array[n].id_name, &check_func);
-        if( assist2 == NULL )
+        INSTRUCT aux = NULL;
+        top = 1;                    // poradi parametru
+
+        // pokud byla funkce jiz volana, existuji instrukce prirazeni parametru ovsem do nespravenho stromu
+        // projdeme cely seznam instrukci a najdeme tedy tyto instrukce k aktualni funkci, prvni z nich bude v aux
+        if( assist2 != NULL )
         {
-            // ukladame veskere parametry do stromu k dane funkci
-            n+=2;
-            while( array[n].type_token != 41 )  // )
+            INSTRUCT aux2 = NULL;
+            aux = list.first;
+            while( aux != NULL )    // prochazeni celym listem
             {
-                if( array[n].type_token != 23 )     // ,
+                if( aux->id == iSAVE_PAR )  // nalezeni instrukce prirazeni hodnot parametrum
                 {
-                    name = makeName(array[n]);
-                    insertVarToTree(name, array[n], &(func->params));
+                    aux2 = aux->right;
+                    while( aux2 != NULL && aux2->id != iASSIGN )    // cyklus pro kontrolu, ke ktere funkci instrukce nalezi
+                    {
+                        aux2 = aux2->right;
+                    }
+                    
+                    if( aux2 != NULL && aux2->id == iASSIGN && aux2->operand_1 != NULL &&
+                        strcmp(aux2->operand_1->key,array[n].id_name) == 0)
+                        // nasli jsme aktualni funkci
+                        break;
+                    else
+                        aux = aux2;     // nenasli jsme aktualni funkci, hledani pokracuje
                 }
-                n++;
+                else
+                    // nenasli jsme instrukci typu iSAVE_PAR
+                    aux = aux->right;
             }
         }
-        else
+
+        // ukladame veskere parametry do stromu k dane funkci
+        n+=2;
+        while( array[n].type_token != 41 )  // )
         {
-            // tato funkce jiz byla volana, je tedy nutne spravne zkopirovat veskere jeji uzly, aby nedoslo k chybe pri
-            // provadeni instrukci a nalezite je pouze prejmenovat
-            // TODO
+            if( array[n].type_token != 23 )     // ,
+            {
+                name = makeName(array[n]);
+                insertVarToTree(name, array[n], &(func->params));
+                assist1 = searchIdent(name, &(func->params));
+                assist1->position = top++;
+                if( aux != NULL && aux->id == iSAVE_PAR)
+                {
+                    aux->operand_1 = assist1;
+                    aux = aux->right;
+                }
+            }
+            n++;
         }
     }
     else
@@ -323,8 +356,10 @@ int functions(TOKEN *array, int n)
             if( !def )
             {
                 unit.c_number = x;
-                name = makeName(unit);
+                name = makeName(unit);      // vytvoreni nazvu z cisla poradi
                 insertVarToTree(name, array[n], &(assist1->params));
+                assist4 = searchIdent(name, &(assist1->params));
+                assist4->position = x;
             }
             assist4 = searchParam(x++, &(assist1->params));     // najde parametr na pozici x
             if( assist4 == NULL )
