@@ -89,7 +89,7 @@ int interpret(LIST_3AK *list){
       list->actual = op_1->body->first;
 
       NODE plop;
-      NODE pop = op_1->params;
+      //NODE pop = op_1->params;
       //copyTree(&pop,&plop);
       //copyTree(&plop,&pop);
       plop = op_1->params;

@@ -17,7 +17,6 @@ void print_tree(NODE a1, NODE a2)
 {
     if( a1 != NULL )
     {
-        printf("%s:\n\t",a1->key);
         if(a1->params != NULL)
         {
             printf("%s, ", a1->params->key);
@@ -50,7 +49,6 @@ void print_tree(NODE a1, NODE a2)
     }
     if( a2 != NULL )
     {
-        printf("%s:\n\t",a2->key);
         if(a2->params != NULL)
         {
             printf("%s, ", a2->params->key);
@@ -144,6 +142,7 @@ int main(int argc, char *argv[])
     if( tree != NULL )
     {
         printf("%s:\n\t",tree->key);
+
         if(tree->params != NULL)
         {
             printf("%s, ", tree->params->key);
