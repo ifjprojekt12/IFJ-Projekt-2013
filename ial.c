@@ -18,6 +18,8 @@ void insertVarToTree (char *key, TOKEN data, NODE *ptr)
         node = malloc(sizeof(struct NODE));
         node->LPtr = NULL;
         node->RPtr = NULL;
+        node->params = NULL;
+        node->position = 0;
         node->key = malloc((strlen(key)+1)*sizeof(char));
         strcpy(node->key, key);
         node->data = data;
