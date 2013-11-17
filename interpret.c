@@ -501,6 +501,9 @@ int interpret(LIST_3AK *list){
         result->data.type_token = 33;
         result->data.boolean = op_1->data.boolean;
       }
+      if(op_1->data.type_token == 34){
+        result->data.type_token = 34;
+      }
     }
 
     //*******************************************
