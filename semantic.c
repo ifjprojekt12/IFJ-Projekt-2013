@@ -327,15 +327,6 @@ int semantixer(TOKEN *array)
 
 int functions(TOKEN *array, int n)
 {
-/*
-    for( int c=0; c<512; c++)
-    {
-        if(array[c].type_token == 0)
-            break;
-        printf("%d, ",array[c].type_token);
-    }
-    printf("\n");
-*/
     LIST_3AK *dest = &list;
     NODE *dest_root = &root;
     if( func != NULL )
@@ -709,6 +700,7 @@ int expression_sem(TOKEN *array, int *m, int end, bool is_for)  // m = index v p
                     {
                         // TODO chyba
                         fprintf(stderr, "chyba, old < 0\n");
+                        free(array_expr);
                         return EXIT_FAILURE;
                     }
 
@@ -749,6 +741,7 @@ int expression_sem(TOKEN *array, int *m, int end, bool is_for)  // m = index v p
                 fprintf(stderr, "semantika, switch default, type: %d.\n", array[n].type_token);
                 // TODO
                 eCode = sSyn;
+                free(array_expr);
                 return EXIT_FAILURE;
             }
         }
@@ -763,7 +756,9 @@ int expression_sem(TOKEN *array, int *m, int end, bool is_for)  // m = index v p
     }
 
     *m = n;
-    return read_postfix(array_expr, type, max);
+    n = read_postfix(array_expr, type, max);
+    free(array_expr);
+    return n;
 }
 
 // funkce pro cteni postfixove notace vyrazu a odesilani instrukci interpretu

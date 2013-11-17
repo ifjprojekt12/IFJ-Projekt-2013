@@ -68,6 +68,7 @@ int syntaxer()
                         eCode = sSyn;
                     else
                         eCode = sINTERN;
+                    free(array);
                     return EXIT_FAILURE;
                 }
 
@@ -81,6 +82,7 @@ int syntaxer()
                     // chybejici znak {
                     printERR(eSBRACKETO);
                     eCode = sSyn;
+                    free(array);
                     return EXIT_FAILURE;
                 }
 
@@ -92,6 +94,7 @@ int syntaxer()
                 // chybejici znak (
                 printERR(eBRACKETO);
                 eCode = sSyn;
+                free(array);
                 return EXIT_FAILURE;
             }
         }
@@ -131,6 +134,7 @@ int syntaxer()
                                 eCode = sSyn;
                             else
                                 eCode = sINTERN;
+                            free(array);
                             return EXIT_FAILURE;
                         }                
                     }
@@ -139,6 +143,7 @@ int syntaxer()
                         // chybi znamenko '='
                         printERR(eWRONG);
                         eCode = sSyn;
+                        free(array);
                         return EXIT_FAILURE;
                     }
                 }
@@ -147,6 +152,7 @@ int syntaxer()
                     // chybi znamenko ';'
                     printERR(eWRONG);
                     eCode = sSyn;
+                    free(array);
                     return EXIT_FAILURE;
                 }
 
@@ -166,9 +172,10 @@ int syntaxer()
                         // chyba ve vyrazu
                         printERR(eEXPR);
                         if(i == -1)
-                        eCode = sSyn;
+                            eCode = sSyn;
                         else
-                        eCode = sINTERN;
+                            eCode = sINTERN;
+                        free(array);
                         return EXIT_FAILURE;
                      }                
 
@@ -178,6 +185,7 @@ int syntaxer()
                     // chybi znamenko ';'
                     printERR(eWRONG);
                     eCode = sSyn;
+                    free(array);
                     return EXIT_FAILURE;
                 }
 
@@ -205,6 +213,7 @@ int syntaxer()
                                 eCode = sSyn;
                             else
                                 eCode = sINTERN;
+                            free(array);
                             return EXIT_FAILURE;
                         }                
                     }
@@ -213,6 +222,7 @@ int syntaxer()
                         // chybejici znak '='
                         printERR(eWRONG);
                         eCode = sSyn;
+                        free(array);
                         return EXIT_FAILURE;
                     }
 
@@ -222,6 +232,7 @@ int syntaxer()
                     // chybi znamenko ';'
                     printERR(eWRONG);
                     eCode = sSyn;
+                    free(array);
                     return EXIT_FAILURE;
                 }
 
@@ -235,6 +246,7 @@ int syntaxer()
                     // chybejici znak '{'
                     printERR(eSBRACKETO);
                     eCode = sSyn;
+                    free(array);
                     return EXIT_FAILURE;
                 }
 
@@ -246,6 +258,7 @@ int syntaxer()
                 // chybejici znak '('
                 printERR(eBRACKETO);
                 eCode = sSyn;
+                free(array);
                 return EXIT_FAILURE;
             }
             inFOR = true;
@@ -257,6 +270,7 @@ int syntaxer()
                 // prikaz break nebo continue se nenachazi uvnitr prikazu FOR
                 printERR(eFOR);
                 eCode = sSyn;
+                free(array);
                 return EXIT_FAILURE;
             }
 
@@ -270,6 +284,7 @@ int syntaxer()
                 // chybejici znak ';'
                 printERR(eWRONG);
                 eCode = sSyn;
+                free(array);
                 return EXIT_FAILURE;
             }
         }
@@ -284,6 +299,7 @@ int syntaxer()
                     eCode = sSyn;
                 else
                     eCode = sINTERN;
+                free(array);
                 return EXIT_FAILURE;
             }
         }
@@ -301,6 +317,7 @@ int syntaxer()
                 // chybejici znak {
                 printERR(eSBRACKETO);
                 eCode = sSyn;
+                free(array);
                 return EXIT_FAILURE;
             }
 
@@ -354,6 +371,7 @@ int syntaxer()
                                 // nespravny token ci posloupnost
                                 eCode = sSyn;
                                 printERR(ePARAM);
+                                free(array);
                                 return EXIT_FAILURE;
                             }
 
@@ -365,9 +383,9 @@ int syntaxer()
                         if( term && !empty )
                         {
                             // spatna posloupnost argumentu funkce
-                            printf("tady2\n");
                             printERR(ePARAM);
                             eCode = sSyn;
+                            free(array);
                             return EXIT_FAILURE;
                         }
 
@@ -381,6 +399,7 @@ int syntaxer()
                             // chybejici znak ';'
                             printERR(eWRONG);
                             eCode = sSyn;
+                            free(array);
                             return EXIT_FAILURE;
                         }
                     }
@@ -389,6 +408,7 @@ int syntaxer()
                         // chybejici znak '('
                         printERR(eWRONG);
                         eCode = sSyn;
+                        free(array);
                         return EXIT_FAILURE;
                     }
                 }
@@ -401,6 +421,7 @@ int syntaxer()
                         eCode = sSyn;
                     else
                         eCode = sINTERN;
+                    free(array);
                     return EXIT_FAILURE;
                 }
             }
@@ -409,6 +430,7 @@ int syntaxer()
                 // chybejici znak =
                 printERR(eASSIGN);
                 eCode = sSyn;
+                free(array);
                 return EXIT_FAILURE;
             }
         }
@@ -452,8 +474,8 @@ int syntaxer()
                         {
                             // nespravny token ci posloupnost
                             eCode = sSyn;
-                            printf("tady3\n");
                             printERR(ePARAM);
+                            free(array);
                             return EXIT_FAILURE;
                         }
 
@@ -465,9 +487,9 @@ int syntaxer()
                     if( id && !empty )
                     {
                         // spatna posloupnost parametru funkce
-                        printf("tady4\n");
                         printERR(ePARAM);
                         eCode = sSyn;
+                        free(array);
                         return EXIT_FAILURE;
                     }
                     
@@ -481,6 +503,7 @@ int syntaxer()
                         // chybejici znak {
                         printERR(eSBRACKETO);
                         eCode = sSyn;
+                        free(array);
                         return EXIT_FAILURE;
                     }
 
@@ -498,6 +521,7 @@ int syntaxer()
                 // vice '}' nez '{' zavorek
                 printERR(eWRONG);
                 eCode = sSyn;
+                free(array);
                 return EXIT_FAILURE;
             }
 
@@ -506,6 +530,7 @@ int syntaxer()
                 // zavorka s prazdnym zasobnikem
                 printERR(eWRONG);
                 eCode = sSyn;
+                free(array);
                 return EXIT_FAILURE;
             }
 
@@ -552,10 +577,10 @@ int syntaxer()
         }
         else
         {
-            //printf("token: %d\n", unit.type_token);
             // token, ktery se nesmi nalezat na zacatku radku
             printERR(eUNKNOWN);
             eCode = sSyn;
+            free(array);
             return EXIT_FAILURE;
         }
 
@@ -590,6 +615,7 @@ int syntaxer()
                         // prazdny zasobnik ( == else(if) bez IF ?)
                         printERR(eWRONG);
                         eCode = sSyn;
+                        free(array);
                         return EXIT_FAILURE;
                     }
                     TOP( &leStack, &top );
@@ -606,36 +632,11 @@ int syntaxer()
                         // else(if) bez IF
                         printERR(eWRONG);
                         eCode = sSyn;
+                        free(array);
                         return EXIT_FAILURE;
                     }
         }
         type = 0;
-
-/*
-        // vypis celeho zasobniku typu int
-        if( !SEmpty( &leStack ) )
-        {
-            printf("Zasobnik int:\ntop: ");
-            tElemPtr aux = leStack.Last;
-            while( aux != NULL )
-            {
-                printf("| %d ", aux->Elem);
-                aux = aux->ptr;
-            }
-            printf("|\n");
-        }
-        else
-            printf("Zasobnik je prazdny.\n");
-*/
-/*
-    // vypis pole tokenu
-    for(int x=0; x<I_MAX; x++)
-    {
-        if(array[x].type_token == 0)    break;
-        printf("%d ", array[x].type_token);
-    }
-    printf("\n");
-*/
 
         // po zpracovani jednoho radku volame funkci pro kontrolu semantiky
         if( semantixer(array) == EXIT_FAILURE )
@@ -647,6 +648,9 @@ int syntaxer()
     
         unit = get_token(); // nacteni dalsiho tokenu
     }
+
+    // uvolneni pole tokenu pri konci syntakticke a semanticke analyzy
+    free(array);
 
     if( unit.type_token == 0 || unit.type_token == 100 )
     {
