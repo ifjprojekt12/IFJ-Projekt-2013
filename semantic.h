@@ -12,6 +12,7 @@
 #define MAXINDEX    15
 #define N_MAX       512
 #define SEMICOLON   22      // type_token ;
+#define B_BRACKET   41      // type_token )
 #define BRACKET     42      // type_token {
 #define ASCII       48      // prevod int -> char
 
@@ -24,6 +25,7 @@ extern INSTRUCT aux;
 extern tSInstr InstrStack;
 extern tSInstr InstrFor;
 extern int eCode;
+//extern int m;           // velikost pole tokenu
 extern bool func_end;
 
 // enum pro urceni priorit
@@ -59,13 +61,16 @@ int semantixer(TOKEN *array);
 int functions(TOKEN *array, int n);
 
 // funkce pro zpracovani vyrazu - prevod do postfixove notace a odeslani instrukci interpretu
-int expression_sem(TOKEN *array, int *m, int end);
+int expression_sem(TOKEN *array, int *m, int end, bool is_for);
 
 // funkce zpracovava vyrazy v postfixu a vytvari instrukce pro interpret
 int read_postfix(TOKEN *array, int type);
 
 // funkce pro vytvoreni jmena do tabulky symbolu
 char* makeName(TOKEN unit);
+
+// funkce pro smazani instrukce ze seznamu a ulozeni do zasobniku pro cyklus FOR
+void PUSH_last(bool first);
 
 // funkce pro porovnavani datovych typu
 bool Compatible(NODE *a1, NODE *a2, int sign);
