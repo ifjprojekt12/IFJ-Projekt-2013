@@ -191,9 +191,22 @@ NODE pop (STACK *zasobnik)
 ////////// VESTAVENE FUNKCE //////////
 //////////////////////////////////////
 
-// funkce vrac� se�azen� �et�zec podle shell sortu
-char * my_sort_string (char *string)
-{
+void reverse(char s[]) {
+  int c, i, j;
+  for( i=0, j=strlen(s)-1; i<j; i++, j--)
+  {
+    c = s[i];
+    s[i] = s[j];
+    s[j] = c;
+  }
+}
+
+// funkce vrací seøazený øetìzec podle shell sortu
+char *my_sort_string (char *old_string) {
+
+    char*string = malloc(strlen(old_string));
+    strcpy(string, old_string);
+
     unsigned int length = strlen(string);
     int increment = length / 2;
     int j = 0; char pom;
@@ -213,8 +226,10 @@ char * my_sort_string (char *string)
         if (increment == 2) increment = 1;
         else increment /= 2.2;
     }
+    reverse(string);
     return string;
 }
+
 // pomocna funkce pro find
 char *vypocitejPrefix (char podretezec[])
 {
