@@ -1,4 +1,4 @@
 <?php
 //vestavna funkce solo
 $a = sort_string("cba");
-$b = put_string("$a");
+$b = put_string($a);
