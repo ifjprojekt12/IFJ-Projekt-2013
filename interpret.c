@@ -90,7 +90,7 @@ int interpret(LIST_3AK *list){
 
       NODE plop;
       //NODE pop = op_1->params;
-      //copyTree(&pop,&plop);
+      //plop = copyTree(&pop,plop);
       //copyTree(&plop,&pop);
       plop = op_1->params;
       push(&symbol_tables,&plop);
@@ -886,8 +886,8 @@ int interpret(LIST_3AK *list){
         eCode = sSemVar;
         return EXIT_FAILURE;
       }
-      result->data.type_token = 30;
       result->data.string = strval(op_1);
+      result->data.type_token = 30;
     }
     //intval
     if(list->actual->id == iIVAL){
@@ -895,8 +895,8 @@ int interpret(LIST_3AK *list){
         eCode = sSemVar;
         return EXIT_FAILURE;
       }
-      result->data.type_token = 31;
       result->data.c_number = intval(op_1);
+      result->data.type_token = 31;
     }
     //doubleval
     if(list->actual->id == iDVAL){
@@ -904,10 +904,10 @@ int interpret(LIST_3AK *list){
         eCode = sSemVar;
         return EXIT_FAILURE;
       }
-      result->data.type_token = 32;
       if((result->data.d_number = doubleval(op_1)) == EXIT_FAILURE){
         return EXIT_FAILURE;
       }
+      result->data.type_token = 32;
     }
     //boolval
     if(list->actual->id == iBVAL){
@@ -915,8 +915,8 @@ int interpret(LIST_3AK *list){
         eCode = sSemVar;
         return EXIT_FAILURE;
       }
-      result->data.type_token = 33;
       result->data.boolean = boolval(op_1);
+      result->data.type_token = 33;
     }
     //-------------------------------------------
     //funkce pro praci s retezci
