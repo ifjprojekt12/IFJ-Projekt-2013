@@ -24,7 +24,6 @@ int interpret(LIST_3AK *list){
 
   list->actual = list->first;
 
-
   while(1){
     //*******************************************
     //instrukce konce programu
@@ -311,7 +310,7 @@ int interpret(LIST_3AK *list){
         char *new_str;
 
         //zabereme misto pro spojene retezce s nejakou rezervou
-        if((new_str = malloc(sizeof(char) * strlen(op_1->data.string) + strlen(op_2->data.string)+ str_rezerv)) == NULL){
+        if((new_str = calloc((strlen(op_1->data.string) + strlen(op_2->data.string)+ str_rezerv),sizeof(char))) == NULL){
           eCode = sINTERN;
           return EXIT_FAILURE;
         }
@@ -389,69 +388,6 @@ int interpret(LIST_3AK *list){
         }
 
       }
-
-      //neco a string
-      /*else if(op_2->data.type_token == 30){
-
-        result->data.type_token = 30;
-
-        //ulozime stary retezec
-        char *old_str = result->data.string;
-        char *new_str;
-        char *buffer;
-
-        if((buffer = malloc(sizeof(char) * str_rezerv)) == NULL){
-          eCode = sINTERN;
-          return EXIT_FAILURE;
-        }
-
-        //zabereme misto pro spojene retezce s nejakou rezervou
-        if((new_str = malloc(sizeof(char) * strlen(op_2->data.string) + str_rezerv)) == NULL){
-          eCode = sINTERN;
-          return EXIT_FAILURE;
-        }
-
-        //samotna konkatenace
-        //int
-        if(op_1->data.type_token == 31){
-          sprintf(buffer,"%d",op_1->data.c_number);
-          strcpy(new_str,buffer);
-          strcat(new_str,op_2->data.string);
-          result->data.string = new_str;
-        }
-        //double
-        if(op_1->data.type_token == 32){
-          sprintf(buffer,"%g",op_1->data.d_number);
-          strcpy(new_str,buffer);
-          strcat(new_str,op_2->data.string);
-          result->data.string = new_str;
-        }
-        //bool
-        if(op_1->data.type_token == 33){
-          if(op_1->data.boolean == 0){
-            strcpy(new_str,"");
-          }
-          if(op_1->data.boolean == 1){
-            strcpy(new_str,"1");
-          }
-          strcat(new_str,op_2->data.string);
-          result->data.string = new_str;
-        }
-        //null
-        if(op_1->data.type_token == 34){
-          strcpy(new_str,op_2->data.string);
-          result->data.string = new_str;
-        }
-
-        //a uvolnime pripadny puvodni retezec z pameti
-        if(old_str != NULL){
-          free(old_str);
-        }
-        if(buffer != NULL){
-          free(buffer);
-        }
-
-      }*/
 
       //cokoliv jineho - chyba
       else {
@@ -981,9 +917,13 @@ int interpret(LIST_3AK *list){
     }
     //find_string
     if(list->actual->id == iF_STR){
+      result->data.type_token = 31;
+      result->data.c_number = find_string(strval(op_1),strval(op_2));
     }
     //sort_string
     if(list->actual->id == iS_STR){
+      result->data.type_token = 30;
+      result->data.string = my_sort_string(strval(op_1));
     }
 
 
