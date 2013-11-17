@@ -907,7 +907,8 @@ int interpret(LIST_3AK *list){
         eCode = sSemVar;
         return EXIT_FAILURE;
       }
-      if((result->data.d_number = doubleval(op_1)) == EXIT_FAILURE){
+      result->data.d_number = doubleval(op_1);
+      if(eCode == 13){
         return EXIT_FAILURE;
       }
       result->data.type_token = 32;
