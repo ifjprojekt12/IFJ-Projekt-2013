@@ -395,17 +395,6 @@ int syntaxer()
                 else if( (i = expression(array, i-1, unit, END_S)) < 0 )    // vyraz
                 // zpracovani vyrazu, END_S = vyraz konci strednikem
                 {
-/*                    printf("tady\n");
-
-    printf("$x = funkce()\n");
-    // vypis pole tokenu
-    for(int x=0; x<m; x++)
-    {
-        if(array[x].type_token == 0)    break;
-        printf("%d ", array[x].type_token);
-    }
-    printf("\n");
-*/
                     // chyba ve vyrazu
                     printERR(eEXPR);
                     if(i == -1)
@@ -751,6 +740,7 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending)
     bool wasExpr = false;
     bool wasSign = true;
     int brackets = 0;
+    int i_orig = i;
 
     while( unit.type_token > 0 && unit.type_token != 100 && unit.type_token != 50 ) // chyba nebo EOF
     {
@@ -780,32 +770,26 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending)
                 if( ending != END_S )
                     break;
                 else
-                {
                     // prebytecna uzaviraci zavorka, cekame strednik (semicolon)
-                    printERR(eEXPR);
                     return -1;
-                }
             }
         }
         else if( ending == END_S && wasExpr && unit.type_token == 22 )     // ;
         {
             if( brackets != 0 )
-            {
                 // chybi zavorka ve vyrazu
-                printERR(eEXPR);
                 return -1;
-            }
             break;
         }
         else
-        {
             // znak na nespravnem miste
-            printERR(eEXPR);
             return -1;
-        }
 
         unit = get_token();
     }
+
+    if( i == i_orig+1 )     // prazdny vyraz
+        i = -2;
 
     return i;
 }
