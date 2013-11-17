@@ -450,7 +450,6 @@ TOKEN get_token(){
         mult_l_string++;
       }
       //realloc pro delsi retezce
-      printf("%d,",length_string);
       if(length_string == ((100*(mult_l_string-1))-1)){
         char *new_str;
         new_str = realloc(new_tok.string,100*mult_l_string);
