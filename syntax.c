@@ -660,7 +660,7 @@ int syntaxer()
     if( unit.type_token == 0 || unit.type_token == 100 )
     {
         printERR(eWRONG);
-        if( eCode == 0 )
+        if( eCode == sOK )
             eCode = sSyn;
         return EXIT_FAILURE;
     }
