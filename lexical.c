@@ -56,7 +56,7 @@ int read_src(){
   if(fgets(buffer,buffer_size-1,source) == NULL)
     return 1;
 
-  //kontrola prazdneho radku... PREDELAT NA VSECHNY BILE ZNAKY PRAZDNEHO RADKU
+  //kontrola prazdneho radku...
   while(1){
     if(buffer[0] == 10) {
       if(fgets(buffer,buffer_size,source) == NULL)
@@ -432,25 +432,31 @@ TOKEN get_token(){
       return new_tok;
     }
 
+    //zacatek cteni
+    int mult_l_string = 1;
+
     while(ende_string == 0){
 
-      pos_buffer++;
-
-      if(pos_buffer == strlen(buffer)){
-        if((read_src()) == 1){
-          return new_tok;
-        }
+      if(pos_buffer == buffer_size-2){
+        read_src();
         pos_buffer = 0;
       }
+      pos_buffer++;
 
       //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       //ukladani obsahu retezce a prace s pameti kam se uklada
       if(new_tok.string == NULL){
-        new_tok.string = malloc(sizeof(char)*100);
+        new_tok.string = calloc(100*mult_l_string,sizeof(char));
+        mult_l_string++;
       }
-
-      //DOPLNIT REALLOC <<------
+      //realloc pro delsi retezce
+      printf("%d,",length_string);
+      if(length_string == ((100*(mult_l_string-1))-1)){
+        char *new_str;
+        new_str = realloc(new_tok.string,100*mult_l_string);
+        new_tok.string = new_str;
+      }
 
       //kontrola na znaky <31 a $
       if(buffer[pos_buffer - 1] == '$' && buffer[pos_buffer - 2] != '\\'){
@@ -521,15 +527,16 @@ TOKEN get_token(){
         new_tok.string[length_string] = buffer[pos_buffer-1];
         length_string++;
       }
-
       //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       if(buffer[pos_buffer] == '"'){
+
         ende_string = 1;
         new_tok.type_token = 30;
         pos_buffer++;
 
         new_tok.string[length_string] = '\0';
+
         return new_tok;
       }
     }
