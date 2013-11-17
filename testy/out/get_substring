@@ -1,8 +1,0 @@
-//vestavna funkce solo
-$x = "0123456789"
-$a = get_string($x, 0,1);
-$b = put_string($a,"\n");
-$a = get_string($x, 1,1);
-$b = put_string($a,"\n");
-$a = get_string($x, 2,5);
-$b = put_string($a,"\n");
