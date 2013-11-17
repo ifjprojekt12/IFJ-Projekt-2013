@@ -1,0 +1,10 @@
+<?php
+
+$x = "0123456789";
+$a = get_substring($x, 0,1);
+$b = put_string($a, "\n");
+$a = get_substring($x, 1,1);
+$b = put_string($a, "\n");
+$a = get_substring($x, 1,4);
+$b = put_string($a, "\n");
+
