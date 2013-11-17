@@ -302,6 +302,8 @@ int semantixer(TOKEN *array)
             if( array[n].type_token != 23 )     // ,
             {
                 name = makeName(array[n]);
+                if( name == NULL )
+                    return EXIT_FAILURE;
                 insertVarToTree(name, array[n], &(func->params));
                 assist1 = searchIdent(name, &(func->params));
                 assist1->position = top++;
@@ -381,6 +383,8 @@ int functions(TOKEN *array, int n)
             {
                 unit.c_number = x;
                 name = makeName(unit);      // vytvoreni nazvu z cisla poradi
+                if( name == NULL )
+                    return EXIT_FAILURE;
                 insertVarToTree(name, array[n], &(assist1->params));
                 assist4 = searchIdent(name, &(assist1->params));
                 assist4->position = x;
@@ -390,6 +394,8 @@ int functions(TOKEN *array, int n)
                 break;      // prebytecne parametry jsou ignorovany
 
             name = makeName(array[n]);
+            if( name == NULL )
+                return EXIT_FAILURE;
             assist3 = searchIdent(name, dest_root);     // hledani hodnoty/promenne ve stromu
             if( assist3 == NULL )                       // hledani neuspesne
             {
@@ -632,15 +638,15 @@ int functions(TOKEN *array, int n)
 }
 
 // funkce pro zapis vyrazu do postfixove notace a odeslani instrukci
-int expression_sem(TOKEN *array, int *m, int end, bool is_for)
+int expression_sem(TOKEN *array, int *m, int end, bool is_for)  // m = index v poli
 {
     // deklarace zasobniku a jeho inicializace
     tStack leStack;
     init(&leStack);
 
-    // pomocne pole tokenu (zatim velikost N_MAX -> udelat dynamicky !!! ) TODO
-    TOKEN array_expr[N_MAX];
-    int i, new = 0, old = 0, precedent = 0, type, n = *m;
+    TOKEN *array_expr;
+    int i = 0, max = 64, new = 0, old = 0, precedent = 0, type, n = *m;
+    initialize_array( &array_expr, i, max );
 
     if( is_for )
         // cislo 50 bude znacit, ze se nachazime ve treti hlaviky cyklu for, o cemz nas informuje is_for
@@ -649,16 +655,8 @@ int expression_sem(TOKEN *array, int *m, int end, bool is_for)
     else
         type = array[0].type_token;
 
-    for( i=0; i<N_MAX; i++)
-    {
-        array_expr[i].type_token = 0;
-        array_expr[i].c_number = 0;
-        array_expr[i].d_number = 0.0;
-        array_expr[i].string = NULL;
-        array_expr[i].boolean = 0;
-        array_expr[i].null = 0;
-        array_expr[i].id_name = NULL;
-    }
+    for( ; i<max; i++)
+        token_init(&(array_expr[i]));
 
     i = 0;
     while( array[n].type_token != end )      // SEMICOLON nebo BRACKET
@@ -673,6 +671,8 @@ int expression_sem(TOKEN *array, int *m, int end, bool is_for)
             case 36:    // promenna
             {
                 array_expr[i++] = array[n++];
+                if( i == max && realloc_array(array_expr, &max) == EXIT_FAILURE )
+                    return EXIT_FAILURE;
                 break;
             }
             case 40:    // (
@@ -721,6 +721,8 @@ int expression_sem(TOKEN *array, int *m, int end, bool is_for)
                     else
                     {
                         array_expr[i++].type_token = TOPCheck( &leStack );
+                        if( i == max && realloc_array(array_expr, &max) == EXIT_FAILURE )
+                            return EXIT_FAILURE;
                         POP( &leStack );
                     }
                     break;
@@ -731,6 +733,8 @@ int expression_sem(TOKEN *array, int *m, int end, bool is_for)
                 if( (old = TOPCheck( &leStack )) != 40 )    // (
                 {
                     array_expr[i++].type_token = TOPCheck( &leStack );
+                    if( i == max && realloc_array(array_expr, &max) == EXIT_FAILURE )
+                        return EXIT_FAILURE;
                     POP( &leStack );
                     break;
                 }
@@ -753,15 +757,17 @@ int expression_sem(TOKEN *array, int *m, int end, bool is_for)
     while( !SEmpty( &leStack ) )
     {
         array_expr[i++].type_token = TOPCheck( &leStack );
+        if( i == max && realloc_array(array_expr, &max) == EXIT_FAILURE )
+           return EXIT_FAILURE;
         POP( &leStack );
     }
 
     *m = n;
-    return read_postfix(array_expr, type);
+    return read_postfix(array_expr, type, max);
 }
 
 // funkce pro cteni postfixove notace vyrazu a odesilani instrukci interpretu
-int read_postfix(TOKEN *array, int type)
+int read_postfix(TOKEN *array, int type, int max)
 {
     // pomocne promenne
     int i=0, top;
@@ -784,7 +790,7 @@ int read_postfix(TOKEN *array, int type)
         dest_root = &(func->params);
     }
 
-    while( array[i].type_token != 0 )   // konec pole ?? TODO
+    while( i < max && array[i].type_token != 0 )
     {
         // narazime na cislo int nebo double, bool, string nebo promennou
         if(array[i].type_token == 36 || (array[i].type_token >= 30 && array[i].type_token <= 34))
@@ -912,48 +918,13 @@ int read_postfix(TOKEN *array, int type)
 
             if( array[i].type_token >= 11 && array[i].type_token <= 15 )    // ulozeni mezivysledku na zasobnik
                 PUSHNode( &nodeStack, assist3);
-
-            /*doplnit assist3 a jedeme na znamenka*//*
-            printf("---------------------------------------------------\n");
-            printf("assist1\n");
-            printf("prvek ve stromu data.string: %s\n",assist1->data.string);
-            printf("prvek ve stromu data.id_name: %s\n",assist1->data.id_name);
-            printf("prvek ve stromu data.c_number: %d\n",assist1->data.c_number);
-            printf("prvek ve stromu data.d_number: %f\n",assist1->data.d_number);
-            printf("prvek ve stromu data.boolean: %d\n",assist1->data.boolean);
-            printf("assist2\n");
-            printf("prvek ve stromu data.string: %s\n",assist2->data.string);
-            printf("prvek ve stromu data.id_name: %s\n",assist2->data.id_name);
-            printf("prvek ve stromu data.c_number: %d\n",assist2->data.c_number);
-            printf("prvek ve stromu data.d_number: %f\n",assist2->data.d_number);
-            printf("prvek ve stromu data.boolean: %d\n",assist2->data.boolean);
-            printf("---------------------------------------------------\n");
-            printf("assist3\n");
-            printf("prvek ve stromu data.string: %s\n",assist3->data.string);
-            printf("prvek ve stromu data.id_name: %s\n",assist3->data.id_name);
-            printf("prvek ve stromu data.c_number: %d\n",assist3->data.c_number);
-            printf("prvek ve stromu data.d_number: %f\n",assist3->data.d_number);
-            printf("prvek ve stromu data.boolean: %d\n",assist3->data.boolean);
-            printf("---------------------------------------------------\n");
-*/
         }
 
         i++; assist1 = NULL; assist2 = NULL; assist3 = NULL;    // smazat nulovani assist* - rychlost
     }
 
-/*
-    for( i=0; i<N_MAX; i++)
-    {
-        if( array[i].type_token == 0 )
-            break;
-        printf("%d ", array[i].type_token);
-    }
-    printf("\n");
-*/
-
     return EXIT_SUCCESS;
 }
-
 
 // funkce pro vytvoreni jmena pro ukladani do stromu
 char* makeName(TOKEN unit)
@@ -1187,4 +1158,43 @@ int Give_index( int type )
         default:    break;
     }
     return -1;
+}
+
+// funkce pro inicializaci pole tokenu
+int initialize_array(TOKEN**array, int i, int m)
+{
+	if( i == 0 && (*array = (TOKEN*) malloc(m*sizeof(TOKEN))) == NULL )
+	{
+		printERR(eINTERN);
+		eCode = sINTERN;
+		return EXIT_FAILURE;
+	}
+
+    for(int x=0; x<m; x++)
+    {
+        token_init(&((*array)[x]));
+    }
+	return EXIT_SUCCESS;
+}
+
+// funkce pro realokaci pole
+int realloc_array(TOKEN*array, int*m)
+{
+	TOKEN *aux = NULL;
+	if( (aux = realloc(array,(*m)*2*sizeof(TOKEN))) == NULL )
+	{
+		free(array);
+		printERR(eINTERN);
+		eCode = sINTERN;
+		return EXIT_FAILURE;
+	}
+	array = aux;
+
+	for(int x=(*m); x<(*m)*2; x++)
+	{
+		token_init(&array[x]);
+	}
+	(*m)*=2;
+
+	return EXIT_SUCCESS;
 }

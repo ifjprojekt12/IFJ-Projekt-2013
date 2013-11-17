@@ -9,7 +9,6 @@
 
 #define END_B   30	// bracket
 #define END_S   31	// semicolon
-#define I_MAX   512
 
 INSTRUCT aux;           // pomocny ukazatel instrukce pro vytvareni skokovych instrukci v semantice
 tSInstr InstrStack;
@@ -25,11 +24,6 @@ extern int eCode;       // navratovy kod
 
 // hlavni funkce syntaxe
 int syntaxer();
-
-// funkce pro inicializaci pole tokenu
-int initialize_array(TOKEN**array, int i, int m);
-
-int realloc_array(TOKEN*array, int*m);
 
 // funkce pro zpracovani vyrazu, array - pole tokenu, i - pozice v poli, unit - prvni token vyrazu, ending - ocekavany konec vyrazu
 int expression(TOKEN*array, int i, TOKEN unit, int ending, int *m);

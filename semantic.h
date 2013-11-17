@@ -10,7 +10,6 @@
 #include "data_struct.h"
 
 #define MAXINDEX    15
-#define N_MAX       512
 #define SEMICOLON   22      // type_token ;
 #define B_BRACKET   41      // type_token )
 #define BRACKET     42      // type_token {
@@ -63,7 +62,7 @@ int functions(TOKEN *array, int n);
 int expression_sem(TOKEN *array, int *m, int end, bool is_for);
 
 // funkce zpracovava vyrazy v postfixu a vytvari instrukce pro interpret
-int read_postfix(TOKEN *array, int type);
+int read_postfix(TOKEN *array, int type, int max);
 
 // funkce pro vytvoreni jmena do tabulky symbolu
 char* makeName(TOKEN unit);
@@ -76,5 +75,11 @@ bool Compatible(NODE *a1, NODE *a2, int sign);
 
 // funkce pro prevod typu tokenu na index v precedencni tabulce
 int Give_index(int type);
+
+// funkce pro inicializaci pole tokenu, i = index, m = velikost pole
+int initialize_array(TOKEN**array, int i, int m);
+
+// funkce pro zvetseni velikosti pole
+int realloc_array(TOKEN*array, int*m);
 
 #endif

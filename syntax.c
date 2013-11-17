@@ -697,44 +697,6 @@ int func_defined(NODE a1, NODE a2)
     return EXIT_SUCCESS;
 }
 
-// funkce pro inicializaci pole tokenu
-int initialize_array(TOKEN**array, int i, int m)
-{
-	if( i == 0 && (*array = (TOKEN*) malloc(m*sizeof(TOKEN))) == NULL )
-	{
-		printERR(eINTERN);
-		eCode = sINTERN;
-		return EXIT_FAILURE;
-	}
-
-    for(int x=0; x<m; x++)
-    {
-        token_init(&((*array)[x]));
-    }
-	return EXIT_SUCCESS;
-}
-
-int realloc_array(TOKEN*array, int*m)
-{
-	TOKEN *aux = NULL;
-	if( (aux = realloc(array,(*m)*2*sizeof(TOKEN))) == NULL )
-	{
-		free(array);
-		printERR(eINTERN);
-		eCode = sINTERN;
-		return EXIT_FAILURE;
-	}
-	array = aux;
-
-	for(int x=(*m); x<(*m)*2; x++)
-	{
-		token_init(&array[x]);
-	}
-	(*m)*=2;
-
-	return EXIT_SUCCESS;
-}
-
 // funkce pro kontrolu vyrazu
 int expression(TOKEN*array, int i, TOKEN unit, int ending, int *m)
 {
