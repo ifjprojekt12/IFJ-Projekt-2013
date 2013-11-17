@@ -444,7 +444,6 @@ TOKEN get_token(){
       pos_buffer++;
 
       //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
       //ukladani obsahu retezce a prace s pameti kam se uklada
       if(new_tok.string == NULL){
         new_tok.string = calloc(100*mult_l_string,sizeof(char));
@@ -455,9 +454,9 @@ TOKEN get_token(){
       if(length_string == ((100*(mult_l_string-1))-1)){
         char *new_str;
         new_str = realloc(new_tok.string,100*mult_l_string);
+        mult_l_string++;
         new_tok.string = new_str;
       }
-
       //kontrola na znaky <31 a $
       if(buffer[pos_buffer - 1] == '$' && buffer[pos_buffer - 2] != '\\'){
         return new_tok;
