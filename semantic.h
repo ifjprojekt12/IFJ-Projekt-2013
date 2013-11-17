@@ -25,7 +25,6 @@ extern INSTRUCT aux;
 extern tSInstr InstrStack;
 extern tSInstr InstrFor;
 extern int eCode;
-//extern int m;           // velikost pole tokenu
 extern bool func_end;
 
 // enum pro urceni priorit

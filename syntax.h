@@ -17,7 +17,6 @@ tSInstr InstrFor;
 NODE check_func;
 NODE func;
 bool func_end;
-int m,i;                // velikost pole tokenu a aktualni index
 
 extern NODE tree;       // tabulka funkci
 extern NODE root;       // tabulka promennych
@@ -28,12 +27,12 @@ extern int eCode;       // navratovy kod
 int syntaxer();
 
 // funkce pro inicializaci pole tokenu
-int initialize_array(TOKEN**array);
+int initialize_array(TOKEN**array, int i, int m);
 
-int realloc_array(TOKEN*array);
+int realloc_array(TOKEN*array, int*m);
 
 // funkce pro zpracovani vyrazu, array - pole tokenu, i - pozice v poli, unit - prvni token vyrazu, ending - ocekavany konec vyrazu
-int expression(TOKEN*array, int i, TOKEN unit, int ending);
+int expression(TOKEN*array, int i, TOKEN unit, int ending, int *m);
 
 // funkce prochazejici celym stromem, kontroluje zda byly volane funkce definovane
 int func_defined(NODE a1, NODE a2);
