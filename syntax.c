@@ -9,9 +9,8 @@ int syntaxer()
 
     // vytvoreni statickeho pole tokenu
     TOKEN *array=NULL;
-	m = 64;			// pocatecni velikost pole
-	i = 0;			// index
-    initialize_array(&array);
+	int m = 64, i = 0;			// pocatecni velikost pole a index
+    initialize_array(&array,i,m);
 
     // vytvoreni zasobniku a jeho inicializace
     tStack leStack;
@@ -44,7 +43,7 @@ int syntaxer()
     {
         // pole pro ukladani tokenu celeho jednoho radku
         array[i++] = unit;
-        if( i == m && realloc_array(array) == EXIT_FAILURE )
+        if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 			return EXIT_FAILURE;
 
         // if, elseif, while
@@ -55,13 +54,13 @@ int syntaxer()
 
             unit = get_token();
             array[i++] = unit;
-    	    if( i == m && realloc_array(array) == EXIT_FAILURE )
+    	    if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 				return EXIT_FAILURE;
 
             if( unit.type_token == 40 ) // (
             {
                 // zpracovani vyrazu, ktery musi nasledovat, END_B = vyraz konci zavorkou
-                if( (i = expression(array, i, get_token(), END_B)) < 0 )
+                if( (i = expression(array, i, get_token(), END_B, &m)) < 0 )
                 {
                     // chyba ve vyrazu
                     printERR(eEXPR);
@@ -69,12 +68,13 @@ int syntaxer()
                         eCode = sSyn;
                     else
                         eCode = sINTERN;
+                    free(array);
                     return EXIT_FAILURE;
                 }
 
                 unit = get_token();
                 array[i++] = unit;
-    		    if( i == m && realloc_array(array) == EXIT_FAILURE )
+    		    if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 					return EXIT_FAILURE;
 
                 if( unit.type_token != 42 ) // {
@@ -82,6 +82,7 @@ int syntaxer()
                     // chybejici znak {
                     printERR(eSBRACKETO);
                     eCode = sSyn;
+                    free(array);
                     return EXIT_FAILURE;
                 }
 
@@ -93,6 +94,7 @@ int syntaxer()
                 // chybejici znak (
                 printERR(eBRACKETO);
                 eCode = sSyn;
+                free(array);
                 return EXIT_FAILURE;
             }
         }
@@ -102,7 +104,7 @@ int syntaxer()
             type = unit.type_token;
             unit = get_token();
             array[i++] = unit;
-	        if( i == m && realloc_array(array) == EXIT_FAILURE )
+	        if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 				return EXIT_FAILURE;
 
             if( unit.type_token == 40 ) // (
@@ -110,7 +112,7 @@ int syntaxer()
                 // nacteni dalsiho tokenu - prvni cast hlavicky
                 unit = get_token();
                 array[i++] = unit;
-    		    if( i == m && realloc_array(array) == EXIT_FAILURE )
+    		    if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 					return EXIT_FAILURE;
 
                 // prvni cast je neprazdna
@@ -118,13 +120,13 @@ int syntaxer()
                 {
                     unit = get_token();
                     array[i++] = unit;
-	    	    	if( i == m && realloc_array(array) == EXIT_FAILURE )
+	    	    	if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 						return EXIT_FAILURE;
 
                     if( unit.type_token == 10 )     // =
                     {
                         // zpracovani vyrazu, END_S = vyraz konci strednikem
-                        if( (i = expression(array, i, get_token(), END_S)) < 0 )
+                        if( (i = expression(array, i, get_token(), END_S, &m)) < 0 )
                         {
                             // chyba ve vyrazu
                             printERR(eEXPR);
@@ -132,6 +134,7 @@ int syntaxer()
                                 eCode = sSyn;
                             else
                                 eCode = sINTERN;
+                            free(array);
                             return EXIT_FAILURE;
                         }                
                     }
@@ -140,6 +143,7 @@ int syntaxer()
                         // chybi znamenko '='
                         printERR(eWRONG);
                         eCode = sSyn;
+                        free(array);
                         return EXIT_FAILURE;
                     }
                 }
@@ -148,13 +152,14 @@ int syntaxer()
                     // chybi znamenko ';'
                     printERR(eWRONG);
                     eCode = sSyn;
+                    free(array);
                     return EXIT_FAILURE;
                 }
 
                 // nacteni dalsiho tokenu - druha cast hlavicky
                 unit = get_token();
                 array[i++] = unit;
-		        if( i == m && realloc_array(array) == EXIT_FAILURE )
+		        if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 					return EXIT_FAILURE;
 
                 // druha cast je neprazdna
@@ -162,14 +167,15 @@ int syntaxer()
                     // string, int, double, bool, null nebo promenna
                 {
                     // zpracovani vyrazu, END_S = vyraz konci strednikem
-                    if( (i = expression(array, i-1, unit, END_S)) < 0 )
+                    if( (i = expression(array, i-1, unit, END_S, &m)) < 0 )
                     {
                         // chyba ve vyrazu
                         printERR(eEXPR);
                         if(i == -1)
-                        eCode = sSyn;
+                            eCode = sSyn;
                         else
-                        eCode = sINTERN;
+                            eCode = sINTERN;
+                        free(array);
                         return EXIT_FAILURE;
                      }                
 
@@ -179,26 +185,27 @@ int syntaxer()
                     // chybi znamenko ';'
                     printERR(eWRONG);
                     eCode = sSyn;
+                    free(array);
                     return EXIT_FAILURE;
                 }
 
                 // nacteni dalsiho tokenu - treti cast hlavicky
                 unit = get_token();
                 array[i++] = unit;
-        		if( i == m && realloc_array(array) == EXIT_FAILURE )
+        		if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 					return EXIT_FAILURE;
                
                 if( unit.type_token == 36 )     // promenna
                 {
                     unit = get_token();
                     array[i++] = unit;
-        			if( i == m && realloc_array(array) == EXIT_FAILURE )
+        			if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 						return EXIT_FAILURE;
 
                     if( unit.type_token == 10 )     // =
                     {
                         // zpracovani vyrazu, END_B = vyraz konci zavorkou
-                        if( (i = expression(array, i, get_token(), END_B)) < 0 )
+                        if( (i = expression(array, i, get_token(), END_B, &m)) < 0 )
                         {
                             // chyba ve vyrazu
                             printERR(eEXPR);
@@ -206,6 +213,7 @@ int syntaxer()
                                 eCode = sSyn;
                             else
                                 eCode = sINTERN;
+                            free(array);
                             return EXIT_FAILURE;
                         }                
                     }
@@ -214,6 +222,7 @@ int syntaxer()
                         // chybejici znak '='
                         printERR(eWRONG);
                         eCode = sSyn;
+                        free(array);
                         return EXIT_FAILURE;
                     }
 
@@ -223,12 +232,13 @@ int syntaxer()
                     // chybi znamenko ';'
                     printERR(eWRONG);
                     eCode = sSyn;
+                    free(array);
                     return EXIT_FAILURE;
                 }
 
                 unit = get_token();
                 array[i++] = unit;
-		        if( i == m && realloc_array(array) == EXIT_FAILURE )
+		        if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 					return EXIT_FAILURE;
 
                 if( unit.type_token != 42 )     // {
@@ -236,6 +246,7 @@ int syntaxer()
                     // chybejici znak '{'
                     printERR(eSBRACKETO);
                     eCode = sSyn;
+                    free(array);
                     return EXIT_FAILURE;
                 }
 
@@ -247,6 +258,7 @@ int syntaxer()
                 // chybejici znak '('
                 printERR(eBRACKETO);
                 eCode = sSyn;
+                free(array);
                 return EXIT_FAILURE;
             }
             inFOR = true;
@@ -258,12 +270,13 @@ int syntaxer()
                 // prikaz break nebo continue se nenachazi uvnitr prikazu FOR
                 printERR(eFOR);
                 eCode = sSyn;
+                free(array);
                 return EXIT_FAILURE;
             }
 
             unit = get_token();
             array[i++] = unit;
-	        if( i == m && realloc_array(array) == EXIT_FAILURE )
+	        if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 				return EXIT_FAILURE;
 
             if( unit.type_token != 22 )     // ;
@@ -271,13 +284,14 @@ int syntaxer()
                 // chybejici znak ';'
                 printERR(eWRONG);
                 eCode = sSyn;
+                free(array);
                 return EXIT_FAILURE;
             }
         }
         else if( unit.type_token == 7 )     // return
         {
             // zpracovani vyrazu, END_S = vyraz konci strednikem
-            if( (i = expression(array, i, get_token(), END_S)) < 0)
+            if( (i = expression(array, i, get_token(), END_S, &m)) < 0)
             {
                 // chyba ve vyrazu
                 printERR(eEXPR);
@@ -285,6 +299,7 @@ int syntaxer()
                     eCode = sSyn;
                 else
                     eCode = sINTERN;
+                free(array);
                 return EXIT_FAILURE;
             }
         }
@@ -294,7 +309,7 @@ int syntaxer()
             type = unit.type_token;
             unit = get_token();
             array[i++] = unit;
-    	    if( i == m && realloc_array(array) == EXIT_FAILURE )
+    	    if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 				return EXIT_FAILURE;
 
             if( unit.type_token != 42 ) // {
@@ -302,6 +317,7 @@ int syntaxer()
                 // chybejici znak {
                 printERR(eSBRACKETO);
                 eCode = sSyn;
+                free(array);
                 return EXIT_FAILURE;
             }
 
@@ -312,28 +328,28 @@ int syntaxer()
         {
             unit = get_token();
             array[i++] = unit;
-    	    if( i == m && realloc_array(array) == EXIT_FAILURE )
+    	    if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 				return EXIT_FAILURE;
 
             if( unit.type_token == 10 )     // =
             {
                 unit = get_token();
                 array[i++] = unit;
-		        if( i == m && realloc_array(array) == EXIT_FAILURE )
+		        if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 					return EXIT_FAILURE;
 
                 if((unit.type_token >= 60 && unit.type_token <= 69) || unit.type_token == 35)    // vestavene nebo uzivatelem definovane funkce
                 {
                     unit = get_token();
                     array[i++] = unit;
-			        if( i == m && realloc_array(array) == EXIT_FAILURE )
+			        if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 						return EXIT_FAILURE;
                    
                     if( unit.type_token == 40 )     // (
                     {
-                        unit = get_token(); 
+                        unit = get_token();
                         array[i++] = unit;
-				        if( i == m && realloc_array(array) == EXIT_FAILURE )
+				        if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 							return EXIT_FAILURE;
 
                         bool empty = true;  // seznam parametru je prazdny
@@ -355,12 +371,13 @@ int syntaxer()
                                 // nespravny token ci posloupnost
                                 eCode = sSyn;
                                 printERR(ePARAM);
+                                free(array);
                                 return EXIT_FAILURE;
                             }
 
                             unit = get_token();
                             array[i++] = unit;
-      						if( i == m && realloc_array(array) == EXIT_FAILURE )
+      						if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 								return EXIT_FAILURE;
                         }
                         if( term && !empty )
@@ -368,12 +385,13 @@ int syntaxer()
                             // spatna posloupnost argumentu funkce
                             printERR(ePARAM);
                             eCode = sSyn;
+                            free(array);
                             return EXIT_FAILURE;
                         }
 
                         unit = get_token();
                         array[i++] = unit;
-				        if( i == m && realloc_array(array) == EXIT_FAILURE )
+				        if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 							return EXIT_FAILURE;
 
                         if( unit.type_token != 22 ) // ;
@@ -381,6 +399,7 @@ int syntaxer()
                             // chybejici znak ';'
                             printERR(eWRONG);
                             eCode = sSyn;
+                            free(array);
                             return EXIT_FAILURE;
                         }
                     }
@@ -389,29 +408,20 @@ int syntaxer()
                         // chybejici znak '('
                         printERR(eWRONG);
                         eCode = sSyn;
+                        free(array);
                         return EXIT_FAILURE;
                     }
                 }
-                else if( (i = expression(array, i-1, unit, END_S)) < 0 )    // vyraz
+                else if( (i = expression(array, i-1, unit, END_S, &m)) < 0 )    // vyraz
                 // zpracovani vyrazu, END_S = vyraz konci strednikem
                 {
-/*                    printf("tady\n");
-
-    printf("$x = funkce()\n");
-    // vypis pole tokenu
-    for(int x=0; x<m; x++)
-    {
-        if(array[x].type_token == 0)    break;
-        printf("%d ", array[x].type_token);
-    }
-    printf("\n");
-*/
                     // chyba ve vyrazu
                     printERR(eEXPR);
                     if(i == -1)
                         eCode = sSyn;
                     else
                         eCode = sINTERN;
+                    free(array);
                     return EXIT_FAILURE;
                 }
             }
@@ -420,6 +430,7 @@ int syntaxer()
                 // chybejici znak =
                 printERR(eASSIGN);
                 eCode = sSyn;
+                free(array);
                 return EXIT_FAILURE;
             }
         }
@@ -429,21 +440,21 @@ int syntaxer()
             type = unit.type_token;
             unit = get_token();
             array[i++] = unit;
-		    if( i == m && realloc_array(array) == EXIT_FAILURE )
+		    if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 				return EXIT_FAILURE;
 
             if( unit.type_token == 35 )     // id
             {
                 unit = get_token();
                 array[i++] = unit;
-		        if( i == m && realloc_array(array) == EXIT_FAILURE )
+		        if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 					return EXIT_FAILURE;
 
                 if( unit.type_token == 40 )     // (
                 {
                     unit = get_token(); 
                     array[i++] = unit;
-				    if( i == m && realloc_array(array) == EXIT_FAILURE )
+				    if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 						return EXIT_FAILURE;
                     
                     bool empty = true;  // seznam parametru je prazdny
@@ -464,12 +475,13 @@ int syntaxer()
                             // nespravny token ci posloupnost
                             eCode = sSyn;
                             printERR(ePARAM);
+                            free(array);
                             return EXIT_FAILURE;
                         }
 
                         unit = get_token();
                         array[i++] = unit;
-				        if( i == m && realloc_array(array) == EXIT_FAILURE )
+				        if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 							return EXIT_FAILURE;
                     }
                     if( id && !empty )
@@ -477,12 +489,13 @@ int syntaxer()
                         // spatna posloupnost parametru funkce
                         printERR(ePARAM);
                         eCode = sSyn;
+                        free(array);
                         return EXIT_FAILURE;
                     }
                     
                     unit = get_token();
                     array[i++] = unit;
-			        if( i == m && realloc_array(array) == EXIT_FAILURE )
+			        if( i == m && realloc_array(array,&m) == EXIT_FAILURE )
 						return EXIT_FAILURE;
 
                     if( unit.type_token != 42 ) // {
@@ -490,6 +503,7 @@ int syntaxer()
                         // chybejici znak {
                         printERR(eSBRACKETO);
                         eCode = sSyn;
+                        free(array);
                         return EXIT_FAILURE;
                     }
 
@@ -507,6 +521,7 @@ int syntaxer()
                 // vice '}' nez '{' zavorek
                 printERR(eWRONG);
                 eCode = sSyn;
+                free(array);
                 return EXIT_FAILURE;
             }
 
@@ -515,6 +530,7 @@ int syntaxer()
                 // zavorka s prazdnym zasobnikem
                 printERR(eWRONG);
                 eCode = sSyn;
+                free(array);
                 return EXIT_FAILURE;
             }
 
@@ -561,10 +577,10 @@ int syntaxer()
         }
         else
         {
-            //printf("token: %d\n", unit.type_token);
             // token, ktery se nesmi nalezat na zacatku radku
             printERR(eUNKNOWN);
             eCode = sSyn;
+            free(array);
             return EXIT_FAILURE;
         }
 
@@ -599,6 +615,7 @@ int syntaxer()
                         // prazdny zasobnik ( == else(if) bez IF ?)
                         printERR(eWRONG);
                         eCode = sSyn;
+                        free(array);
                         return EXIT_FAILURE;
                     }
                     TOP( &leStack, &top );
@@ -615,52 +632,30 @@ int syntaxer()
                         // else(if) bez IF
                         printERR(eWRONG);
                         eCode = sSyn;
+                        free(array);
                         return EXIT_FAILURE;
                     }
         }
         type = 0;
-
-/*
-        // vypis celeho zasobniku typu int
-        if( !SEmpty( &leStack ) )
-        {
-            printf("Zasobnik int:\ntop: ");
-            tElemPtr aux = leStack.Last;
-            while( aux != NULL )
-            {
-                printf("| %d ", aux->Elem);
-                aux = aux->ptr;
-            }
-            printf("|\n");
-        }
-        else
-            printf("Zasobnik je prazdny.\n");
-*/
-/*
-    // vypis pole tokenu
-    for(int x=0; x<I_MAX; x++)
-    {
-        if(array[x].type_token == 0)    break;
-        printf("%d ", array[x].type_token);
-    }
-    printf("\n");
-*/
 
         // po zpracovani jednoho radku volame funkci pro kontrolu semantiky
         if( semantixer(array) == EXIT_FAILURE )
             return EXIT_FAILURE;
 
         // po zpracovani jednoho radku si pripravime pole pro radek novy
-        initialize_array(&array);
+        initialize_array(&array,i,m);
         i = 0;
     
         unit = get_token(); // nacteni dalsiho tokenu
     }
 
+    // uvolneni pole tokenu pri konci syntakticke a semanticke analyzy
+    free(array);
+
     if( unit.type_token == 0 || unit.type_token == 100 )
     {
         printERR(eWRONG);
-        if( eCode == 0 )
+        if( eCode == sOK )
             eCode = sSyn;
         return EXIT_FAILURE;
     }
@@ -706,56 +701,19 @@ int func_defined(NODE a1, NODE a2)
     return EXIT_SUCCESS;
 }
 
-// funkce pro inicializaci pole tokenu
-int initialize_array(TOKEN**array)
-{
-	if( i == 0 && (*array = (TOKEN*) malloc(m*sizeof(TOKEN))) == NULL )
-	{
-		printERR(eINTERN);
-		eCode = sINTERN;
-		return EXIT_FAILURE;
-	}
-
-    for(int x=0; x<m; x++)
-    {
-        token_init(&((*array)[x]));
-    }
-	return EXIT_SUCCESS;
-}
-
-int realloc_array(TOKEN*array)
-{
-	TOKEN *aux = NULL;
-	if( (aux = realloc(array,m*2*sizeof(TOKEN))) == NULL )
-	{
-		free(array);
-		printERR(eINTERN);
-		eCode = sINTERN;
-		return EXIT_FAILURE;
-	}
-	array = aux;
-
-	for(int x=m; x<m*2; x++)
-	{
-		token_init(&array[x]);
-	}
-	m*=2;
-
-	return EXIT_SUCCESS;
-}
-
 // funkce pro kontrolu vyrazu
-int expression(TOKEN*array, int i, TOKEN unit, int ending)
+int expression(TOKEN*array, int i, TOKEN unit, int ending, int *m)
 {
     // definice a deklarace pomocnych promennych
     bool wasExpr = false;
     bool wasSign = true;
     int brackets = 0;
+    int i_orig = i;
 
     while( unit.type_token > 0 && unit.type_token != 100 && unit.type_token != 50 ) // chyba nebo EOF
     {
         array[i++] = unit;
-        if( i == m && realloc_array(array) == EXIT_FAILURE )
+        if( i == *m && realloc_array(array,m) == EXIT_FAILURE )
 			return -2;
 
         if( wasSign && unit.type_token == 40 )  // (
@@ -780,32 +738,26 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending)
                 if( ending != END_S )
                     break;
                 else
-                {
                     // prebytecna uzaviraci zavorka, cekame strednik (semicolon)
-                    printERR(eEXPR);
                     return -1;
-                }
             }
         }
         else if( ending == END_S && wasExpr && unit.type_token == 22 )     // ;
         {
             if( brackets != 0 )
-            {
                 // chybi zavorka ve vyrazu
-                printERR(eEXPR);
                 return -1;
-            }
             break;
         }
         else
-        {
             // znak na nespravnem miste
-            printERR(eEXPR);
             return -1;
-        }
 
         unit = get_token();
     }
+
+    if( i == i_orig+1 )     // prazdny vyraz
+        i = -2;
 
     return i;
 }

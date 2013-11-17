@@ -54,20 +54,20 @@ int semantixer(TOKEN *array)
             if( functions(array,n) == EXIT_FAILURE )
                 return EXIT_FAILURE;
         }
-        else if( expression_sem(array, &n, SEMICOLON) == EXIT_FAILURE )
+        else if( expression_sem(array, &n, SEMICOLON, false) == EXIT_FAILURE )
             // vyraz prirazeni
             return EXIT_FAILURE;
     }
     else if( array[n].type_token == 1 || array[n].type_token == 3 || array[n].type_token == 4 )  // if, elseif, while
     {
         n++;
-        if( expression_sem(array, &n, BRACKET) == EXIT_FAILURE )
+        if( expression_sem(array, &n, BRACKET, false) == EXIT_FAILURE )
             return EXIT_FAILURE;
     }
     else if( array[n].type_token == 7 )     // return
     {
         n++;
-        if( expression_sem(array, &n, SEMICOLON) == EXIT_FAILURE )
+        if( expression_sem(array, &n, SEMICOLON, false) == EXIT_FAILURE )
             return EXIT_FAILURE;
     }
     else if( array[n].type_token == 2 )     // else
@@ -105,10 +105,10 @@ int semantixer(TOKEN *array)
         else
         {
             bool quit = false;
-            INSTRUCT aux2 = NULL;
+            INSTRUCT aux2 = NULL, aux3 = NULL;
             new_instr(dest, iJUMP, NULL, NULL, NULL, NULL);
             TOPInstr( &InstrStack, &top );
-            if( top == 4 || top == 5 )
+            if( top == 4 || top == 5 )  // pro while nebo for si ulozime instrukci aux
                 aux2 = aux;
             else if( aux != NULL )
             {
@@ -129,6 +129,20 @@ int semantixer(TOKEN *array)
                         break;
 
                     case 5:     // for
+
+                        POPInstr( &InstrFor, &aux3, &top );
+                        bool first = true;
+                        while( aux3 != NULL )
+                        {
+                            new_instr(dest, aux3->id, &(aux3->operand_1), &(aux3->operand_2), &(aux3->result), aux3->jump);
+                            if( first && aux2 != NULL )
+                                aux2->jump = dest->last;
+
+                            first = false;
+                            aux3 = aux3->right;
+                        }
+                        new_instr(dest, iJUMP, NULL, NULL, NULL, NULL);
+
                     case 4:     // while
 
                         dest->last->jump = aux;
@@ -173,14 +187,14 @@ int semantixer(TOKEN *array)
                 // prvni vyskyt promenne, jeji zapis do stromu
                 insertVarToTree(name, array[n], dest_root);
 
-            if( expression_sem(array, &n, SEMICOLON) == EXIT_FAILURE )     // ;
+            if( expression_sem(array, &n, SEMICOLON, false) == EXIT_FAILURE )     // ;
                 return EXIT_FAILURE;
         }
         n++;
 
         if( array[n].type_token != 22 )     // druha cast hlavicky neni prazdna
         {
-            if( expression_sem(array, &n, SEMICOLON) == EXIT_FAILURE )     // ;
+            if( expression_sem(array, &n, SEMICOLON, false) == EXIT_FAILURE )     // ;
                 return EXIT_FAILURE;
         }
         else
@@ -192,15 +206,16 @@ int semantixer(TOKEN *array)
         if( array[n].type_token != 41 )     // treti cast hlavicky neni prazdna
         {
             // ulozit na zasobnik, nejspis to nebude jen jedna instrukce, takze celkem sranda
+            if( expression_sem(array, &n, B_BRACKET, true) == EXIT_FAILURE )
+                return EXIT_FAILURE;
         }
-        else    // druha cast hlavicky je prazdna
+        else
         {
-            // ulozit na zasobnik i prazdnou instrukci, kvuli zanorovani
+            // ackoliv je treti cast hlavicky prazdna, je nutno do zasobniku ulozit nejakou instrukci
+            // jinak bychom narusili prirazeni instrukci jednotlivym vrstvam zanoreni
+            new_instr(dest, iJUMP, NULL, NULL, NULL, NULL);
+            PUSH_last(true);
         }
-
-        // TODO
-        // treti cast hlavicky se musi nekam ulozit a pridat az na konec tela cyklu, coz by slo jednoduse zasobnikem
-        // problem ale budou vnorene cykly FOR, takze asi zasobnik typu LIST_3AK (neco jako u funkci)
     }
     else if( array[n].type_token == 8 )     // break
     {
@@ -287,6 +302,8 @@ int semantixer(TOKEN *array)
             if( array[n].type_token != 23 )     // ,
             {
                 name = makeName(array[n]);
+                if( name == NULL )
+                    return EXIT_FAILURE;
                 insertVarToTree(name, array[n], &(func->params));
                 assist1 = searchIdent(name, &(func->params));
                 assist1->position = top++;
@@ -310,15 +327,6 @@ int semantixer(TOKEN *array)
 
 int functions(TOKEN *array, int n)
 {
-/*
-    for( int c=0; c<512; c++)
-    {
-        if(array[c].type_token == 0)
-            break;
-        printf("%d, ",array[c].type_token);
-    }
-    printf("\n");
-*/
     LIST_3AK *dest = &list;
     NODE *dest_root = &root;
     if( func != NULL )
@@ -366,6 +374,8 @@ int functions(TOKEN *array, int n)
             {
                 unit.c_number = x;
                 name = makeName(unit);      // vytvoreni nazvu z cisla poradi
+                if( name == NULL )
+                    return EXIT_FAILURE;
                 insertVarToTree(name, array[n], &(assist1->params));
                 assist4 = searchIdent(name, &(assist1->params));
                 assist4->position = x;
@@ -375,6 +385,8 @@ int functions(TOKEN *array, int n)
                 break;      // prebytecne parametry jsou ignorovany
 
             name = makeName(array[n]);
+            if( name == NULL )
+                return EXIT_FAILURE;
             assist3 = searchIdent(name, dest_root);     // hledani hodnoty/promenne ve stromu
             if( assist3 == NULL )                       // hledani neuspesne
             {
@@ -617,26 +629,25 @@ int functions(TOKEN *array, int n)
 }
 
 // funkce pro zapis vyrazu do postfixove notace a odeslani instrukci
-int expression_sem(TOKEN *array, int *m, int end)
+int expression_sem(TOKEN *array, int *m, int end, bool is_for)  // m = index v poli
 {
     // deklarace zasobniku a jeho inicializace
     tStack leStack;
     init(&leStack);
 
-    // pomocne pole tokenu (zatim velikost N_MAX -> udelat dynamicky !!! ) TODO
-    TOKEN array_expr[N_MAX];
-    int i, new = 0, old = 0, precedent = 0, type = array[0].type_token, n = *m;
+    TOKEN *array_expr;
+    int i = 0, max = 64, new = 0, old = 0, precedent = 0, type, n = *m;
+    initialize_array( &array_expr, i, max );
 
-    for( i=0; i<N_MAX; i++)
-    {
-        array_expr[i].type_token = 0;
-        array_expr[i].c_number = 0;
-        array_expr[i].d_number = 0.0;
-        array_expr[i].string = NULL;
-        array_expr[i].boolean = 0;
-        array_expr[i].null = 0;
-        array_expr[i].id_name = NULL;
-    }
+    if( is_for )
+        // cislo 50 bude znacit, ze se nachazime ve treti hlaviky cyklu for, o cemz nas informuje is_for
+        // zvolil jsem cislo 50, jelikoz neni pouzito a cislo 5 nalezi token FOR
+        type = 50;
+    else
+        type = array[0].type_token;
+
+    for( ; i<max; i++)
+        token_init(&(array_expr[i]));
 
     i = 0;
     while( array[n].type_token != end )      // SEMICOLON nebo BRACKET
@@ -651,6 +662,8 @@ int expression_sem(TOKEN *array, int *m, int end)
             case 36:    // promenna
             {
                 array_expr[i++] = array[n++];
+                if( i == max && realloc_array(array_expr, &max) == EXIT_FAILURE )
+                    return EXIT_FAILURE;
                 break;
             }
             case 40:    // (
@@ -687,6 +700,7 @@ int expression_sem(TOKEN *array, int *m, int end)
                     {
                         // TODO chyba
                         fprintf(stderr, "chyba, old < 0\n");
+                        free(array_expr);
                         return EXIT_FAILURE;
                     }
 
@@ -699,6 +713,8 @@ int expression_sem(TOKEN *array, int *m, int end)
                     else
                     {
                         array_expr[i++].type_token = TOPCheck( &leStack );
+                        if( i == max && realloc_array(array_expr, &max) == EXIT_FAILURE )
+                            return EXIT_FAILURE;
                         POP( &leStack );
                     }
                     break;
@@ -709,6 +725,8 @@ int expression_sem(TOKEN *array, int *m, int end)
                 if( (old = TOPCheck( &leStack )) != 40 )    // (
                 {
                     array_expr[i++].type_token = TOPCheck( &leStack );
+                    if( i == max && realloc_array(array_expr, &max) == EXIT_FAILURE )
+                        return EXIT_FAILURE;
                     POP( &leStack );
                     break;
                 }
@@ -723,6 +741,7 @@ int expression_sem(TOKEN *array, int *m, int end)
                 fprintf(stderr, "semantika, switch default, type: %d.\n", array[n].type_token);
                 // TODO
                 eCode = sSyn;
+                free(array_expr);
                 return EXIT_FAILURE;
             }
         }
@@ -731,22 +750,33 @@ int expression_sem(TOKEN *array, int *m, int end)
     while( !SEmpty( &leStack ) )
     {
         array_expr[i++].type_token = TOPCheck( &leStack );
+        if( i == max && realloc_array(array_expr, &max) == EXIT_FAILURE )
+           return EXIT_FAILURE;
         POP( &leStack );
     }
 
     *m = n;
-    return read_postfix(array_expr, type);
+    n = read_postfix(array_expr, type, max);
+    free(array_expr);
+    return n;
 }
 
 // funkce pro cteni postfixove notace vyrazu a odesilani instrukci interpretu
-int read_postfix(TOKEN *array, int type)
+int read_postfix(TOKEN *array, int type, int max)
 {
+    // pomocne promenne
     int i=0, top;
     char *name = NULL;
-
     NODE assist1 = NULL, assist2 = NULL, assist3 = NULL;
     TOKEN unit;
+    tSNode nodeStack;
+    initNode( &nodeStack );
 
+    bool first = false;     // rozliseni treti casti hlavicky for a tedy ukladani instrukci na zasobnik
+    if( type == 50 )
+        first = true;
+
+    // cil pro ukladani instrukci (hlavni telo programu nebo telo funkce)
     LIST_3AK *dest = &list;
     NODE *dest_root = &root;
     if( func != NULL )
@@ -755,12 +785,9 @@ int read_postfix(TOKEN *array, int type)
         dest_root = &(func->params);
     }
 
-    tSNode nodeStack;
-    initNode( &nodeStack );
-
-    while( array[i].type_token != 0 )   // konec pole ?? TODO
+    while( i < max && array[i].type_token != 0 )
     {
-        // narazime na cisla int nebo double, booly, stringy nebo promenne
+        // narazime na cislo int nebo double, bool, string nebo promennou
         if(array[i].type_token == 36 || (array[i].type_token >= 30 && array[i].type_token <= 34))
         {
             name = makeName(array[i]);
@@ -768,10 +795,10 @@ int read_postfix(TOKEN *array, int type)
                 return EXIT_FAILURE;
             assist1 = searchIdent(name, dest_root);
             if(assist1 == NULL)
-            {
-                
+            {                
                 if(array[i].type_token == 36)
                 {
+                    // nedeklarovana promenna
                     printERR(eVAR);
                     eCode = sSemVar;
                     return EXIT_FAILURE;
@@ -807,15 +834,12 @@ int read_postfix(TOKEN *array, int type)
             {
                 case 10:    // =
                     new_instr(dest, iASSIGN, &assist2, NULL, &assist1, NULL);
-                    //printf("ASSIGN\n\tco: %s (%d)\n\tkam: %s (%d)\n",assist2->key,assist2->data.type_token,assist1->key,assist1->data.type_token);
                     break;
                 case 11:    // -
                     new_instr(dest, iMINUS, &assist1, &assist2, &assist3, NULL);
-                    //printf("MINUS\n\t%s (%d) - %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     break;
                 case 12:    // *
                     new_instr(dest, iMUL, &assist1, &assist2, &assist3, NULL);
-                    //printf("MUL\n\t%s (%d) * %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     break;
                 case 13:    // /
                     if( assist2->data.c_number == 0 || assist2->data.d_number == 0.0 )
@@ -825,111 +849,77 @@ int read_postfix(TOKEN *array, int type)
                         return EXIT_FAILURE;
                     }
                     new_instr(dest, iDIV, &assist1, &assist2, &assist3, NULL);
-                    //printf("DIV\n\t%s (%d) : %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     break;
                 case 14:    // +
                     new_instr(dest, iPLUS, &assist1, &assist2, &assist3, NULL);
-                    //printf("PLUS\n\t%s (%d) + %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     break;
                 case 15:    // .
                     new_instr(dest, iKONK, &assist1, &assist2, &assist3, NULL);
-                    //printf("KONK\n\t%s (%d) . %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     break;
                 case 16:    // ===
                     new_instr(dest, iEQ, &assist1, &assist2, NULL, NULL);
-                    //printf("EQ\n\t%s (%d) === %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     break;
                 case 17:    // !==
                     new_instr(dest, iNEQ, &assist1, &assist2, NULL, NULL);
-                    //printf("NEQ\n\t%s (%d) !== %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     break;
                 case 18:    // >
                     new_instr(dest, iHIGH, &assist1, &assist2, NULL, NULL);
-                    //printf("HIGH\n\t%s (%d) > %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     break;
                 case 19:    // >=
                     new_instr(dest, iHEQ, &assist1, &assist2, NULL, NULL);
-                    //printf("HEQ\n\t%s (%d) >= %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     break;
                 case 20:    // <
                     new_instr(dest, iLOW, &assist1, &assist2, NULL, NULL);
-                    //printf("LOW\n\t%s (%d) < %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
                     break;
                 case 21:    // <=
                     new_instr(dest, iLEQ, &assist1, &assist2, NULL, NULL);
-                    //printf("LEQ\n\t%s (%d) <= %s (%d)\n",assist1->key,assist1->data.type_token,assist2->key,assist2->data.type_token);
             }
 
-            if( aux != NULL )
+            if( type != 50 )
             {
-                aux->jump = list.last;
-                aux = NULL;
-            }
-
-            if( type == 1 || (type >= 3 && type <= 5) )     // if, elseif, while, for
-            {
-                PUSHInstr( &InstrStack, dest->last, type );
-                type = 0;
-            }
-            else if( !SEmptyInstr( &InstrStack ) )
-            {
-                TOPInstr( &InstrStack, &top );
-                while( top == 43 )
+                if( aux != NULL )
                 {
-                    POPInstr( &InstrStack, &aux, &top );
-                    aux->jump = dest->last;
+                    aux->jump = list.last;
                     aux = NULL;
-                    if( !SEmptyInstr( &InstrStack ) )
-                        TOPInstr( &InstrStack, &top );
-                    else
-                        break;
                 }
+
+                if( type == 1 || (type >= 3 && type <= 5) )     // if, elseif, while, for
+                {
+                    PUSHInstr( &InstrStack, dest->last, type );
+                    type = 0;
+                }
+                else if( !SEmptyInstr( &InstrStack ) )
+                {
+                    TOPInstr( &InstrStack, &top );
+                    while( top == 43 )
+                    {
+                        POPInstr( &InstrStack, &aux, &top );
+                        aux->jump = dest->last;
+                        aux = NULL;
+                        if( !SEmptyInstr( &InstrStack ) )
+                            TOPInstr( &InstrStack, &top );
+                        else
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                // zpracovavame treti cast hlavicky cyklu FOR
+                // instrukce se pridaji az na konec tohoto cyklu
+                PUSH_last(first);
+                first = false;
             }
 
             if( array[i].type_token >= 11 && array[i].type_token <= 15 )    // ulozeni mezivysledku na zasobnik
                 PUSHNode( &nodeStack, assist3);
-
-            /*doplnit assist3 a jedeme na znamenka*//*
-            printf("---------------------------------------------------\n");
-            printf("assist1\n");
-            printf("prvek ve stromu data.string: %s\n",assist1->data.string);
-            printf("prvek ve stromu data.id_name: %s\n",assist1->data.id_name);
-            printf("prvek ve stromu data.c_number: %d\n",assist1->data.c_number);
-            printf("prvek ve stromu data.d_number: %f\n",assist1->data.d_number);
-            printf("prvek ve stromu data.boolean: %d\n",assist1->data.boolean);
-            printf("assist2\n");
-            printf("prvek ve stromu data.string: %s\n",assist2->data.string);
-            printf("prvek ve stromu data.id_name: %s\n",assist2->data.id_name);
-            printf("prvek ve stromu data.c_number: %d\n",assist2->data.c_number);
-            printf("prvek ve stromu data.d_number: %f\n",assist2->data.d_number);
-            printf("prvek ve stromu data.boolean: %d\n",assist2->data.boolean);
-            printf("---------------------------------------------------\n");
-            printf("assist3\n");
-            printf("prvek ve stromu data.string: %s\n",assist3->data.string);
-            printf("prvek ve stromu data.id_name: %s\n",assist3->data.id_name);
-            printf("prvek ve stromu data.c_number: %d\n",assist3->data.c_number);
-            printf("prvek ve stromu data.d_number: %f\n",assist3->data.d_number);
-            printf("prvek ve stromu data.boolean: %d\n",assist3->data.boolean);
-            printf("---------------------------------------------------\n");
-*/
         }
 
         i++; assist1 = NULL; assist2 = NULL; assist3 = NULL;    // smazat nulovani assist* - rychlost
     }
 
-/*
-    for( i=0; i<N_MAX; i++)
-    {
-        if( array[i].type_token == 0 )
-            break;
-        printf("%d ", array[i].type_token);
-    }
-    printf("\n");
-*/
-
     return EXIT_SUCCESS;
 }
-
 
 // funkce pro vytvoreni jmena pro ukladani do stromu
 char* makeName(TOKEN unit)
@@ -1074,6 +1064,35 @@ char* makeName(TOKEN unit)
     return name;
 }
 
+// funkce pro ukladani posledni instrukce v listu do zasobniku pro FOR cyklus
+// funkce musi podsledni instrukci z listu vyjmout a zrusit veskere ukazatele
+void PUSH_last(bool first)
+{
+    LIST_3AK *dest = &list;
+    if( func != NULL )
+        dest = func->body;
+
+    INSTRUCT a = NULL, b = dest->last->left;
+
+    if( first )     // prvni instrukce, nutno vytvorit dalsi seznam v zasobniku
+    {
+        PUSHInstr( &InstrFor, dest->last, 0 );      // seznam zacina instrukci
+        dest->last->left = NULL;
+    }
+    else
+    {
+        a = InstrFor.Last->Instr;
+        while( a->right != NULL )       // hledame posledni instrukci v seznamu
+            a = a->right;
+
+        a->right = dest->last;
+        dest->last->left = a;
+    }
+
+    b->right = NULL;
+    dest->last = b;     // smazani posledni instrukce z listu
+}
+
 // funkce pro porovnani dvou datovych typu
 bool Compatible(NODE *a1, NODE *a2, int sign)
 {
@@ -1134,4 +1153,43 @@ int Give_index( int type )
         default:    break;
     }
     return -1;
+}
+
+// funkce pro inicializaci pole tokenu
+int initialize_array(TOKEN**array, int i, int m)
+{
+	if( i == 0 && (*array = (TOKEN*) malloc(m*sizeof(TOKEN))) == NULL )
+	{
+		printERR(eINTERN);
+		eCode = sINTERN;
+		return EXIT_FAILURE;
+	}
+
+    for(int x=0; x<m; x++)
+    {
+        token_init(&((*array)[x]));
+    }
+	return EXIT_SUCCESS;
+}
+
+// funkce pro realokaci pole
+int realloc_array(TOKEN*array, int*m)
+{
+	TOKEN *aux = NULL;
+	if( (aux = realloc(array,(*m)*2*sizeof(TOKEN))) == NULL )
+	{
+		free(array);
+		printERR(eINTERN);
+		eCode = sINTERN;
+		return EXIT_FAILURE;
+	}
+	array = aux;
+
+	for(int x=(*m); x<(*m)*2; x++)
+	{
+		token_init(&array[x]);
+	}
+	(*m)*=2;
+
+	return EXIT_SUCCESS;
 }
