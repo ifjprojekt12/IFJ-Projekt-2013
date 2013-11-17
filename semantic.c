@@ -105,8 +105,12 @@ int semantixer(TOKEN *array)
         else
         {
             bool quit = false;
+            INSTRUCT aux2 = NULL;
             new_instr(dest, iJUMP, NULL, NULL, NULL, NULL);
-            if( aux != NULL )
+            TOPInstr( &InstrStack, &top );
+            if( top == 4 || top == 5 )
+                aux2 = aux;
+            else if( aux != NULL )
             {
                 aux->jump = dest->last;
                 aux = NULL;
@@ -124,10 +128,13 @@ int semantixer(TOKEN *array)
                         POPInstr( &InstrStack, &aux, &top );
                         break;
 
-                    case 4:     // while
                     case 5:     // for
+                    case 4:     // while
 
                         dest->last->jump = aux;
+                        new_instr(dest, iJUMP, NULL, NULL, NULL, NULL);
+                        if( aux2 != NULL )
+                            aux2->jump = dest->last;
                         quit = true;
                         break;
 
@@ -411,7 +418,7 @@ int functions(TOKEN *array, int n)
         // prirazeni volani funkce do promenne
         new_instr(dest, iASSIGN, &assist1, NULL, &assist2, NULL);
     }
-    else
+    else        // volani vestavene funkce
     {
         n = 4;
         if( type == iP_STR )
@@ -531,6 +538,38 @@ int functions(TOKEN *array, int n)
                             first = false;
                         }
                         new_instr(dest, iG_SUBSTR2, NULL, NULL, &assist2, NULL);
+                    }
+                }
+                else if( type == iF_STR )
+                {
+                    if( substr1 == NULL )
+                        substr1 = assist1;
+                    else
+                    {
+                        new_instr(dest, type, &substr1, &assist1, &assist2, NULL );
+                        if( first )
+                        {
+                            if( aux != NULL )
+                            {
+                                aux->jump = list.last;
+                                aux = NULL;
+                            }
+                            if( !SEmptyInstr( &InstrStack ) )
+                            {
+                                TOPInstr( &InstrStack, &top );
+                                while( top == 43 )
+                                {
+                                    POPInstr( &InstrStack, &aux, &top );
+                                    aux->jump = dest->last;
+                                    aux = NULL;
+                                    if( !SEmptyInstr( &InstrStack ) )
+                                        TOPInstr( &InstrStack, &top );
+                                    else
+                                        break;
+                                }
+                            }
+                            first = false;
+                        }
                     }
                 }
                 else

@@ -122,6 +122,10 @@ int main(int argc, char *argv[])
             printf(", ass3: %s", a->result->key);
         if( a->jump != NULL )
             printf(", jump: %d", a->jump->number);
+        if( a->left != NULL )
+            printf(", left: %d", a->left->number);
+        if( a->right != NULL )
+            printf(", right: %d", a->right->number);
         printf("\n");
         fflush(stdout);
     }
