@@ -7,8 +7,6 @@ Pomocne datove struktury
 
 #include "data_struct.h"
 
-int instr_number;
-
 // tabulka pro vypis chyboveho hlaseni
 const char*MESSAGE[]=
 {
@@ -37,7 +35,6 @@ void new_instr_list(LIST_3AK *new_list){
   new_list->actual = NULL;
   new_list->last = NULL;
 
-  instr_number = 0;
 }
 
 //pridava novou instrukci na konec seznamu
@@ -51,6 +48,12 @@ int new_instr(LIST_3AK *list, int id, NODE *op_1, NODE *op_2, NODE *result, INST
     return 99;
 
   //vlozime data
+  if(list->first == NULL){
+    new_instr->number = 0;
+  } else {
+    new_instr->number = list->last->number + 1;
+  }
+
   new_instr->id = id;
   if(op_1 != NULL){
     new_instr->operand_1 = *op_1;
@@ -70,9 +73,6 @@ int new_instr(LIST_3AK *list, int id, NODE *op_1, NODE *op_2, NODE *result, INST
   } else {
     list->first = new_instr;
   }
-
-  new_instr->number = instr_number;
-  instr_number++;
 
   list->last = new_instr;
 
