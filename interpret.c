@@ -87,12 +87,14 @@ int interpret(LIST_3AK *list){
       //jaka dalsi instrukce se bude vykonavat
       list->actual = op_1->body->first;
 
-      NODE plop;
-      //NODE pop = op_1->params;
-      //plop = copyTree(&pop,plop);
-      //copyTree(&plop,&pop);
-      plop = op_1->params;
-      push(&symbol_tables,&plop);
+      NODE new_tab;
+      printf("prvni");
+      NODE old = op_1->params;
+      new_tab = copyTree(&old);
+      //new_tab = op_1->params;
+      printf("druha");
+      fflush(stdout);
+      push(&symbol_tables,&new_tab);
       continue;
     }
 
