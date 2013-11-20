@@ -89,15 +89,16 @@ NODE searchIdent (char *key, NODE *ptr)
             }
         }
     }
-    printf("Hledas neco co tam neni\n");
+    // pokud neni nikde nic tak vraci null
     return NULL;
 }
 
 // funkce zkopiruje puvodni strom promennych do noveho
 // novy strom MUSI byt inicializovany
-NODE copyTree (NODE *ptr, NODE *ptrNew)
+NODE copyTree (NODE *ptr)
 {
     NODE tree = *ptr;
+    NODE *ptrNew = malloc(sizeof(NODE));
     NODE treeNew = *ptrNew;
     if (tree == NULL)
     {
@@ -121,9 +122,9 @@ NODE copyTree (NODE *ptr, NODE *ptrNew)
         treeNew->data.id_name = malloc((strlen(tree->data.id_name)+1) * sizeof(char));
         strcpy(treeNew->data.id_name, tree->data.id_name);
 
-        if (tree->LPtr != NULL) treeNew->LPtr = copyTree(&tree->LPtr, &treeNew->LPtr);
+        if (tree->LPtr != NULL) treeNew->LPtr = copyTree(&tree->LPtr);
         else treeNew->LPtr = NULL;
-        if (tree->RPtr != NULL) treeNew->RPtr = copyTree(&tree->RPtr, &treeNew->RPtr);
+        if (tree->RPtr != NULL) treeNew->RPtr = copyTree(&tree->RPtr);
         else treeNew->RPtr = NULL;
     }
     return treeNew;
@@ -254,7 +255,7 @@ int find_string (char *retezec, char *podretezec)
 	 for (int i = 0; i<512; i++)
 		 if (retezec[i] == 0)
 			retezec[i] = '\0';
-	
+
     if (strlen(podretezec) == 512)
 	 for (int i = 0; i<512; i++)
 		 if (podretezec[i] == 0)

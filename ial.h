@@ -49,7 +49,7 @@ void treeInit (NODE*);
 void insertVarToTree (char *, TOKEN, NODE*);
 NODE searchIdent (char *, NODE*);
 NODE searchParam(int, NODE*);
-NODE copyTree (NODE*, NODE*);
+NODE copyTree (NODE*);
 
 // zasobnik
 void stackInit (STACK*);
