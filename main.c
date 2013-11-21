@@ -184,7 +184,6 @@ int main(int argc, char *argv[])
 */
 
     /* Po kontrole validace vstupu prechazime do interpretu */
-    //printf("interpret:\n"); fflush(stdout);
     interpret( &list );
 
     /* Odstraneni veskere pouzite pameti */
