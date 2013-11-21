@@ -45,10 +45,11 @@ enum intstructions {
     iG_SUBSTR,
     iF_STR,
     iS_STR,
-    iRETURN,
+    iRETURN,    // 30
     iJUMP,
     iSAVE_PAR,
     iEND_FCE,
+    iFUNCTION,
     iP_STR_NEW = 250,
     iG_SUBSTR2 = 270,
 };
