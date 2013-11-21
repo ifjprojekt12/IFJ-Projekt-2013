@@ -312,23 +312,25 @@ int semantixer(TOKEN *array)
                     aux->operand_1 = assist1;
                     aux = aux->right;
                 }
-                else if( aux != NULL && aux->id != iSAVE_PAR )
+/*                else if( aux != NULL && aux->id != iSAVE_PAR )
                 {
                     // pri volani funkce bylo pouzito malo parametru
                     printERR(ePARAM);
                     eCode = sSemFceParam;
                     return EXIT_FAILURE;
                 }
+                */
             }
             n++;
         }
-
+/*
         // smazeme vsechny prebytecne parametry v pripade, ze funkce byla volana pred definici
         while( aux != NULL && aux->id == iSAVE_PAR )
         {
             aux->result = NULL;
             aux = aux->right;
         }
+*/
     }
     else
     {
