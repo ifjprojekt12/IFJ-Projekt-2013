@@ -937,14 +937,14 @@ int read_postfix(TOKEN *array, int type, int max)
         TOPPOPNode(&nodeStack, &assist);
         switch(type)
         {
-            case 1:     // if
+/*            case 1:     // if
             case 3:     // elseif
             case 4:     // while
             case 5:     // for
 
                 new_instr(dest, iEQ, &assist, NULL, NULL, NULL);
                 break;
-
+*/
             case 7:     // return
 
                 new_instr(dest, iRETURN, &assist, NULL, NULL, NULL);
