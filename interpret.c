@@ -22,22 +22,17 @@ int interpret(LIST_3AK *list){
 
   push(&symbol_tables,&root);
 
+  //zasobnik na zaznamy pro return
+  tSNode ret_addr;
+  initNode(&ret_addr);
+
   list->actual = list->first;
 
   while(1){
 
-    //printf("ID:%d\n",list->actual->id);
-  //  if(list->actual->operand_1 != NULL){
-
-      //printf("Type1:%d\n",list->actual->operand_1->data.type_token);
-   // }
-   // if(list->actual->operand_2 != NULL){
-      //printf("Type2:%d\n",list->actual->operand_2->data.type_token);
-   // }
-   // if(list->actual->result != NULL){
-      //printf("TypeR:%d\n",list->actual->result->data.type_token);
-    //}
-    fflush(stdout);
+    //*********************
+    //ladici vypisy
+    //printf("%d\n",list->actual->id);
 
     //*******************************************
     //instrukce konce programu
@@ -55,18 +50,18 @@ int interpret(LIST_3AK *list){
     //a pripadne preskakuje ty ciste pomocne instrukce
     if(list->actual->id == iP_STR_NEW){
       list->actual = list->actual->right;
-      continue;
     }
 
     //*******************************************
     //konec funkce
     //*******************************************
-    if(list->actual->id == iEND_FCE){
+    if(list->actual->id == 34){
       int a;
       INSTRUCT next;
       POPInstr(&next_instr,&next,&a);
       list->actual = next;
       pop(&symbol_tables);
+
       continue;
     }
     //*******************************************
@@ -76,59 +71,122 @@ int interpret(LIST_3AK *list){
     if(list->actual->operand_1 != NULL){
       if(list->actual->operand_1->data.type_token == 35){
         op_1 = list->actual->operand_1;
-      } else {
+      } else if(list->actual->id == iRETURN){
+          op_1 = searchIdent(list->actual->operand_1->key,symbol_tables->ptr);
+      }
+      else {
         op_1 = searchIdent(list->actual->operand_1->key,symbol_tables->ptr);
       }
     } else op_1 = NULL;
 
     if(list->actual->operand_2 != NULL){
-      printf("\nTypeI:%d\n",list->actual->id);
-      op_2 = searchIdent(list->actual->operand_2->key,symbol_tables->ptr);
+      if(list->actual->id != iRETURN){
+        op_2 = searchIdent(list->actual->operand_2->key,symbol_tables->ptr);
+      }
     } else op_2 = NULL;
 
     if(list->actual->result != NULL){
-      result = searchIdent(list->actual->result->key,symbol_tables->ptr);
+      if(list->actual->id != iRETURN){
+        result = searchIdent(list->actual->result->key,symbol_tables->ptr);
+      }
     } else result = NULL;
 
     //*******************************************
     //Instrukce pro implementaci funkci
     //*******************************************
+    //pomocna instrukce znacici, ze prijde volani funkce
+    if(list->actual->id == iFUNCTION){
+      NODE new_tab;
+      //printf("prvni");
+      //NODE old = op_1->params;
+      //new_tab = copyTree(&old);
+      new_tab = op_1->params;
+      //printf("druha");
+      //fflush(stdout);
+      push(&symbol_tables,&new_tab);
+
+      list->actual = list->actual->right;
+      //printf("a sem zde");
+      continue;
+    }
+
+    //volani funkce
     if(list->actual->id == iASSIGN && list->actual->operand_1->data.type_token == 35){
 
       //defaultni navratovy typ
+      if(list->actual->result != NULL){
+        if(list->actual->id != iRETURN){
+          result = searchIdent(list->actual->result->key,symbol_tables->next->ptr);
+        }
+      }
       result->data.type_token = 34;
+
       //ulozeni instrukce nasledujici po funkci
       PUSHInstr(&next_instr,list->actual->right,0);
+
+      //ulozeni kam ukladat navratovou hodnotu
+      PUSHNode(&ret_addr,result);
 
       //jaka dalsi instrukce se bude vykonavat
       list->actual = op_1->body->first;
 
-      NODE new_tab;
-      //printf("prvni");
-      NODE old;
-      //treeInit(&old);
-      //old = op_1->params;
-      //new_tab = copyTree(&old);
-      new_tab = op_1->params;
-      //printf("druha");
-      fflush(stdout);
-      push(&symbol_tables,&new_tab);
       continue;
     }
 
-    //jeden return prosim
+    //*******************************************
+    //return a ukladani parametru funkci
+    //*******************************************
+    //return
     if(list->actual->id == iRETURN){
+      TOPPOPNode(&ret_addr,&result);
 
+      result->data.type_token = op_1->data.type_token;
+      if(result->data.type_token == 30){
+        if((result->data.string = malloc(sizeof(op_1->data.string))) == NULL){
+          eCode = 99;
+          return EXIT_FAILURE;
+        }
+        strcpy(result->data.string,op_1->data.string);
+      }
+      if(result->data.type_token == 31){
+        result->data.c_number = op_1->data.c_number;
+      }
+      if(result->data.type_token == 32){
+        result->data.d_number = op_1->data.d_number;
+      }
+      if(result->data.type_token == 33){
+        result->data.boolean = op_1->data.boolean;
+      }
+
+      list->actual = list->actual->right;
+      continue;
     }
-    //jedny parametry prosim pekne
+
+    //ukladame parametry funkci
     if(list->actual->id == iSAVE_PAR){
-      /*result->data.type_token = 30;
-      op_1->data.type_token = 30;
-      printf("marenka");
-      printf("%s\n",result->key);*/
-      //printf("%d %s\n",list->actual->right->id,list->actual->right->operand_1->key);
-      //fflush(stdout);
-      //result->data.string = "pop";
+      if(list->actual->operand_1 != NULL){
+        op_1 = searchIdent(list->actual->operand_1->key,symbol_tables->next->ptr);
+      }
+
+      result->data.type_token = op_1->data.type_token;
+      if(result->data.type_token == 30){
+        if((result->data.string = malloc(sizeof(op_1->data.string))) == NULL){
+          eCode = 99;
+          return EXIT_FAILURE;
+        }
+        strcpy(result->data.string,op_1->data.string);
+      }
+      if(result->data.type_token == 31){
+        result->data.c_number = op_1->data.c_number;
+      }
+      if(result->data.type_token == 32){
+        result->data.d_number = op_1->data.d_number;
+      }
+      if(result->data.type_token == 33){
+        result->data.boolean = op_1->data.boolean;
+      }
+
+      list->actual = list->actual->right;
       continue;
     }
 
