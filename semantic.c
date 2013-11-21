@@ -312,8 +312,22 @@ int semantixer(TOKEN *array)
                     aux->operand_1 = assist1;
                     aux = aux->right;
                 }
+                else if( aux != NULL && aux->id != iSAVE_PAR )
+                {
+                    // pri volani funkce bylo pouzito malo parametru
+                    printERR(ePARAM);
+                    eCode = sSemFceParam;
+                    return EXIT_FAILURE;
+                }
             }
             n++;
+        }
+
+        // smazeme vsechny prebytecne parametry v pripade, ze funkce byla volana pred definici
+        while( aux != NULL && aux->id == iSAVE_PAR )
+        {
+            aux->result = NULL;
+            aux = aux->right;
         }
     }
     else
@@ -744,6 +758,7 @@ int expression_sem(TOKEN *array, int *m, int end, bool is_for)  // m = index v p
         }
     }
 
+    // jednoprvkove vyrazy
     while( !SEmpty( &leStack ) )
     {
         array_expr[i++].type_token = TOPCheck( &leStack );
