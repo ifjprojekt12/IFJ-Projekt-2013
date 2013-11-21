@@ -380,7 +380,7 @@ int functions(TOKEN *array, int n)
             def = false;
         }
         n+=2;
-
+/*
         // prirazeni volani funkce do promenne
         new_instr(dest, iASSIGN, &assist1, NULL, &assist2, NULL);
 
@@ -403,7 +403,7 @@ int functions(TOKEN *array, int n)
                     break;
             }
         }
-
+*/
         // prirazeni hodnot parametrum
         while(array[n].type_token != 41 )       // )
         {
@@ -439,7 +439,32 @@ int functions(TOKEN *array, int n)
             }
 
             new_instr(dest, iSAVE_PAR, &assist3, NULL, &assist4, NULL); // vytvoreni instrukce pro ulozeni hodnoty parametru
+            if( first )         // kontrola skokovych instrukci, ktere by odkazovali na nove vytvorenou
+            {
+                if( aux != NULL )
+                {
+                    aux->jump = list.last;
+                    aux = NULL;
+                }
+                if( !SEmptyInstr( &InstrStack ) )
+                {
+                    TOPInstr( &InstrStack, &top );
+                    while( top == 43 )
+                    {
+                        POPInstr( &InstrStack, &aux, &top );
+                        aux->jump = dest->last;
+                        aux = NULL;
+                        if( !SEmptyInstr( &InstrStack ) )
+                            TOPInstr( &InstrStack, &top );
+                        else
+                            break;
+                    }
+                }
+                first = false;
+            }
         }
+
+        new_instr(dest, iASSIGN, &assist1, NULL, &assist2, NULL);
     }
     else        // volani vestavene funkce
     {
@@ -929,7 +954,7 @@ int read_postfix(TOKEN *array, int type, int max)
 
         i++; assist1 = NULL; assist2 = NULL; assist3 = NULL;    // smazat nulovani assist* - rychlost
     }
-
+/*
     if( !SEmptyNode( &nodeStack ) )
     {
         // odchytavani jednoprvkovych vyrazu
@@ -937,20 +962,20 @@ int read_postfix(TOKEN *array, int type, int max)
         TOPPOPNode(&nodeStack, &assist);
         switch(type)
         {
-/*            case 1:     // if
+            case 1:     // if
             case 3:     // elseif
             case 4:     // while
             case 5:     // for
 
                 new_instr(dest, iEQ, &assist, NULL, NULL, NULL);
                 break;
-*/
+
             case 7:     // return
 
                 new_instr(dest, iRETURN, &assist, NULL, NULL, NULL);
         }
     }
-
+*/
     return EXIT_SUCCESS;
 }
 
