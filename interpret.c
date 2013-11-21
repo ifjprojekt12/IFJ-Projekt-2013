@@ -25,6 +25,20 @@ int interpret(LIST_3AK *list){
   list->actual = list->first;
 
   while(1){
+
+    //printf("ID:%d\n",list->actual->id);
+  //  if(list->actual->operand_1 != NULL){
+
+      //printf("Type1:%d\n",list->actual->operand_1->data.type_token);
+   // }
+   // if(list->actual->operand_2 != NULL){
+      //printf("Type2:%d\n",list->actual->operand_2->data.type_token);
+   // }
+   // if(list->actual->result != NULL){
+      //printf("TypeR:%d\n",list->actual->result->data.type_token);
+    //}
+    fflush(stdout);
+
     //*******************************************
     //instrukce konce programu
     //*******************************************
@@ -41,12 +55,13 @@ int interpret(LIST_3AK *list){
     //a pripadne preskakuje ty ciste pomocne instrukce
     if(list->actual->id == iP_STR_NEW){
       list->actual = list->actual->right;
+      continue;
     }
 
     //*******************************************
     //konec funkce
     //*******************************************
-    if(list->actual->id == 34){
+    if(list->actual->id == iEND_FCE){
       int a;
       INSTRUCT next;
       POPInstr(&next_instr,&next,&a);
@@ -67,6 +82,7 @@ int interpret(LIST_3AK *list){
     } else op_1 = NULL;
 
     if(list->actual->operand_2 != NULL){
+      printf("\nTypeI:%d\n",list->actual->id);
       op_2 = searchIdent(list->actual->operand_2->key,symbol_tables->ptr);
     } else op_2 = NULL;
 
@@ -88,18 +104,33 @@ int interpret(LIST_3AK *list){
       list->actual = op_1->body->first;
 
       NODE new_tab;
-      printf("prvni");
-      NODE old = op_1->params;
-      new_tab = copyTree(&old);
-      //new_tab = op_1->params;
-      printf("druha");
+      //printf("prvni");
+      NODE old;
+      //treeInit(&old);
+      //old = op_1->params;
+      //new_tab = copyTree(&old);
+      new_tab = op_1->params;
+      //printf("druha");
       fflush(stdout);
       push(&symbol_tables,&new_tab);
       continue;
     }
 
-    //jeden return prosin
+    //jeden return prosim
+    if(list->actual->id == iRETURN){
+
+    }
     //jedny parametry prosim pekne
+    if(list->actual->id == iSAVE_PAR){
+      /*result->data.type_token = 30;
+      op_1->data.type_token = 30;
+      printf("marenka");
+      printf("%s\n",result->key);*/
+      //printf("%d %s\n",list->actual->right->id,list->actual->right->operand_1->key);
+      //fflush(stdout);
+      //result->data.string = "pop";
+      continue;
+    }
 
     //*******************************************
     //Aritmeticke a retezcove operatory
