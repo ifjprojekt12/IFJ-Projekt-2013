@@ -382,7 +382,7 @@ int functions(TOKEN *array, int n)
         n+=2;
 
         // prirazeni volani funkce do promenne
-        new_instr(dest, iASSIGN, &assist1, NULL, &assist2, NULL);
+        new_instr(dest, iFUNCTION, &assist1, NULL, NULL, NULL);
 
         if( aux != NULL )
         {
@@ -440,6 +440,8 @@ int functions(TOKEN *array, int n)
 
             new_instr(dest, iSAVE_PAR, &assist3, NULL, &assist4, NULL); // vytvoreni instrukce pro ulozeni hodnoty parametru
         }
+
+        new_instr(dest, iASSIGN, &assist1, NULL, &assist2, NULL);
     }
     else        // volani vestavene funkce
     {
