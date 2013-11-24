@@ -139,7 +139,7 @@ NODE copyTree (NODE *ptr)
         treeNew->position = tree->position;
         treeNew->body = NULL;
 
-        treeNew->Params = NULL;
+        treeNew->params = NULL;
         if( tree->params != NULL )
             treeNew->params = copyTree(&(tree->params));
 
