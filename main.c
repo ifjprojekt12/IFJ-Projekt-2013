@@ -25,13 +25,16 @@ void print_tree(NODE a1, NODE a2)
         }
         else
 */
-            printf("%s, ",a1->key);
+/*        printf("%s, ",a1->key);
         print_tree(a1->LPtr,a1->RPtr);
-/*        printf("\n");
 
-        if( a1->body->first != NULL )
+        printf("\n");
+*/
+/*
+        if( a1->body != NULL && a1->body->first != NULL )
         {
-            for( INSTRUCT a = list.first; a != NULL; a = a->right )
+            printf("%s:\n",a1->key);
+            for( INSTRUCT a = a1->body->first; a != NULL; a = a->right )
             {
                 printf("\tid: %d, typ: %d", a->number, a->id);
                 if( a->operand_1 != NULL )
@@ -47,7 +50,7 @@ void print_tree(NODE a1, NODE a2)
             }   
         }
         else
-            printf("seznam instrukci je prazdny\n");
+            printf("%s: seznam instrukci je prazdny\n",a1->key);
 */
     }
     if( a2 != NULL )
@@ -59,13 +62,16 @@ void print_tree(NODE a1, NODE a2)
         }
         else
 */
-            printf("%s, ",a2->key);
+/*        printf("%s, ",a2->key);
         print_tree(a2->LPtr,a2->RPtr);
-/*        printf("\n");
 
-        if( a2->body->first != NULL )
+        printf("\n");
+*/
+/*
+        if( a2->body != NULL && a2->body->first != NULL )
         {
-            for( INSTRUCT a = list.first; a != NULL; a = a->right )
+            printf("%s:\n",a2->key);
+            for( INSTRUCT a = a2->body->first; a != NULL; a = a->right )
             {
                 printf("\tid: %d, typ: %d", a->number, a->id);
                 if( a->operand_1 != NULL )
@@ -78,10 +84,10 @@ void print_tree(NODE a1, NODE a2)
                     printf(", jump: %d", a->jump->number);
                 printf("\n");
                 fflush(stdout);
-            }   
+            }
         }
         else
-            printf("seznam instrukci je prazdny\n");
+            printf("%s: seznam instrukci je prazdny\n",a2->key);
 */
     }
 }
@@ -157,7 +163,7 @@ int main(int argc, char *argv[])
     printf("\nstrom funkci obsahuje:\n");
     if( tree != NULL )
     {
-        printf("%s:\n\t",tree->key);
+        printf("%s:\n",tree->key);
 
         if(tree->params != NULL)
         {
@@ -196,7 +202,7 @@ int main(int argc, char *argv[])
 */
 
     /* Po kontrole validace vstupu prechazime do interpretu */
-    //printf("\ninterpret:\n");fflush(stdout);
+    printf("interpret:\n");fflush(stdout);
     interpret( &list );
 
     /* Odstraneni veskere pouzite pameti */
