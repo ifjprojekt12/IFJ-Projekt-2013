@@ -136,6 +136,12 @@ NODE copyTree (NODE *ptr)
             strcpy(treeNew->data.id_name, tree->data.id_name);
         }
 
+        treeNew->position = tree->position;
+
+        treeNew->Params = NULL;
+        if( tree->params != NULL )
+            treeNew->Params = copyTree(&(tree->params));
+
         if (tree->LPtr != NULL) treeNew->LPtr = copyTree(&(tree->LPtr));
         else treeNew->LPtr = NULL;
         if (tree->RPtr != NULL) treeNew->RPtr = copyTree(&(tree->RPtr));
