@@ -141,7 +141,7 @@ NODE copyTree (NODE *ptr)
 
         treeNew->Params = NULL;
         if( tree->params != NULL )
-            treeNew->Params = copyTree(&(tree->params));
+            treeNew->params = copyTree(&(tree->params));
 
         if (tree->LPtr != NULL) treeNew->LPtr = copyTree(&(tree->LPtr));
         else treeNew->LPtr = NULL;
