@@ -104,7 +104,7 @@ NODE copyTree (NODE *ptr)
     }
     else
     {
-        NODE treeNew = malloc(sizeof(NODE));
+        NODE treeNew = malloc(sizeof(struct NODE));
         if( treeNew == NULL )
             return NULL;
 
@@ -137,6 +137,7 @@ NODE copyTree (NODE *ptr)
         }
 
         treeNew->position = tree->position;
+        treeNew->body = NULL;
 
         treeNew->Params = NULL;
         if( tree->params != NULL )
