@@ -29,6 +29,7 @@ int syntaxer()
     func_end = false;
     initInstr( &InstrStack );
     initInstr( &InstrFor );
+    initInstr( &InstrBreak );
     treeInit( &check_func );
  
     // pomocne promenne

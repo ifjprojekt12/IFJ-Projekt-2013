@@ -13,6 +13,7 @@
 INSTRUCT aux;           // pomocny ukazatel instrukce pro vytvareni skokovych instrukci v semantice
 tSInstr InstrStack;
 tSInstr InstrFor;
+tSInstr InstrBreak;
 NODE check_func;
 NODE func;
 bool func_end;

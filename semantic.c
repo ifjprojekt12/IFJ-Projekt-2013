@@ -107,6 +107,7 @@ int semantixer(TOKEN *array)
         else
         {
             bool quit = false;
+            bool wasFor = false;
             INSTRUCT aux2 = NULL, aux3 = NULL;
             new_instr(dest, iJUMP, NULL, NULL, NULL, NULL);
             TOPInstr( &InstrStack, &top );
@@ -121,13 +122,17 @@ int semantixer(TOKEN *array)
 
             while( !quit )
             {
-                if( aux->id == iBVAL )
-                // v pripade jednoprvkoveho vyrazu nebudeme pripisovat skok k instrukci iBVAL ale nasledujici
-                    aux = aux->right;
-
                 //printf("na vrcholu semantickeho zasobniku je: %d\n", top);
                 switch( top )
                 {
+                    case 1:     // if
+                    case 3:     // elseif
+
+                        if( aux->id == iBVAL )
+                            aux = aux->right;
+                        PUSHInstr( &InstrStack, dest->last, array[n].type_token );
+                        quit = true;
+                        break;
 
                     case 43:    // }
 
@@ -156,11 +161,24 @@ int semantixer(TOKEN *array)
                             aux3 = aux3->right;
                         }
                         new_instr(dest, iJUMP, NULL, NULL, NULL, NULL);
+                        wasFor = true;
 
                     case 4:     // while
 
                         dest->last->jump = aux;
+                        if( aux->id == iBVAL )
+                            aux = aux->right;
                         new_instr(dest, iJUMP, NULL, NULL, NULL, NULL);
+                        if( wasFor )
+                        {
+                            POPInstr(&InstrBreak, &aux3, &top);
+                            while( aux3 != NULL && aux3->id == iJUMP )
+                            {
+                                aux3->jump = dest->last;
+                                aux3 = aux3->right;
+                                POPInstr(&InstrBreak, &aux3, &top);
+                            }
+                        }
                         if( aux2 != NULL )
                             aux2->jump = dest->last;
                         quit = true;
@@ -215,9 +233,13 @@ int semantixer(TOKEN *array)
         }
         else
         {
+            printf("sem bych se nemel nikdy dostat.\n");
             // co kdyz bude prazdna, jakou instrukci vytvorit ?? TODO
         }
         n++;
+
+        new_instr(dest, 80, NULL, NULL, NULL, NULL);
+        PUSH_last(true, &InstrBreak);
 
         if( array[n].type_token != 41 )     // treti cast hlavicky neni prazdna
         {
@@ -230,13 +252,14 @@ int semantixer(TOKEN *array)
             // ackoliv je treti cast hlavicky prazdna, je nutno do zasobniku ulozit nejakou instrukci
             // jinak bychom narusili prirazeni instrukci jednotlivym vrstvam zanoreni
             new_instr(dest, iJUMP, NULL, NULL, NULL, NULL);
-            PUSH_last(true);
+            PUSH_last(true, &InstrFor);
         }
     }
     else if( array[n].type_token == 8 )     // break
     {
         // dost pravdepodobne se bude ukladat na zasobnik -> novy typ TODO
         new_instr(dest, iJUMP, NULL, NULL, NULL, NULL);
+        PUSHInstr(&InstrBreak, dest->last, 0);
     }
     else if( array[n].type_token == 9 )     // continue
     {
@@ -954,7 +977,7 @@ int read_postfix(TOKEN *array, int type, int max)
             {
                 // zpracovavame treti cast hlavicky cyklu FOR
                 // instrukce se pridaji az na konec tohoto cyklu
-                PUSH_last(first);
+                PUSH_last(first, &InstrFor);
                 first = false;
             }
 
@@ -992,25 +1015,8 @@ int read_postfix(TOKEN *array, int type, int max)
                     aux = NULL;
                 }
 
-                if( type == 1 || (type >= 3 && type <= 5) )     // if, elseif, while, for
-                {
-                    PUSHInstr( &InstrStack, dest->last, type );
-                    type = 0;
-                }
-                else if( !SEmptyInstr( &InstrStack ) )
-                {
-                    TOPInstr( &InstrStack, &top );
-                    while( top == 43 )
-                    {
-                        POPInstr( &InstrStack, &aux, &top );
-                        aux->jump = dest->last;
-                        aux = NULL;
-                        if( !SEmptyInstr( &InstrStack ) )
-                            TOPInstr( &InstrStack, &top );
-                        else
-                            break;
-                    }
-                }
+                PUSHInstr( &InstrStack, dest->last, type );
+                type = 0;
 
                 token_init(&unit);
                 unit.type_token = 33;   // bool
@@ -1180,7 +1186,7 @@ char* makeName(TOKEN unit)
 
 // funkce pro ukladani posledni instrukce v listu do zasobniku pro FOR cyklus
 // funkce musi podsledni instrukci z listu vyjmout a zrusit veskere ukazatele
-void PUSH_last(bool first)
+void PUSH_last(bool first, tSInstr *Stack)
 {
     LIST_3AK *dest = &list;
     if( func != NULL )
@@ -1190,12 +1196,12 @@ void PUSH_last(bool first)
 
     if( first )     // prvni instrukce, nutno vytvorit dalsi seznam v zasobniku
     {
-        PUSHInstr( &InstrFor, dest->last, 0 );      // seznam zacina instrukci
+        PUSHInstr( Stack, dest->last, 0 );      // seznam zacina instrukci
         dest->last->left = NULL;
     }
     else
     {
-        a = InstrFor.Last->Instr;
+        a = Stack->Last->Instr;
         while( a->right != NULL )       // hledame posledni instrukci v seznamu
             a = a->right;
 

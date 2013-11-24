@@ -23,6 +23,7 @@ extern LIST_3AK list;
 extern INSTRUCT aux;
 extern tSInstr InstrStack;
 extern tSInstr InstrFor;
+extern tSInstr InstrBreak;
 extern int eCode;
 extern bool func_end;
 
@@ -68,7 +69,7 @@ int read_postfix(TOKEN *array, int type, int max);
 char* makeName(TOKEN unit);
 
 // funkce pro smazani instrukce ze seznamu a ulozeni do zasobniku pro cyklus FOR
-void PUSH_last(bool first);
+void PUSH_last(bool first, tSInstr *Stack);
 
 // funkce pro porovnavani datovych typu
 bool Compatible(NODE *a1, NODE *a2, int sign);
