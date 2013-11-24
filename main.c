@@ -115,38 +115,32 @@ int main(int argc, char *argv[])
     }
     else
     {
-    // kontrola listu instrukci pro skoky (c) Kuba
-    for( INSTRUCT a = list.first; a != NULL; a = a->right )
-    {
-        printf("id: %d, typ: %d", a->number, a->id);fflush(stdout);
-        if( a->operand_1 != NULL )
+        // kontrola listu instrukci pro skoky (c) Kuba
+        for( INSTRUCT a = list.first; a != NULL; a = a->right )
         {
-            printf(", ass1: ");fflush(stdout);
-            printf("%s", a->operand_1->key);fflush(stdout);
-            printf(" (%d)",a->operand_1->data.type_token);fflush(stdout);
+            printf("id: %d, typ: %d", a->number, a->id);
+            if( a->operand_1 != NULL )
+            {
+                printf(", ass1: %s", a->operand_1->key);
+            }
+            if( a->operand_2 != NULL )
+            {
+                printf(", ass2: %s", a->operand_2->key);
+            }
+            if( a->result != NULL )
+            {
+                printf(", ass3: %s", a->result->key);
+            }
+            if( a->jump != NULL )
+            {
+                printf(", jump: %d", a->jump->number);
+            }
+            //if( a->left != NULL )
+                //printf(", left: %d", a->left->number);
+            //if( a->right != NULL )
+                //printf(", right: %d", a->right->number);
+            printf("\n");
         }
-        if( a->operand_2 != NULL )
-        {
-            printf(", ass2: ");fflush(stdout);
-            printf("%s", a->operand_2->key);fflush(stdout);
-        }
-        if( a->result != NULL )
-        {
-            printf(", ass3: ");fflush(stdout);
-            printf("%s", a->result->key);fflush(stdout);
-        }
-        if( a->jump != NULL )
-        {
-            printf(", jump: ");fflush(stdout);
-            printf("%d", a->jump->number);fflush(stdout);
-        }
-        //if( a->left != NULL )
-            //printf(", left: %d", a->left->number);
-        //if( a->right != NULL )
-            //printf(", right: %d", a->right->number);
-        printf("\n");
-        fflush(stdout);
-    }
     }
 */
 /*
