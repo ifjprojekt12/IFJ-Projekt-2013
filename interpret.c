@@ -100,11 +100,12 @@ int interpret(LIST_3AK *list){
       NODE new_tab;
       treeInit(&new_tab);
       //printf("prvni");
+      //fflush(stdout);
       //NODE old = op_1->params;
       new_tab = copyTree(&op_1->params);
       //new_tab = op_1->params;
-      printf("druha");
-      fflush(stdout);
+      //printf("druha");
+      //fflush(stdout);
       push(&symbol_tables,&new_tab);
 
       list->actual = list->actual->right;
