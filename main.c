@@ -17,15 +17,17 @@ void print_tree(NODE a1, NODE a2)
 {
     if( a1 != NULL )
     {
+/*
         if(a1->params != NULL)
         {
             printf("%s, ", a1->params->key);
             print_tree(a1->params->LPtr, a1->params->RPtr);
         }
         else
+*/
             printf("%s, ",a1->key);
         print_tree(a1->LPtr,a1->RPtr);
-        printf("\n");
+/*        printf("\n");
 
         if( a1->body->first != NULL )
         {
@@ -46,18 +48,20 @@ void print_tree(NODE a1, NODE a2)
         }
         else
             printf("seznam instrukci je prazdny\n");
+*/
     }
     if( a2 != NULL )
     {
-        if(a2->params != NULL)
+/*        if(a2->params != NULL)
         {
             printf("%s, ", a2->params->key);
             print_tree(a2->params->LPtr, a2->params->RPtr);
         }
         else
+*/
             printf("%s, ",a2->key);
         print_tree(a2->LPtr,a2->RPtr);
-        printf("\n");
+/*        printf("\n");
 
         if( a2->body->first != NULL )
         {
@@ -78,6 +82,7 @@ void print_tree(NODE a1, NODE a2)
         }
         else
             printf("seznam instrukci je prazdny\n");
+*/
     }
 }
 
@@ -113,15 +118,28 @@ int main(int argc, char *argv[])
     // kontrola listu instrukci pro skoky (c) Kuba
     for( INSTRUCT a = list.first; a != NULL; a = a->right )
     {
-        printf("id: %d, typ: %d", a->number, a->id);
+        printf("id: %d, typ: %d", a->number, a->id);fflush(stdout);
         if( a->operand_1 != NULL )
-            printf(", ass1: %s", a->operand_1->key);
+        {
+            printf(", ass1: ");fflush(stdout);
+            printf("%s", a->operand_1->key);fflush(stdout);
+            printf(" (%d)",a->operand_1->data.type_token);fflush(stdout);
+        }
         if( a->operand_2 != NULL )
-            printf(", ass2: %s", a->operand_2->key);
+        {
+            printf(", ass2: ");fflush(stdout);
+            printf("%s", a->operand_2->key);fflush(stdout);
+        }
         if( a->result != NULL )
-            printf(", ass3: %s", a->result->key);
+        {
+            printf(", ass3: ");fflush(stdout);
+            printf("%s", a->result->key);fflush(stdout);
+        }
         if( a->jump != NULL )
-            printf(", jump: %d", a->jump->number);
+        {
+            printf(", jump: ");fflush(stdout);
+            printf("%d", a->jump->number);fflush(stdout);
+        }
         //if( a->left != NULL )
             //printf(", left: %d", a->left->number);
         //if( a->right != NULL )
@@ -184,6 +202,7 @@ int main(int argc, char *argv[])
 */
 
     /* Po kontrole validace vstupu prechazime do interpretu */
+    //printf("\ninterpret:\n");fflush(stdout);
     interpret( &list );
 
     /* Odstraneni veskere pouzite pameti */
