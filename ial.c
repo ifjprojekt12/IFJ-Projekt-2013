@@ -98,36 +98,50 @@ NODE searchIdent (char *key, NODE *ptr)
 NODE copyTree (NODE *ptr)
 {
     NODE tree = *ptr;
-    NODE *ptrNew = malloc(sizeof(NODE));
-    NODE treeNew = *ptrNew;
     if (tree == NULL)
     {
-        treeNew = NULL;
-        return treeNew;
+        return NULL;
     }
     else
     {
+        NODE treeNew = malloc(sizeof(NODE));
+        if( treeNew == NULL )
+            return NULL;
+
         treeNew->key = malloc((strlen(tree->key)+1) * sizeof(char));
+        if( treeNew->key == NULL )
+            return NULL;
+
         strcpy(treeNew->key, tree->key);
         treeNew->data.type_token = tree->data.type_token;
         treeNew->data.c_number = tree->data.c_number;
         treeNew->data.d_number = tree->data.d_number;
+
         if (tree->data.string != NULL)
         {
             treeNew->data.string = malloc((strlen(tree->data.string)+1) * sizeof(char));
+            if( treeNew->data.string == NULL )
+                return NULL;
             strcpy(treeNew->data.string, tree->data.string);
         }
+
         treeNew->data.boolean = tree->data.boolean;
         treeNew->data.null = tree->data.null;
-        treeNew->data.id_name = malloc((strlen(tree->data.id_name)+1) * sizeof(char));
-        strcpy(treeNew->data.id_name, tree->data.id_name);
 
-        if (tree->LPtr != NULL) treeNew->LPtr = copyTree(&tree->LPtr);
+        if( treeNew->data.id_name != NULL )
+        {
+            treeNew->data.id_name = malloc((strlen(tree->data.id_name)+1) * sizeof(char));
+            if( treeNew->data.id_name == NULL )
+                return NULL;
+            strcpy(treeNew->data.id_name, tree->data.id_name);
+        }
+
+        if (tree->LPtr != NULL) treeNew->LPtr = copyTree(&(tree->LPtr));
         else treeNew->LPtr = NULL;
-        if (tree->RPtr != NULL) treeNew->RPtr = copyTree(&tree->RPtr);
+        if (tree->RPtr != NULL) treeNew->RPtr = copyTree(&(tree->RPtr));
         else treeNew->RPtr = NULL;
+        return treeNew;
     }
-    return treeNew;
 }
 
 NODE searchParam (int index, NODE *ptr)
