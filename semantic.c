@@ -45,8 +45,10 @@ int semantixer(TOKEN *array)
         if( name == NULL )
             return EXIT_FAILURE;
         if( (assist1 = searchIdent(name, dest_root)) == NULL )
+        {
             // prvni vyskyt promenne, jeji zapis do stromu
             insertVarToTree(name, array[n], dest_root);
+        }
 
         if( array[n+2].type_token == 35 || (array[n+2].type_token >= 60 && array[n+2].type_token <= 69) )
         {
@@ -119,9 +121,14 @@ int semantixer(TOKEN *array)
 
             while( !quit )
             {
+                if( aux->id == iBVAL )
+                // v pripade jednoprvkoveho vyrazu nebudeme pripisovat skok k instrukci iBVAL ale nasledujici
+                    aux = aux->right;
+
                 //printf("na vrcholu semantickeho zasobniku je: %d\n", top);
                 switch( top )
                 {
+
                     case 43:    // }
 
                         aux->jump = dest->last;
@@ -134,7 +141,14 @@ int semantixer(TOKEN *array)
                         bool first = true;
                         while( aux3 != NULL )
                         {
-                            new_instr(dest, aux3->id, &(aux3->operand_1), &(aux3->operand_2), &(aux3->result), aux3->jump);
+                            NODE help1 = NULL, help2 = NULL, help3 = NULL;
+                            if( aux3->operand_1 != NULL )
+                                help1 = aux3->operand_1;
+                            if( aux3->operand_2 != NULL )
+                                help2 = aux3->operand_2;
+                            if( aux3->result != NULL )
+                                help3 = aux3->result;
+                            new_instr(dest, aux3->id, &help1, &help2, &help3, aux3->jump);
                             if( first && aux2 != NULL )
                                 aux2->jump = dest->last;
 
@@ -184,8 +198,10 @@ int semantixer(TOKEN *array)
             if( name == NULL )
                 return EXIT_FAILURE;
             if( (assist1 = searchIdent(name, dest_root)) == NULL )
+            {
                 // prvni vyskyt promenne, jeji zapis do stromu
                 insertVarToTree(name, array[n], dest_root);
+            }
 
             if( expression_sem(array, &n, SEMICOLON, false) == EXIT_FAILURE )     // ;
                 return EXIT_FAILURE;
@@ -427,6 +443,7 @@ int functions(TOKEN *array, int n)
             assist3 = searchIdent(name, dest_root);     // hledani hodnoty/promenne ve stromu
             if( assist3 == NULL )                       // hledani neuspesne
             {
+                /*
                 if( array[n].type_token == 36 )
                 {
                     // nedefinovana promenna
@@ -434,6 +451,7 @@ int functions(TOKEN *array, int n)
                     eCode = sSemVar;
                     return EXIT_FAILURE;
                 }
+                */
                 insertVarToTree(name, array[n], dest_root);     // vlozeni hodnoty do stromu
                 assist3 = searchIdent(name, dest_root);
             }
@@ -511,6 +529,7 @@ int functions(TOKEN *array, int n)
             assist1 = searchIdent(name, dest_root);
             if(assist1 == NULL)
             {
+                /*
                 if(array[n].type_token == 36)
                 {
                     // nedeklarovana promenna
@@ -518,6 +537,7 @@ int functions(TOKEN *array, int n)
                     eCode = sSemVar;
                     return EXIT_FAILURE;
                 }
+                */
 
                 insertVarToTree(name, array[n], dest_root);
                 assist1 = searchIdent(name, dest_root);
@@ -778,6 +798,16 @@ int expression_sem(TOKEN *array, int *m, int end, bool is_for)  // m = index v p
 // funkce pro cteni postfixove notace vyrazu a odesilani instrukci interpretu
 int read_postfix(TOKEN *array, int type, int max)
 {
+    /*
+    printf("read_postfix array: ");
+    for(int h=0; h<max; h++)
+    {
+        if( array[h].type_token == 0 )
+            break;
+        printf("%d, ",array[h].type_token);
+    }
+    printf("\n"); */
+
     // pomocne promenne
     int i=0, top;
     char *name = NULL;
@@ -809,7 +839,8 @@ int read_postfix(TOKEN *array, int type, int max)
                 return EXIT_FAILURE;
             assist1 = searchIdent(name, dest_root);
             if(assist1 == NULL)
-            {                
+            {               
+                /*
                 if(array[i].type_token == 36)
                 {
                     // nedeklarovana promenna
@@ -817,6 +848,8 @@ int read_postfix(TOKEN *array, int type, int max)
                     eCode = sSemVar;
                     return EXIT_FAILURE;
                 }
+                */
+
                 insertVarToTree(name, array[i], dest_root);
                 assist1 = searchIdent(name, dest_root);
             } 
@@ -897,7 +930,7 @@ int read_postfix(TOKEN *array, int type, int max)
                     aux = NULL;
                 }
 
-                if( type == 1 || (type >= 3 && type <= 5) )     // if, elseif, while, for
+                if( type == 1 || (type >= 3 && type < 5) || ( type == 5 && array[i].type_token != 10 ) )     // if, elseif, while, for
                 {
                     PUSHInstr( &InstrStack, dest->last, type );
                     type = 0;
@@ -935,21 +968,62 @@ int read_postfix(TOKEN *array, int type, int max)
     if( !SEmptyNode( &nodeStack ) )
     {
         // odchytavani jednoprvkovych vyrazu
-        NODE assist = NULL;
-        TOPPOPNode(&nodeStack, &assist);
+        assist1 = NULL;
+        TOPPOPNode(&nodeStack, &assist1);
         switch(type)
         {
-/*            case 1:     // if
+            case 1:     // if
             case 3:     // elseif
             case 4:     // while
             case 5:     // for
 
-                new_instr(dest, iEQ, &assist, NULL, NULL, NULL);
+                token_init(&unit);
+                unit.type_token = 37;
+                name = makeName(unit);
+                if( name == NULL )
+                    return EXIT_FAILURE;
+                insertVarToTree(name, unit, dest_root);
+                assist2 = searchIdent(name, dest_root);
+                new_instr(dest, iBVAL, &assist1, NULL, &assist2, NULL);
+
+                if( aux != NULL )
+                {
+                    aux->jump = list.last;
+                    aux = NULL;
+                }
+
+                if( type == 1 || (type >= 3 && type <= 5) )     // if, elseif, while, for
+                {
+                    PUSHInstr( &InstrStack, dest->last, type );
+                    type = 0;
+                }
+                else if( !SEmptyInstr( &InstrStack ) )
+                {
+                    TOPInstr( &InstrStack, &top );
+                    while( top == 43 )
+                    {
+                        POPInstr( &InstrStack, &aux, &top );
+                        aux->jump = dest->last;
+                        aux = NULL;
+                        if( !SEmptyInstr( &InstrStack ) )
+                            TOPInstr( &InstrStack, &top );
+                        else
+                            break;
+                    }
+                }
+
+                token_init(&unit);
+                unit.type_token = 33;   // bool
+                unit.boolean = 1;
+                insertVarToTree("true", unit, dest_root);
+                assist3 = searchIdent("true", dest_root);
+
+                new_instr(dest, iEQ, &assist2, &assist3, NULL, NULL);
                 break;
-*/
+
             case 7:     // return
 
-                new_instr(dest, iRETURN, &assist, NULL, NULL, NULL);
+                new_instr(dest, iRETURN, &assist1, NULL, NULL, NULL);
         }
     }
 
@@ -1094,6 +1168,11 @@ char* makeName(TOKEN unit)
             name[size--] = (char)((n % 10) + ASCII);
             n /= 10;
         }
+    }
+    else
+    {
+        printERR(eINTERN);
+        eCode = sINTERN;
     }
 
     return name;
