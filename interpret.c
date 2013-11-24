@@ -81,6 +81,7 @@ int interpret(LIST_3AK *list){
 
     if(list->actual->operand_2 != NULL){
       if(list->actual->id != iRETURN){
+      //if(list->actual->id != iRETURN && list->actual->id != iP_STR_NEW && list->actual->id != iP_STR && list->actual->id != iDVAL){
         op_2 = searchIdent(list->actual->operand_2->key,symbol_tables->ptr);
       }
     } else op_2 = NULL;
@@ -97,12 +98,13 @@ int interpret(LIST_3AK *list){
     //pomocna instrukce znacici, ze prijde volani funkce
     if(list->actual->id == iFUNCTION){
       NODE new_tab;
+      treeInit(&new_tab);
       //printf("prvni");
       //NODE old = op_1->params;
-      //new_tab = copyTree(&old);
-      new_tab = op_1->params;
-      //printf("druha");
-      //fflush(stdout);
+      new_tab = copyTree(&op_1->params);
+      //new_tab = op_1->params;
+      printf("druha");
+      fflush(stdout);
       push(&symbol_tables,&new_tab);
 
       list->actual = list->actual->right;
