@@ -44,6 +44,14 @@ int new_instr(LIST_3AK *list, int id, NODE *op_1, NODE *op_2, NODE *result, INST
   //urcime pamet pro novou instrukci
   new_instr = malloc(sizeof(struct instruct));
 
+  // inicializace
+  new_instr->operand_1 = NULL;
+  new_instr->operand_2 = NULL;
+  new_instr->result = NULL;
+  new_instr->jump = NULL;
+  new_instr->left = NULL;
+  new_instr->right = NULL;
+
   if(new_instr == NULL)
     return 99;
 
