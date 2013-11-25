@@ -184,7 +184,7 @@ void stackInit (STACK *zasobnik)
 // vlozeni prvku na vrchol zasobniku
 void push (STACK *zasobnik, NODE *ptr)
 {
-    STACK stack = malloc(sizeof(STACK));
+    STACK stack = malloc(sizeof(struct STACK));
     if (*zasobnik == NULL) // zasobnik je prazdny
     {
         stack->ptr = ptr;
