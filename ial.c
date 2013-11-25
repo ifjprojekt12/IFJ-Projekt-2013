@@ -253,53 +253,41 @@ char *my_sort_string (char *old_string) {
 }
 
 // pomocna funkce pro find
-char *vypocitejPrefix (char podretezec[])
+char *calculate_prefix(char *substring)
 {
     int k = -1;
-    int delkaPodretezce = strlen(podretezec);
-    char *prefix = malloc(delkaPodretezce*sizeof(char));
+    int substring_length = strlen(substring);
+    char *prefix = malloc(substring_length*sizeof(char));
     prefix[0] = k;
-    for (int i = 1; i < delkaPodretezce; i++)
+    for (int i = 1; i < substring_length; i++)
     {
-        while (k > -1 && podretezec[k+1] != podretezec[i]) k = prefix[k];
-        if (podretezec[i] == podretezec[k+1]) k++;
+        while (k > -1 && substring[k+1] != substring[i]) k = prefix[k];
+        if (substring[i] == substring[k+1]) k++;
         prefix[i] = k;
     }
     return prefix;
 }
 
-// funkce hleda podretezec v retezci pomoci Knuth-Moris-Prattova algoritmu
-int find_string (char *retezec, char *podretezec)
+// funkce hleda substring v retezci pomoci Knuth-Moris-Prattova algoritmu
+int find_string (char *string, char *substring)
 {
-    // malej hack pro ty nase retezce
-    if (strlen(retezec) == 512)
-	 for (int i = 0; i<512; i++)
-		 if (retezec[i] == 0)
-			retezec[i] = '\0';
-
-    if (strlen(podretezec) == 512)
-	 for (int i = 0; i<512; i++)
-		 if (podretezec[i] == 0)
-			podretezec[i] = '\0';
-
     int k = -1;
-    int delkaRetezce = strlen(retezec);
-    int delkaPodretezce = strlen(podretezec);
-    if (delkaPodretezce == 0)
-	return 0.0;
-    char *prefix = vypocitejPrefix(podretezec);
+    int string_length = strlen(string);
+    int substring_length = strlen(substring);
+    if (substring_length == 0) return 0; // prazdny retezec
+    char *prefix = calculate_prefix(substring);
 
-    for (int i = 0; i < delkaRetezce; i++)
+    for (int i = 0; i < string_length; i++)
     {
-        while (k > -1 && podretezec[k+1] != retezec[i]) k = prefix[k];
-        	if (retezec[i] == podretezec[k+1]) k++;
+        while (k > -1 && substring[k+1] != string[i]) k = prefix[k];
+        if (string[i] == substring[k+1]) k++;
 
-	if (k == delkaPodretezce - 1)
+	if (k == substring_length - 1)
         {
             free(prefix);
             return (i-k);
         }
     }
     free(prefix);
-    return -1.0;
+    return -1;
 }
