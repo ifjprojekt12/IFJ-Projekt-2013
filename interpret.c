@@ -55,7 +55,7 @@ int interpret(LIST_3AK *list){
     //*******************************************
     //konec funkce
     //*******************************************
-    if(list->actual->id == 34){
+    if(list->actual->id == iEND_FCE){
       int a;
       INSTRUCT next = NULL;
       POPInstr(&next_instr,&next,&a);
