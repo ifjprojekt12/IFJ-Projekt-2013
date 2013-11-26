@@ -57,7 +57,7 @@ int interpret(LIST_3AK *list){
     //*******************************************
     if(list->actual->id == 34){
       int a;
-      INSTRUCT next;
+      INSTRUCT next = NULL;
       POPInstr(&next_instr,&next,&a);
       list->actual = next;
       pop(&symbol_tables);
