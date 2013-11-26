@@ -1,0 +1,5 @@
+<?php
+function Mymain() {
+//	return 0;
+}
+$foo = Mymain();

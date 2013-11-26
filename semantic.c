@@ -82,8 +82,8 @@ int semantixer(TOKEN *array)
     {
         if( func_end )
         {
-            // TODO asi bude potreba vytvorit praznou skokovou instrukci v pripade, kdy funkce konci
-            // neuplnym ifem bez prikazu return !!! promyslet
+            // bude potreba vytvorit praznou skokovou instrukci v pripade, kdy funkce konci
+            // neuplnym ifem bez prikazu return
             new_instr(dest, iEND_FCE, NULL, NULL, NULL, NULL );
             if( aux != NULL )
                 aux->jump = dest->last;
@@ -257,7 +257,7 @@ int semantixer(TOKEN *array)
     }
     else if( array[n].type_token == 8 )     // break
     {
-        // dost pravdepodobne se bude ukladat na zasobnik -> novy typ TODO
+        // vytvorena instrukce se bude ukladat na zasobnik
         new_instr(dest, iJUMP, NULL, NULL, NULL, NULL);
         PUSHInstr(&InstrBreak, dest->last, 0);
     }
@@ -310,7 +310,7 @@ int semantixer(TOKEN *array)
         if( assist2 != NULL )
         {
             INSTRUCT aux2 = NULL;
-            aux = list.first;
+            aux = list.first;       // tady je to prustrelne, musel bych prohledavat i seznamy instrukci pro vsechny funkce TODO
             while( aux != NULL )    // prochazeni celym listem
             {
                 if( aux->id == iSAVE_PAR )  // nalezeni instrukce prirazeni hodnot parametrum
@@ -401,7 +401,7 @@ int functions(TOKEN *array, int n)
     // zjisteni typu funkce a odecteni jeji hodnoty pro odpovidajici hodnotu id pro instrukce
     int type = array[n].type_token - 40;
 
-    if( type < 0 )      // uzivatelem definovana funkce TODO
+    if( type < 0 )      // uzivatelem definovana funkce
     {
         bool def = true;
         int x = 1;
@@ -480,6 +480,14 @@ int functions(TOKEN *array, int n)
             }
 
             new_instr(dest, iSAVE_PAR, &assist3, NULL, &assist4, NULL); // vytvoreni instrukce pro ulozeni hodnoty parametru
+        }
+
+        // detekce chybejicich parametru pri volani jiz definovave funkce
+        if( (assist4 = searchParam(x, &(assist1->params))) != NULL )
+        {
+            printERR(eFCEPARAM);
+            eCode = sSemFceParam;
+            return EXIT_FAILURE;
         }
 
         new_instr(dest, iASSIGN, &assist1, NULL, &assist2, NULL);
@@ -914,7 +922,7 @@ int read_postfix(TOKEN *array, int type, int max)
                 case 13:    // /
                     if( assist2->data.c_number == 0 || assist2->data.d_number == 0.0 )
                     {
-                        printERR(eEXPR);        // napsat hlaseni pro deleni nulou !! TODO
+                        printERR(eEXPR);        // napsat hlaseni pro deleni nulou !!
                         eCode = sSynZero;
                         return EXIT_FAILURE;
                     }
