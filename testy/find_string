@@ -1,6 +1,6 @@
 <?php
 //vestavna funkce solo
-$x = "https://github.com/ifjprojekt12/IFJ-Projekt-2013/new/master/testy"
+$x = "https://github.com/ifjprojekt12/IFJ-Projekt-2013/new/master/testy";
 $a = find_string($x, "h");
 $b = put_string($a,"\n");
 $a = find_string($x, "x");
