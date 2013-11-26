@@ -483,7 +483,7 @@ int functions(TOKEN *array, int n)
         }
 
         // detekce chybejicich parametru pri volani jiz definovave funkce
-        if( (assist4 = searchParam(x, &(assist1->params))) != NULL )
+        if( assist1->params != NULL && (assist4 = searchParam(x, &(assist1->params))) != NULL )
         {
             printERR(eFCEPARAM);
             eCode = sSemFceParam;
