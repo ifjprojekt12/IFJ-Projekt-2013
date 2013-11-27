@@ -1,0 +1,34 @@
+<?php
+
+//prevod retezcu na desetine cisla
+$str="0.1232e3";
+$double = boolval($str);
+$put=put_string($double, "\n");
+
+$str=0.0;
+$double = boolval($str);
+$put=put_string($double, "\n");
+
+$stdsa = 0;
+$duble = boolval($stdsa);
+$ut = put_string($duble, "\n");
+
+$stdsa = 3.32132;
+$duble = boolval($stdsa);
+$ut = put_string($duble, "\n");
+
+$stdsa = null;
+$duble = boolval($stdsa);
+$ut = put_string($duble, "\n");
+
+$stdsa = true;
+$duble = boolval($stdsa);
+$ut = put_string($duble, "\n");
+
+$stdsa = false;
+$duble = boolval($stdsa);
+$ut = put_string($duble,":D", "\n");
+
+$stdsa = "false";
+$duble = boolval($stdsa);
+$ut = put_string($duble, "\n");

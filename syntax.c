@@ -64,11 +64,17 @@ int syntaxer()
                 if( (i = expression(array, i, get_token(), END_B, &m)) < 0 )
                 {
                     // chyba ve vyrazu
-                    printERR(eEXPR);
                     if(i == -1)
+                    {
+                        printERR(eEXPR);
                         eCode = sSyn;
-                    else
+                    }
+                    else if( i == -2 )
+                    {
+                        printERR(eINTERN);
                         eCode = sINTERN;
+                    }
+
                     free(array);
                     return EXIT_FAILURE;
                 }
@@ -130,11 +136,17 @@ int syntaxer()
                         if( (i = expression(array, i, get_token(), END_S, &m)) < 0 )
                         {
                             // chyba ve vyrazu
-                            printERR(eEXPR);
                             if(i == -1)
+                            {
+                                printERR(eEXPR);
                                 eCode = sSyn;
-                            else
+                            }
+                            else if( i == -2 )
+                            {
+                                printERR(eINTERN);
                                 eCode = sINTERN;
+                            }
+
                             free(array);
                             return EXIT_FAILURE;
                         }                
@@ -171,11 +183,17 @@ int syntaxer()
                     if( (i = expression(array, i-1, unit, END_S, &m)) < 0 )
                     {
                         // chyba ve vyrazu
-                        printERR(eEXPR);
                         if(i == -1)
+                        {
+                            printERR(eEXPR);
                             eCode = sSyn;
-                        else
+                        }
+                        else if( i == -2 )
+                        {
+                            printERR(eINTERN);
                             eCode = sINTERN;
+                        }
+
                         free(array);
                         return EXIT_FAILURE;
                      }                
@@ -209,11 +227,16 @@ int syntaxer()
                         if( (i = expression(array, i, get_token(), END_B, &m)) < 0 )
                         {
                             // chyba ve vyrazu
-                            printERR(eEXPR);
                             if(i == -1)
+                            {
+                                printERR(eEXPR);
                                 eCode = sSyn;
-                            else
+                            }
+                            else if( i == -2 )
+                            {
+                                printERR(eINTERN);
                                 eCode = sINTERN;
+                            }
                             free(array);
                             return EXIT_FAILURE;
                         }                
@@ -295,11 +318,16 @@ int syntaxer()
             if( (i = expression(array, i, get_token(), END_S, &m)) < 0)
             {
                 // chyba ve vyrazu
-                printERR(eEXPR);
                 if(i == -1)
+                {
+                    printERR(eEXPR);
                     eCode = sSyn;
-                else
+                }
+                else if( i == -2 )
+                {
+                    printERR(eINTERN);
                     eCode = sINTERN;
+                }
                 free(array);
                 return EXIT_FAILURE;
             }
@@ -417,11 +445,17 @@ int syntaxer()
                 // zpracovani vyrazu, END_S = vyraz konci strednikem
                 {
                     // chyba ve vyrazu
-                    printERR(eEXPR);
                     if(i == -1)
+                    {
+                        printERR(eEXPR);
                         eCode = sSyn;
-                    else
+                    }
+                    else if( i == -2 )
+                    {
+                        printERR(eINTERN);
                         eCode = sINTERN;
+                    }
+
                     free(array);
                     return EXIT_FAILURE;
                 }
@@ -708,8 +742,7 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending, int *m)
     // definice a deklarace pomocnych promennych
     bool wasExpr = false;
     bool wasSign = true;
-    int brackets = 0;
-    int i_orig = i;
+    int brackets = 0, i_orig = i;
 
     while( unit.type_token > 0 && unit.type_token != 100 && unit.type_token != 50 ) // chyba nebo EOF
     {
@@ -752,13 +785,17 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending, int *m)
         }
         else
             // znak na nespravnem miste
-            return -1;
+            break;
 
         unit = get_token();
     }
 
     if( i == i_orig+1 )     // prazdny vyraz
         i = -2;
+
+    if( unit.type_token == 0 || unit.type_token == 100 )
+        // chyba lexikalni analyzy
+        return -3;
 
     return i;
 }

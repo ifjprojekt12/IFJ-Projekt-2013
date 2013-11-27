@@ -1,0 +1,30 @@
+<?php
+
+//prevod retezcu na desetine cisla
+$str="0.1232e3";
+$double = intval($str);
+$put=put_string($double, "\n");
+
+$str="3827168";
+$double = intval($str);
+$put=put_string($double, "\n");
+
+$str="dsa";
+$double = intval($str);
+$put=put_string($double, "\n");
+
+$str=23312;
+$double = intval($str);
+$put=put_string($double, "\n");
+
+$str=false;
+$double = intval($str);
+$put=put_string($double, "\n");
+
+$str = null;
+$double = intval($str);
+$put=put_string($double, "\n");
+
+$str = true;
+$double = intval($str);
+$put=put_string($double, "\n");

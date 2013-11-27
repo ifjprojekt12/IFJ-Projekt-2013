@@ -1,0 +1,58 @@
+<?php
+
+//prevod retezcu na desetine cisla
+$str="0.1232e3";
+$double = doubleval($str);
+$put=put_string($double, "\n");
+
+$str="0.2232E3";
+$double = doubleval($str);
+$put=put_string($double, "\n");
+
+$str="323200.0-e3";
+$double = doubleval($str);
+$put=put_string($double, "\n");
+
+$str="423200.0-E3";
+$double = doubleval($str);
+$put=put_string($double, "\n");
+
+$str="0.5232+e3";
+$double = doubleval($str);
+$put=put_string($double, "\n");
+
+$str="0.6232+E3";
+$double = doubleval($str);
+$put=put_string($double, "\n");
+
+$stdsa = 3;
+$duble = doubleval($stdsa);
+$ut = put_string($duble, "\n");
+
+$stdsa = 3.32132;
+$duble = doubleval($stdsa);
+$ut = put_string($duble, "\n");
+
+$stdsa = null;
+$duble = doubleval($stdsa);
+$ut = put_string($duble, "\n");
+
+$stdsa = true;
+$duble = doubleval($stdsa);
+$ut = put_string($duble, "\n");
+
+$stdsa = false;
+$duble = doubleval($stdsa);
+$ut = put_string($duble, "\n");
+
+$stdsa = "false";
+$duble = doubleval($stdsa);
+$ut = put_string($duble, "\n");
+
+$stdsa = "true";
+$duble = doubleval($stdsa);
+$ut = put_string($duble, "\n");
+
+$stdsa = "null";
+$duble = doubleval($stdsa);
+$ut = put_string($duble, "\n");
