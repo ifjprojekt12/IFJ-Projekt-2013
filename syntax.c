@@ -689,7 +689,6 @@ int syntaxer()
 
     if( unit.type_token == 0 || unit.type_token == 100 )
     {
-        printf("jsem zde\n");
         printERR(eWRONG);
         if( eCode == sOK )
             eCode = sSyn;
