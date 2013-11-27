@@ -14,18 +14,16 @@ Lexikalni analyzator
 //ZNAME BUGY
 //retezce, promenne, identifikatory a podobny shit pri velikosti radku vetsi nez je buffer - dodelat
 //dodelat reallocy u identifikatoru, retezcu a promennych
-//a dodelat podminky na to, ze malloc prosel a neexnul nam nekde v prubehu (0/100?)
 //retezec neukonceny " zacykli lexikalni analyzator...
 //podivat se na rozdil ve vypisu stylu "marenka\t" a "marenka \t", to prvni z nejakeho duvodu nevypise tabulator
-//zeptat se na foru, zda muzeme v retezci hexa kodem zadavat i znaky < 31 ASCII, aktualne to mam tak, ze nemuzem
 
-FILE *source; //prom. - zdrojovy soubor
-char buffer[buffer_size]; //buffer
-unsigned int pos_buffer = 0; //aktualni pozice v bufferu
+FILE *source;                 //prom. - zdrojovy soubor
+char buffer[buffer_size];     //buffer
+unsigned int pos_buffer = 0;  //aktualni pozice v bufferu
 
 int start = 0;
 
-//tabulka klicovych slov - retezce se porovnaji s timto a token se tomu podridi
+//tabulka klicovych slov
 const char table_words[keywords_table_length][15] = {"if","else","elseif","while","for","function","return",
             "break","continue","boolval","doubleval","intval","strval","get_string","put_string","strlen",
             "get_substring","find_string","sort_string"};
@@ -34,7 +32,6 @@ const char table_words[keywords_table_length][15] = {"if","else","elseif","while
 //***********************************************
 //operace nad souborem, vola se z mainu na zacatku a konci
 //***********************************************
-
 //otevre zdrojovy soubor
 int open_source(char *source_file){
 
@@ -56,7 +53,7 @@ int read_src(){
   if(fgets(buffer,buffer_size-1,source) == NULL)
     return 1;
 
-  //kontrola prazdneho radku...
+  //kontrola pri nacteni prazdneho radku
   while(1){
     if(buffer[0] == 10) {
       if(fgets(buffer,buffer_size,source) == NULL)
@@ -68,7 +65,7 @@ int read_src(){
 }
 
 //***********************************************
-//automat pro cteni a analyzu tokenu...
+//konecny automat pro cteni a analyzu tokenu
 //***********************************************
 void token_init(TOKEN *token){
   token->type_token = 0;
@@ -79,19 +76,17 @@ void token_init(TOKEN *token){
   token->null = -1;
   token->id_name = NULL;
 }
-
-//------------------------------------------------
+//***********************************************
 TOKEN get_token(){
   TOKEN new_tok;
-  //radek control
-  //while(1){
-  //nastaveni vychazich hodnot noveho tokenu
+
+  //Inicializace noveho tokenu
   token_init(&new_tok);
 
     /* kontroly pred jadrem zjistovani dalsiho tokenu
   prebytecna bila mista, konce radku a podobne */
 
-  //jednoducha kontrola na zacatek souboru <?php
+  //kontrola zjistujici zda soubor obsahuje <?php
   if(start == 0){
     char *o_w;
 
@@ -108,7 +103,6 @@ TOKEN get_token(){
     }
 
     if(start == 0){
-      eCode = 2;
       new_tok.type_token = 0;
       return new_tok;
     }
@@ -119,7 +113,7 @@ TOKEN get_token(){
     pos_buffer = 0;
   }
 
-  //tak detekujeme posledni \n na radku.... no neni to prasacke?
+  //detekce posledniho \n na radku
   if(buffer[pos_buffer] == '\n'){
     pos_buffer = 0;
   }
@@ -176,7 +170,7 @@ TOKEN get_token(){
     }
 
 
-    //tak detekujeme posledni \n na radku... again
+    //detekujeme posledni \n na radku
     if(buffer[pos_buffer] == '\n'){
       if(read_src() == 1){
         new_tok.type_token = 50;
@@ -190,7 +184,7 @@ TOKEN get_token(){
   while(1){
     if((isspace(buffer[pos_buffer])) != 0 && buffer[pos_buffer] != '\n'){
       pos_buffer++;
-      //a toto nacte novy radek, pokud jsou prebytecna bila mista na konci radku
+      //a toto nacte novy radek, pokud jsou na konci radku prebytecna bila mista
       if(buffer[pos_buffer] == '\n'){
         if(read_src() == 1){
           new_tok.type_token = 50;
@@ -203,7 +197,7 @@ TOKEN get_token(){
   }
 
   //-------------------------------------------------
-  //konecny automat...
+  //dulezite casti konecneho automatu
   //-------------------------------------------------
   //zavorky
   //znak (
@@ -235,7 +229,7 @@ TOKEN get_token(){
   }
 
   //************************************************
-  //aritmeticke operatory, rovna se a podobne
+  //aritmeticke operatory, rovna se atd.
   //+
     if(buffer[pos_buffer] == '+'){
     new_tok.type_token = 14;
@@ -426,6 +420,11 @@ TOKEN get_token(){
       pos_buffer++;
       if(new_tok.string == NULL){
         new_tok.string = malloc(sizeof(char)*100);
+        if(new_tok.string == NULL){
+          eCode = 99;
+          new_tok.type_token = 0;
+          return new_tok;
+        }
       }
       new_tok.string[0] = '\0';
       new_tok.type_token = 30;
@@ -587,10 +586,15 @@ TOKEN get_token(){
 
     }
 
-    //pokud to neni klicove slovo, nebo vestavena funkce ulozime to do id_name v tokenu
+    //pokud identifikator neni klicove slovo, ulozi se jeho nazev do id_name
     if(new_tok.type_token == 35){
       if(new_tok.id_name == NULL){
         new_tok.id_name = malloc(sizeof(char)*strlen(id_name)+10);
+        if(new_tok.id_name == NULL){
+          eCode = 99;
+          new_tok.type_token = 0;
+          return new_tok;
+        }
       }
 
       strcpy(new_tok.id_name,id_name);
@@ -613,6 +617,11 @@ TOKEN get_token(){
         //ukladani nazvu promenne a prace s pameti kam se uklada
         if(new_tok.id_name == NULL){
           new_tok.id_name = malloc(sizeof(char)*100);
+          if(new_tok.id_name == NULL){
+            eCode = 99;
+            new_tok.type_token = 0;
+            return new_tok;
+          }
         }
 
         //DOPLNIT REALLOC <<------
@@ -640,6 +649,7 @@ TOKEN get_token(){
       return new_tok;
     }
   }
+
   //}//zavorka ke control while
   return new_tok;
 }
