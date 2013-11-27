@@ -11,12 +11,6 @@ Lexikalni analyzator
 #define keywords_table_length 20
 #define NaN 0.0/0.0
 
-//ZNAME BUGY
-//retezce, promenne, identifikatory a podobny shit pri velikosti radku vetsi nez je buffer - dodelat
-//dodelat reallocy u identifikatoru, retezcu a promennych
-//retezec neukonceny " zacykli lexikalni analyzator...
-//podivat se na rozdil ve vypisu stylu "marenka\t" a "marenka \t", to prvni z nejakeho duvodu nevypise tabulator
-
 FILE *source;                 //prom. - zdrojovy soubor
 char buffer[buffer_size];     //buffer
 unsigned int pos_buffer = 0;  //aktualni pozice v bufferu
@@ -103,6 +97,7 @@ TOKEN get_token(){
     }
 
     if(start == 0){
+      eCode = 2;
       new_tok.type_token = 0;
       return new_tok;
     }
@@ -342,34 +337,44 @@ TOKEN get_token(){
 
           //duplikace exponentu v cisle
           if(exponent == 1){
+            eCode = 1;
             return new_tok;
           }
 
           exponent = 1;
 
-          //neprazdny exponent
+          //neprazdny exponent watafak? 10ee10??? 10++e10
           if(!((isdigit(buffer[pos_buffer + 1])) != 0)){
-            if(buffer[pos_buffer + 1] != '+' && buffer[pos_buffer +1] != '-')
+            if(buffer[pos_buffer + 1] != '+' && buffer[pos_buffer +1] != '-'){
+              eCode = 1;
+              new_tok.type_token = 0;
               return new_tok;
+            }
           }
 
       } else if(buffer[pos_buffer] == '.'){
 
           //duplikace desetinne carky v cisle
           if(cel_or_double == 1){
+            eCode = 1;
             return new_tok;
           }
           cel_or_double = 1;
 
           //neprazdna desetinna cast
           if((isdigit(buffer[pos_buffer + 1])) != 0){}
-          else return new_tok;
+          else {
+            eCode = 1;
+            new_tok.type_token = 0;
+            return new_tok;
+          }
 
       } else if((buffer[pos_buffer] == '+' || buffer[pos_buffer] == '-') && exponent == 1){
           cel_or_double = 1;
 
           //neprazdny exponent
           if(!((isdigit(buffer[pos_buffer + 1])) != 0)){
+            eCode = 1;
             return new_tok;
           }
 
@@ -385,6 +390,7 @@ TOKEN get_token(){
     //podminka zhruba na tvary 1aa,1.0aa a tak dale, funguje zatim na pismenka
     if((isalpha(buffer[pos_buffer])) != 0){
       new_tok.type_token = 0;
+      eCode = 1;
       return new_tok;
     }
 
@@ -540,7 +546,7 @@ TOKEN get_token(){
   }
 
   //************************************************
-  //predpokladam, ze promenne a identifikatory vzdy maji za sebou bily znak... asi?
+  //identifikatory
   if((isalpha(buffer[pos_buffer])) != 0 || buffer[pos_buffer] == '_'){
     char id_name[500];
     int uk = 0;
@@ -574,7 +580,7 @@ TOKEN get_token(){
       new_tok.boolean = 1;
       return new_tok;
     }
-    //_________!!!
+    //je dany identifikator klicove slovo?
     for(unsigned int a = 0;a < keywords_table_length;a++){
       if((strcmp(table_words[a],id_name)) == 0){
         if(a < 9){
@@ -583,7 +589,6 @@ TOKEN get_token(){
           new_tok.type_token = a+51;
         }
       }
-
     }
 
     //pokud identifikator neni klicove slovo, ulozi se jeho nazev do id_name
@@ -614,9 +619,9 @@ TOKEN get_token(){
       while((isalpha(buffer[pos_buffer])) != 0 || buffer[pos_buffer] == '_' || (isdigit(buffer[pos_buffer])) != 0){
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        //ukladani nazvu promenne a prace s pameti kam se uklada
+        //ukladani nazvu promenne a prace s pameti kam se uklada tento nazev
         if(new_tok.id_name == NULL){
-          new_tok.id_name = malloc(sizeof(char)*100);
+          new_tok.id_name = malloc(sizeof(char)*200);
           if(new_tok.id_name == NULL){
             eCode = 99;
             new_tok.type_token = 0;
@@ -624,7 +629,7 @@ TOKEN get_token(){
           }
         }
 
-        //DOPLNIT REALLOC <<------
+        //DOPLNIT REALLOC <<< jaka je sance, ze promenne budou dlouhe pres 200 znaku?
 
         new_tok.id_name[length_string] = buffer[pos_buffer];
         length_string++;
@@ -641,7 +646,7 @@ TOKEN get_token(){
   }
 
   //************************************************
-  //kontrolujem zda mame konec radku po tokenu...
+  //kontrolujem konec radku
   if(pos_buffer == (strlen(buffer))){
     pos_buffer = 0;
     if((read_src()) == 1){
@@ -650,7 +655,8 @@ TOKEN get_token(){
     }
   }
 
-  //}//zavorka ke control while
+  //pokud program dosel az sem, znamena to, ze je ve slepe vetvi automatu
+  eCode = 1;
   return new_tok;
 }
 
