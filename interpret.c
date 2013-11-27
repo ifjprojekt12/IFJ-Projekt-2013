@@ -990,10 +990,11 @@ int interpret(LIST_3AK *list){
       }
       if(list->actual->right->id == iG_SUBSTR2){
         list->actual->right->result->data.type_token = 30;
-        if((list->actual->right->result->data.string = my_get_substring(op_1->data.string,intval(op_2),intval(result))) == NULL){
+        NODE result_gsubstr = NULL;
+        result_gsubstr = searchIdent(list->actual->right->result->key,symbol_tables->ptr);
+        if((result_gsubstr->data.string = my_get_substring(op_1->data.string,intval(op_2),intval(result))) == NULL){
           return EXIT_FAILURE;
-        };
-        //op_2->data.c_number,result->data.c_number))
+        }
       }
     }
     if(list->actual->id == iG_SUBSTR2){
