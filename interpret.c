@@ -29,9 +29,10 @@ int interpret(LIST_3AK *list){
   list->actual = list->first;
 
   while(1){
-
+    //printf("%d...%d\n",list->actual->id,list->actual->right->id);
     //*********************
     //ladici vypisy
+    //if(list->actual->id == iIVAL){printf("intval ");}
     //printf("%d\n",list->actual->id);
 
     //*******************************************
@@ -61,12 +62,11 @@ int interpret(LIST_3AK *list){
       POPInstr(&next_instr,&next,&a);
       list->actual = next;
       pop(&symbol_tables);
-
       continue;
     }
     //*******************************************
     //*******************************************
-
+    op_1 = NULL;op_2 = NULL;result = NULL;
     //vyhledavame v prislusnych tabulkach prislusne zaznamy
     if(list->actual->operand_1 != NULL){
       if(list->actual->operand_1->data.type_token == 35){
@@ -132,7 +132,6 @@ int interpret(LIST_3AK *list){
 
       //jaka dalsi instrukce se bude vykonavat
       list->actual = op_1->body->first;
-
       continue;
     }
 
@@ -188,7 +187,6 @@ int interpret(LIST_3AK *list){
       if(result->data.type_token == 33){
         result->data.boolean = op_1->data.boolean;
       }
-
       list->actual = list->actual->right;
       continue;
     }
@@ -787,7 +785,7 @@ int interpret(LIST_3AK *list){
     }
     //---------------------------------
     // mensi
-    if(list->actual->id == iLOW){
+    if(list->actual->id == iLOW){//printf("ahoj %d %d\n",list->actual->id,list->actual->jump->id);fflush(stdout);
       //kontrola zda pouzivame deklarovane promenne
       if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
         eCode = sSemVar;
@@ -900,6 +898,7 @@ int interpret(LIST_3AK *list){
     if(list->actual->id == iJUMP){
       if(list->actual->jump != NULL){
         list->actual = list->actual->jump;
+
         continue;
       }
       else {
