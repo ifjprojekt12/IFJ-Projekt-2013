@@ -1,3 +1,11 @@
+/**
+
+Implementace interpretu imperativniho jazyka IFJ13.
+
+xhanak27 - Jan Hanak
+xfiser10 - Jakub Fiser
+
+*/
 #ifndef _SYNTAX_H
 #define _SYNTAX_H
 

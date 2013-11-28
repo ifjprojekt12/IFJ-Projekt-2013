@@ -1,3 +1,12 @@
+/**
+
+Implementace interpretu imperativniho jazyka IFJ13.
+
+xhanak27 - Jan Hanak
+xfiser10 - Jakub Fiser
+
+*/
+
 #include "syntax.h"
 
 // hlavni funkce syntaxe
@@ -791,7 +800,7 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending, int *m)
     }
 
     if( i == i_orig+1 )     // prazdny vyraz
-        i = -2;
+        i = -1;
 
     if( unit.type_token == 0 || unit.type_token == 100 )
         // chyba lexikalni analyzy

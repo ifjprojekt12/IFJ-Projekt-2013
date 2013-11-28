@@ -1,9 +1,17 @@
+/**
+
+Implementace interpretu imperativniho jazyka IFJ13.
+
+xhanak27 - Jan Hanak
+xfiser10 - Jakub Fiser
+
+*/
 #include "semantic.h"
 
 // precedencni tabulka
 int table[MAXINDEX][MAXINDEX]={
     //              term    +   -   *   /   <   >   === <=  >=  !== .   (   )  =
-    /* 1. term */ { H,      H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H, H },
+    i/* 1. term */ { H,      H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H, H },
     /* 2. + */    { L,      H,  H,  L,  L,  H,  H,  H,  H,  H,  H,  E,  L,  H, H },
     /* 3. - */    { L,      H,  H,  L,  L,  H,  H,  H,  H,  H,  H,  E,  L,  H, H },
     /* 4. * */    { L,      H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  E,  L,  H, H },

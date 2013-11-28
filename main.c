@@ -1,3 +1,11 @@
+/**
+
+Implementace interpretu imperativniho jazyka IFJ13.
+
+xfiser10 - Jakub Fiser
+
+*/
+
 #include "lexical.h"
 #include "syntax.h"
 #include "interpret.h"
@@ -139,7 +147,7 @@ int main(int argc, char *argv[])
             }
             if( a->jump != NULL )
             {
-                printf(", jump: %d", a->jump->number);
+                printf(", jump: %d (%d)", a->jump->number, a->jump->id);
             }
             //if( a->left != NULL )
                 //printf(", left: %d", a->left->number);
@@ -164,7 +172,8 @@ int main(int argc, char *argv[])
     if( tree != NULL )
     {
         printf("%s:\n",tree->key);
-
+*/
+/*
         if(tree->params != NULL)
         {
             printf("%s, ", tree->params->key);
@@ -174,7 +183,8 @@ int main(int argc, char *argv[])
             printf("%s, ",tree->key);
         print_tree(tree->LPtr,tree->RPtr);
         printf("\n");
-
+*/
+/*
         if( tree->body->first != NULL )
         {
             for( INSTRUCT a = tree->body->first; a != NULL; a = a->right )
@@ -187,7 +197,7 @@ int main(int argc, char *argv[])
                 if( a->result != NULL )
                     printf(", ass3: %s", a->result->key);
                 if( a->jump != NULL )
-                    printf(", jump: %d", a->jump->number);
+                    printf(", jump: %d (%d)", a->jump->number,a->jump->id);
                 printf("\n");
                 fflush(stdout);
             }   
