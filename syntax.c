@@ -554,6 +554,20 @@ int syntaxer()
                     // promenna pro kontrolu poctu slozenych zavorek
                     super_brackets++;
                 }
+                else
+                {
+                    printERR(eBRACKETO);
+                    eCode = sSyn;
+                    free(array);
+                    return EXIT_FAILURE;
+                }
+            }
+            else
+            {
+                printERR(eWRONG);
+                eCode = sSyn;
+                free(array);
+                return EXIT_FAILURE;
             }
         }
         else if( unit.type_token == 43 )    // }
