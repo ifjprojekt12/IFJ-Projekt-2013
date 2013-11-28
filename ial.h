@@ -13,6 +13,8 @@
 #define STACKSIZE 1024
 #define BUFFERSIZE 1024
 
+#define DEBUG printf("blablabla")
+
 struct list3_ak;
 
 // linearni seznam pro parametry funkci

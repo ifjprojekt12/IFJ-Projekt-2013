@@ -128,7 +128,7 @@ NODE copyTree (NODE *ptr)
         treeNew->data.boolean = tree->data.boolean;
         treeNew->data.null = tree->data.null;
 
-        if( treeNew->data.id_name != NULL )
+        if( tree->data.id_name != NULL )
         {
             treeNew->data.id_name = malloc((strlen(tree->data.id_name)+1) * sizeof(char));
             if( treeNew->data.id_name == NULL )
