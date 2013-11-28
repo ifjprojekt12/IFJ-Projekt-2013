@@ -11,7 +11,7 @@ xfiser10 - Jakub Fiser
 // precedencni tabulka
 int table[MAXINDEX][MAXINDEX]={
     //              term    +   -   *   /   <   >   === <=  >=  !== .   (   )  =
-    i/* 1. term */ { H,      H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H, H },
+    /* 1. term */ { H,      H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  H, H },
     /* 2. + */    { L,      H,  H,  L,  L,  H,  H,  H,  H,  H,  H,  E,  L,  H, H },
     /* 3. - */    { L,      H,  H,  L,  L,  H,  H,  H,  H,  H,  H,  E,  L,  H, H },
     /* 4. * */    { L,      H,  H,  H,  H,  H,  H,  H,  H,  H,  H,  E,  L,  H, H },
@@ -241,7 +241,7 @@ int semantixer(TOKEN *array)
         }
         else
         {
-            printf("sem bych se nemel nikdy dostat.\n");
+            fprintf(stderr,"sem bych se nemel nikdy dostat.\n");
             // co kdyz bude prazdna, jakou instrukci vytvorit ?? TODO
         }
         n++;
@@ -488,6 +488,7 @@ int functions(TOKEN *array, int n)
             }
 
             new_instr(dest, iSAVE_PAR, &assist3, NULL, &assist4, NULL); // vytvoreni instrukce pro ulozeni hodnoty parametru
+            n++;
         }
 
         // detekce chybejicich parametru pri volani jiz definovave funkce
