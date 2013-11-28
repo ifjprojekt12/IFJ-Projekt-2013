@@ -200,7 +200,7 @@ int semantixer(TOKEN *array)
     {
         new_instr(dest, iEND, NULL, NULL, NULL, NULL);
         if( aux != NULL )
-            aux->jump = list.last;
+            aux->jump = dest->last;
         while( !SEmptyInstr( &InstrStack ) )
         {
             POPInstr( &InstrStack, &aux, &top );
@@ -500,7 +500,7 @@ int functions(TOKEN *array, int n)
             new_instr(dest, iP_STR_NEW, NULL, NULL, NULL, NULL);   // uvodni instrukce pro funkci put_string
             if( aux != NULL )
             {
-                aux->jump = list.last;
+                aux->jump = dest->last;
                 aux = NULL;
             }
 
@@ -525,7 +525,7 @@ int functions(TOKEN *array, int n)
             new_instr(dest, type, NULL, NULL, &assist2, NULL);
             if( aux != NULL )
             {
-                aux->jump = list.last;
+                aux->jump = dest->last;
                 aux = NULL;
             }
 
@@ -594,7 +594,7 @@ int functions(TOKEN *array, int n)
                         {
                             if( aux != NULL )
                             {
-                                aux->jump = list.last;
+                                aux->jump = dest->last;
                                 aux = NULL;
                             }
                             if( !SEmptyInstr( &InstrStack ) )
@@ -627,7 +627,7 @@ int functions(TOKEN *array, int n)
                         {
                             if( aux != NULL )
                             {
-                                aux->jump = list.last;
+                                aux->jump = dest->last;
                                 aux = NULL;
                             }
                             if( !SEmptyInstr( &InstrStack ) )
@@ -656,7 +656,7 @@ int functions(TOKEN *array, int n)
                     {
                         if( aux != NULL )
                         {
-                            aux->jump = list.last;
+                            aux->jump = dest->last;
                             aux = NULL;
                         }
                         if( !SEmptyInstr( &InstrStack ) )
@@ -957,7 +957,7 @@ int read_postfix(TOKEN *array, int type, int max)
             {
                 if( aux != NULL )
                 {
-                    aux->jump = list.last;
+                    aux->jump = dest->last;
                     aux = NULL;
                 }
 
@@ -1019,7 +1019,7 @@ int read_postfix(TOKEN *array, int type, int max)
 
                 if( aux != NULL )
                 {
-                    aux->jump = list.last;
+                    aux->jump = dest->last;
                     aux = NULL;
                 }
 
