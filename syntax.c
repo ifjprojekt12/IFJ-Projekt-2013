@@ -636,7 +636,7 @@ int syntaxer()
         else
         {
             // token, ktery se nesmi nalezat na zacatku radku
-            printERR(eUNKNOWN);
+            printERR(eWRONG);
             eCode = sSyn;
             free(array);
             return EXIT_FAILURE;
