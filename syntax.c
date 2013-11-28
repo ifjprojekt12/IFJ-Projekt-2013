@@ -808,7 +808,7 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending, int *m)
         }
         else
             // znak na nespravnem miste
-            break;
+            return -1;
 
         unit = get_token();
     }
