@@ -1038,6 +1038,25 @@ int read_postfix(TOKEN *array, int type, int max)
             case 7:     // return
 
                 new_instr(dest, iRETURN, &assist1, NULL, NULL, NULL);
+                if( aux != NULL )
+                {
+                    aux->jump = dest->last;
+                    aux = NULL;
+                }
+                if( !SEmptyInstr( &InstrStack ) )
+                {
+                    TOPInstr( &InstrStack, &top );
+                    while( top == 43 )
+                    {
+                        POPInstr( &InstrStack, &aux, &top );
+                        aux->jump = dest->last;
+                        aux = NULL;
+                        if( !SEmptyInstr( &InstrStack ) )
+                            TOPInstr( &InstrStack, &top );
+                        else
+                            break;
+                    }
+                }
         }
     }
 
