@@ -33,7 +33,7 @@ int interpret(LIST_3AK *list){
     //*********************
     //ladici vypisy
     //if(list->actual->id == iIVAL){printf("intval ");}
-    //printf("%d\n",list->actual->id);
+   // printf("%d\n",list->actual->id);
 
     //*******************************************
     //instrukce konce programu
@@ -187,6 +187,7 @@ int interpret(LIST_3AK *list){
       if(result->data.type_token == 33){
         result->data.boolean = op_1->data.boolean;
       }
+
       list->actual = list->actual->right;
       continue;
     }
@@ -785,7 +786,7 @@ int interpret(LIST_3AK *list){
     }
     //---------------------------------
     // mensi
-    if(list->actual->id == iLOW){//printf("ahoj %d %d\n",list->actual->id,list->actual->jump->id);fflush(stdout);
+    if(list->actual->id == iLOW){
       //kontrola zda pouzivame deklarovane promenne
       if(op_1->data.type_token < 30 || op_1->data.type_token > 34){
         eCode = sSemVar;
@@ -898,7 +899,6 @@ int interpret(LIST_3AK *list){
     if(list->actual->id == iJUMP){
       if(list->actual->jump != NULL){
         list->actual = list->actual->jump;
-
         continue;
       }
       else {
