@@ -1,3 +1,12 @@
+/**
+
+Implementace interpretu imperativniho jazyka IFJ13.
+
+xhanak27 - Jan Hanak
+xfiser10 - Jakub Fiser
+
+*/
+
 #include "syntax.h"
 
 // hlavni funkce syntaxe

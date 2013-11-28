@@ -1,3 +1,11 @@
+/**
+
+Implementace interpretu imperativniho jazyka IFJ13.
+
+xfiser10 - Jakub Fiser
+
+*/
+
 #include "lexical.h"
 #include "syntax.h"
 #include "interpret.h"
