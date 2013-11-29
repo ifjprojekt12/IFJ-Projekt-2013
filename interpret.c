@@ -66,7 +66,7 @@ int interpret(LIST_3AK *list){
     }
     //*******************************************
     //*******************************************
-    //op_1 = NULL;op_2 = NULL;result = NULL;
+    op_1 = NULL;op_2 = NULL;result = NULL;
     //vyhledavame v prislusnych tabulkach prislusne zaznamy
     if(list->actual->operand_1 != NULL){
       if(list->actual->operand_1->data.type_token == 35){
