@@ -1,0 +1,11 @@
+<?php
+//projedeme pres spousty funkci az do funkce a
+function a(){
+$x = put_string("jsme v a", "\n");
+$x = b();
+}
+function b(){
+$x = put_string("jsme v b", "\n");
+$x = a();
+}
+$c = b();

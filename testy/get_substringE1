@@ -1,5 +1,6 @@
 <?php
 
 $x = "0123456789";
-$a = get_substring($x, -1,1);
-$b = put_string($a, "\n")
+$c = 1 - 2;
+$a = get_substring($x, $c,1);
+$b = put_string($a, "\n");

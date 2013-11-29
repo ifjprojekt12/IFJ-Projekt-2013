@@ -1,0 +1,7 @@
+<?php
+$z = 1.456789;
+function a(){
+$x = put_string($z, "\n");
+}
+
+$c = a();

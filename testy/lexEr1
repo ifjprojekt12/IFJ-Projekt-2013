@@ -1,0 +1,5 @@
+<?php
+
+if(null) {
+$x=put_string("fu\n");
+}

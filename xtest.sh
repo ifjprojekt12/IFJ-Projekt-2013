@@ -18,6 +18,10 @@ yellow='\e[1;33m'
 NC='\e[0m' # no color
 
 
+echo -e "TEST 0  ECODE a OUT .: ${red} FAIL  ${NC} --- ${yellow}p2${NC}"
+echo -e "TEST 0  ECODE a OUT .: ${red} FAIL  ${NC} --- ${yellow}p3${NC}"
+echo -e "TEST 0  ECODE a OUT .: ${red} FAIL  ${NC} --- ${yellow}p8${NC} je to deadlock ale mel by se chovat jinak"
+echo -e "TEST 0  ECODE a OUT .: ${red} FAIL  ${NC} --- ${yellow}p9${NC} je taky nekonecny a spadne"
 #ziskani testovacich souboru
 location="./testy"
 foundExp=`find ./ -maxdepth 1 -type f ! -name '.*'` 
@@ -37,12 +41,7 @@ CT=1; #cislo testu
 cat ./testy/.files | while read line; do
 	if [ -f "./testy/${line}" ] && [ -f "./testy/out/${line}Out" ]
 	then
-        if [ -f "./testy/${line}IN" ]
-        then
-		    ./interpret testy/${line} <./testy/${line}IN  >./testy/.out 2>/dev/null
-        else
-		    ./interpret testy/${line} > ./testy/.out 2>/dev/null
-        fi
+		./interpret testy/${line} > ./testy/.out
 		echo $? > ./testy/.ecode 
 		diff -u "./testy/.out" "./testy/out/${line}Out" >/dev/null 2> /dev/null
 		if [ $? -eq 0 ]

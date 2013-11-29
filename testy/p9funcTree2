@@ -1,0 +1,37 @@
+<?php
+//projedeme pres spousty funkci az do funkce a (rozvetvene)
+// a jednou se zkusi vratit vyse a spadne...
+
+function a(){
+$x = put_string("jsme tam", "\n");
+}
+function b(){
+$x = a();
+$x = k();
+}
+function i(){
+$x = b();
+}
+function j(){
+$x = i();
+}
+function k(){
+$x = j();
+}
+function l(){
+$x = k();
+}
+function m(){
+$x = k();
+$x = j();
+}
+function n(){
+$x = m();
+$x = i();
+}
+function o(){
+$x = n();
+$x = m();
+$x = k();
+}
+$c = o();
