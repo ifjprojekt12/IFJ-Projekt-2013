@@ -37,7 +37,12 @@ CT=1; #cislo testu
 cat ./testy/.files | while read line; do
 	if [ -f "./testy/${line}" ] && [ -f "./testy/out/${line}Out" ]
 	then
-		./interpret testy/${line} > ./testy/.out 2>/dev/null
+        if [ -f "./testy/${line}IN" ]
+        then
+		    ./interpret testy/${line} <./testy/${line}IN  >./testy/.out 2>/dev/null
+        else
+		    ./interpret testy/${line} > ./testy/.out 2>/dev/null
+        fi
 		echo $? > ./testy/.ecode 
 		diff -u "./testy/.out" "./testy/out/${line}Out" >/dev/null 2> /dev/null
 		if [ $? -eq 0 ]
