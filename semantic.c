@@ -1176,9 +1176,25 @@ char* makeName(TOKEN unit)
     else if( unit.type_token == 33 )    // bool
     {
         if( unit.boolean == 1 )
-            name = "true";
+        {
+            if( (name = malloc((strlen("true")+1) * sizeof(char))) == NULL )
+            {
+                printERR(eINTERN);
+                eCode = sINTERN;
+                return NULL;
+            }
+            strcpy(name,"true");
+        }
         else
-            name = "false";
+        {
+            if( (name = malloc((strlen("false")+1) * sizeof(char))) == NULL )
+            {
+                printERR(eINTERN);
+                eCode = sINTERN;
+                return NULL;
+            }
+            strcpy(name,"false");
+        }
     }
     else if( unit.type_token == 32)                               // double
     {
@@ -1216,7 +1232,15 @@ char* makeName(TOKEN unit)
         }
     }
     else if( unit.type_token == 34)    // null
-        name = "null";
+    {
+        if( (name = malloc((strlen("null")+1) * sizeof(char))) == NULL )
+        {
+            printERR(eINTERN);
+            eCode = sINTERN;
+            return NULL;
+        }
+        strcpy(name,"null");
+    }
     else if( unit.type_token == 30)    // string
     {
         size = strlen(unit.string);
@@ -1230,6 +1254,7 @@ char* makeName(TOKEN unit)
 
         name[0] = 0x06; //ACK
         name[size+1] = '\0';
+        size--;
         while(size >= 0){
             name[size+1] = unit.string[size];
             size--;
@@ -1248,6 +1273,7 @@ char* makeName(TOKEN unit)
 
         name[0] = 0x05; //ENQ
         name[size+1] = '\0';
+        size--;
         while(size >= 0)
         {
             name[size+1] = unit.id_name[size];
