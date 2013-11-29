@@ -325,10 +325,35 @@ int semantixer(TOKEN *array)
         new_instr_list(func->body);
         //treeInit( &(func->params) );
 
+        int m = n;
+
+        // ukladame veskere parametry do stromu k dane funkci
+        n+=2;
+        top = 1;                    // poradi parametru
+        while( array[n].type_token != 41 )  // )
+        {
+            if( array[n].type_token != 23 )     // ,
+            {
+                name = makeName(array[n]);
+                if( name == NULL )
+                    return EXIT_FAILURE;
+                insertVarToTree(name, array[n], &(func->params));
+                if( eCode != sOK )
+                {
+                    printERR(eINTERN);
+                    return EXIT_FAILURE;
+                }
+                assist1 = searchIdent(name, &(func->params));
+                assist1->position = top++;
+            }
+            n++;
+        }
+
+        n = m;
         // kontrola, zda byla funkce volana pred jeji definici
         NODE assist2 = searchIdent(array[n].id_name, &check_func);
         INSTRUCT aux = NULL;
-        top = 1;                    // poradi parametru
+        top = 1;
 
         // pokud byla funkce jiz volana, existuji instrukce prirazeni parametru ovsem do nespravenho stromu
         // projdeme cely seznam instrukci a najdeme tedy tyto instrukce k aktualni funkci, prvni z nich bude v aux
@@ -347,9 +372,22 @@ int semantixer(TOKEN *array)
                     }
                     
                     if( aux2 != NULL && aux2->id == iASSIGN && aux2->operand_1 != NULL &&
-                        strcmp(aux2->operand_1->key,array[n].id_name) == 0)
+                        strcmp(aux2->operand_1->key,func->data.id_name) == 0)
+                    {
                         // nasli jsme aktualni funkci
-                        break;
+                        while( aux->id == iSAVE_PAR )      // )
+                        {
+                            if( (assist1 = searchParam(top++, &(func->params))) != NULL )
+                            {
+                                aux->result = assist1;
+                            }
+                            else
+                            {
+                                aux->result = NULL;
+                            }
+                            aux = aux->right;
+                        }
+                    }
                     else
                         aux = aux2;     // nenasli jsme aktualni funkci, hledani pokracuje
                 }
@@ -357,46 +395,6 @@ int semantixer(TOKEN *array)
                     // nenasli jsme instrukci typu iSAVE_PAR
                     aux = aux->right;
             }
-        }
-
-        // ukladame veskere parametry do stromu k dane funkci
-        n+=2;
-        while( array[n].type_token != 41 )  // )
-        {
-            if( array[n].type_token != 23 )     // ,
-            {
-                name = makeName(array[n]);
-                if( name == NULL )
-                    return EXIT_FAILURE;
-                insertVarToTree(name, array[n], &(func->params));
-                if( eCode != sOK )
-                {
-                    printERR(eINTERN);
-                    return EXIT_FAILURE;
-                }
-                assist1 = searchIdent(name, &(func->params));
-                assist1->position = top++;
-                if( aux != NULL && aux->id == iSAVE_PAR)
-                {
-                    aux->operand_1 = assist1;
-                    aux = aux->right;
-                }
-                else if( aux != NULL && aux->id != iSAVE_PAR )
-                {
-                    // pri volani funkce bylo pouzito malo parametru
-                    printERR(ePARAM);
-                    eCode = sSemFceParam;
-                    return EXIT_FAILURE;
-                }
-            }
-            n++;
-        }
-
-        // smazeme vsechny prebytecne parametry v pripade, ze funkce byla volana pred definici
-        while( aux != NULL && aux->id == iSAVE_PAR )
-        {
-            aux->result = NULL;
-            aux = aux->right;
         }
     }
     else
