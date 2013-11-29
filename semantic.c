@@ -1401,12 +1401,6 @@ int initialize_array(TOKEN**array, int i, int m)
 
     for(int x=0; x<m; x++)
     {
-    /*
-        if( i!=0 && (*array)[x].string != NULL)
-            free((*array)[x].string);
-        if( i!=0 && (*array)[x].id_name != NULL)
-            free((*array)[x].id_name);
-            */
         token_init(&((*array)[x]));
     }
 	return EXIT_SUCCESS;
