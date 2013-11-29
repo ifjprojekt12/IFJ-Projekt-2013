@@ -33,7 +33,7 @@ int interpret(LIST_3AK *list){
     //*********************
     //ladici vypisy
     //if(list->actual->id == iIVAL){printf("intval ");}
-   // printf("%d\n",list->actual->id);
+    //printf("%d\n",list->actual->id);
 
     //*******************************************
     //instrukce konce programu
@@ -66,7 +66,7 @@ int interpret(LIST_3AK *list){
     }
     //*******************************************
     //*******************************************
-    op_1 = NULL;op_2 = NULL;result = NULL;
+    //op_1 = NULL;op_2 = NULL;result = NULL;
     //vyhledavame v prislusnych tabulkach prislusne zaznamy
     if(list->actual->operand_1 != NULL){
       if(list->actual->operand_1->data.type_token == 35){
@@ -104,9 +104,12 @@ int interpret(LIST_3AK *list){
       //NODE old = op_1->params;
       new_tab = copyTree(&op_1->params);
       //new_tab = op_1->params;
-      //printf("druha");
-      //fflush(stdout);
+
       push(&symbol_tables,&new_tab);
+
+     // printf("druha");
+     // fflush(stdout);
+
 
       list->actual = list->actual->right;
       //printf("a sem zde");
@@ -115,15 +118,13 @@ int interpret(LIST_3AK *list){
 
     //volani funkce
     if(list->actual->id == iASSIGN && list->actual->operand_1->data.type_token == 35){
-
       //defaultni navratovy typ
       if(list->actual->result != NULL){
         if(list->actual->id != iRETURN){
           result = searchIdent(list->actual->result->key,symbol_tables->next->ptr);
         }
+        result->data.type_token = 34;
       }
-      result->data.type_token = 34;
-
       //ulozeni instrukce nasledujici po funkci
       PUSHInstr(&next_instr,list->actual->right,0);
 
