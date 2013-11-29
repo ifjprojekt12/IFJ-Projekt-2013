@@ -45,7 +45,7 @@ cat ./testy/.files | while read line; do
         then
 	    	./interpret testy/${line} <./testy/${line}IN >./testy/.out 2>/dev/null
         else
-    		./interpret testy/${line} > ./testy/.out
+    		./interpret testy/${line} > ./testy/.out 2>/dev/null
         fi
 		echo $? > ./testy/.ecode 
 		diff -u "./testy/.out" "./testy/out/${line}Out" >/dev/null 2> /dev/null
