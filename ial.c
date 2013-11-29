@@ -18,6 +18,7 @@ void insertVarToTree (char *key, TOKEN data, NODE *ptr)
         if( (node = malloc(sizeof(struct NODE))) == NULL )
         {
             eCode = 99;
+            free(key);
             return;
         }
         node->LPtr = NULL;

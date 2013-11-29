@@ -62,6 +62,8 @@ int semantixer(TOKEN *array)
                 return EXIT_FAILURE;
             }
         }
+        else
+            free(name);
 
         if( array[n+2].type_token == 35 || (array[n+2].type_token >= 60 && array[n+2].type_token <= 69) )
         {
@@ -232,11 +234,11 @@ int semantixer(TOKEN *array)
             {
                 // prvni vyskyt promenne, jeji zapis do stromu
                 insertVarToTree(name, array[n], dest_root);
-            if( eCode != sOK )
-            {
-                printERR(eINTERN);
-                return EXIT_FAILURE;
-            }
+                if( eCode != sOK )
+                {
+                    printERR(eINTERN);
+                    return EXIT_FAILURE;
+                }
             }
 
             if( expression_sem(array, &n, SEMICOLON, false) == EXIT_FAILURE )     // ;
@@ -304,11 +306,11 @@ int semantixer(TOKEN *array)
             return EXIT_FAILURE;
         }
         insertVarToTree(array[n].id_name, array[n], &tree);
-            if( eCode != sOK )
-            {
-                printERR(eINTERN);
-                return EXIT_FAILURE;
-            }
+        if( eCode != sOK )
+        {
+            printERR(eINTERN);
+            return EXIT_FAILURE;
+        }
 
         // ulozime si uzel pro funkci, v niz se budeme nachazet
         func = searchIdent(array[n].id_name, &tree);
@@ -367,11 +369,11 @@ int semantixer(TOKEN *array)
                 if( name == NULL )
                     return EXIT_FAILURE;
                 insertVarToTree(name, array[n], &(func->params));
-            if( eCode != sOK )
-            {
-                printERR(eINTERN);
-                return EXIT_FAILURE;
-            }
+                if( eCode != sOK )
+                {
+                    printERR(eINTERN);
+                    return EXIT_FAILURE;
+                }
                 assist1 = searchIdent(name, &(func->params));
                 assist1->position = top++;
                 if( aux != NULL && aux->id == iSAVE_PAR)
@@ -421,6 +423,7 @@ int functions(TOKEN *array, int n)
         return EXIT_FAILURE;
     NODE assist1, assist3, assist4;
     NODE assist2 = searchIdent(name, dest_root);    // ulozeni uzlu odpovidajicimu promenne pro prirazeni
+    free(name);
     NODE substr1 = NULL, substr2 = NULL, substr3 = NULL;
     n = 2;      // zacatek vyctu argumentu funkce
     bool first = true;
@@ -486,11 +489,11 @@ int functions(TOKEN *array, int n)
                 if( name == NULL )
                     return EXIT_FAILURE;
                 insertVarToTree(name, array[n], &(assist1->params));
-            if( eCode != sOK )
-            {
-                printERR(eINTERN);
-                return EXIT_FAILURE;
-            }
+                if( eCode != sOK )
+                {
+                    printERR(eINTERN);
+                    return EXIT_FAILURE;
+                }
                 assist4 = searchIdent(name, &(assist1->params));
                 assist4->position = x;
             }
@@ -514,13 +517,15 @@ int functions(TOKEN *array, int n)
                 }
                 */
                 insertVarToTree(name, array[n], dest_root);     // vlozeni hodnoty do stromu
-            if( eCode != sOK )
-            {
-                printERR(eINTERN);
-                return EXIT_FAILURE;
-            }
+                if( eCode != sOK )
+                {
+                    printERR(eINTERN);
+                    return EXIT_FAILURE;
+                }
                 assist3 = searchIdent(name, dest_root);
             }
+            else
+                free(name);
 
             new_instr(dest, iSAVE_PAR, &assist3, NULL, &assist4, NULL); // vytvoreni instrukce pro ulozeni hodnoty parametru
             n++;
@@ -615,13 +620,15 @@ int functions(TOKEN *array, int n)
                 */
 
                 insertVarToTree(name, array[n], dest_root);
-            if( eCode != sOK )
-            {
-                printERR(eINTERN);
-                return EXIT_FAILURE;
-            }
+                if( eCode != sOK )
+                {
+                    printERR(eINTERN);
+                    return EXIT_FAILURE;
+                }
                 assist1 = searchIdent(name, dest_root);
             }
+            else
+                free(name);
             n++;
             params++;   // pocitame pocet parametru
 
@@ -931,13 +938,15 @@ int read_postfix(TOKEN *array, int type, int max)
                 */
 
                 insertVarToTree(name, array[i], dest_root);
-            if( eCode != sOK )
-            {
-                printERR(eINTERN);
-                return EXIT_FAILURE;
-            }
+                if( eCode != sOK )
+                {
+                    printERR(eINTERN);
+                    return EXIT_FAILURE;
+                }
                 assist1 = searchIdent(name, dest_root);
             } 
+            else
+                free(name);
 
             PUSHNode( &nodeStack, assist1);
         }
@@ -1073,11 +1082,11 @@ int read_postfix(TOKEN *array, int type, int max)
                 if( name == NULL )
                     return EXIT_FAILURE;
                 insertVarToTree(name, unit, dest_root);
-            if( eCode != sOK )
-            {
-                printERR(eINTERN);
-                return EXIT_FAILURE;
-            }
+                if( eCode != sOK )
+                {
+                    printERR(eINTERN);
+                    return EXIT_FAILURE;
+                }
                 assist2 = searchIdent(name, dest_root);
                 new_instr(dest, iBVAL, &assist1, NULL, &assist2, NULL);
 
@@ -1094,11 +1103,11 @@ int read_postfix(TOKEN *array, int type, int max)
                 unit.type_token = 33;   // bool
                 unit.boolean = 1;
                 insertVarToTree("true", unit, dest_root);
-            if( eCode != sOK )
-            {
-                printERR(eINTERN);
-                return EXIT_FAILURE;
-            }
+                if( eCode != sOK )
+                {
+                    printERR(eINTERN);
+                    return EXIT_FAILURE;
+                }
                 assist3 = searchIdent("true", dest_root);
 
                 new_instr(dest, iEQ, &assist2, &assist3, NULL, NULL);
