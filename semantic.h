@@ -89,6 +89,8 @@ int Give_index(int type);
 // funkce pro inicializaci pole tokenu, i = index, m = velikost pole
 int initialize_array(TOKEN **array, int i, int m);
 
+void dispose_array(TOKEN *array, int max);
+
 // funkce pro zvetseni velikosti pole
 int realloc_array(TOKEN *array, int *m);
 

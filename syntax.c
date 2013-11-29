@@ -84,7 +84,7 @@ int syntaxer()
                         eCode = sINTERN;
                     }
 
-                    free(array);
+                    dispose_array(array, m);
                     return EXIT_FAILURE;
                 }
 
@@ -101,7 +101,7 @@ int syntaxer()
                         printERR(eSBRACKETO);
                         eCode = sSyn;
                     }
-                    free(array);
+                    dispose_array(array, m);
                     return EXIT_FAILURE;
                 }
 
@@ -116,7 +116,7 @@ int syntaxer()
                     printERR(eBRACKETO);
                     eCode = sSyn;
                 }
-                free(array);
+                dispose_array(array, m);
                 return EXIT_FAILURE;
             }
         }
@@ -162,7 +162,7 @@ int syntaxer()
                                 eCode = sINTERN;
                             }
 
-                            free(array);
+                            dispose_array(array, m);
                             return EXIT_FAILURE;
                         }                
                     }
@@ -174,7 +174,7 @@ int syntaxer()
                             printERR(eWRONG);
                             eCode = sSyn;
                         }
-                        free(array);
+                        dispose_array(array, m);
                         return EXIT_FAILURE;
                     }
                 }
@@ -186,7 +186,7 @@ int syntaxer()
                         printERR(eWRONG);
                         eCode = sSyn;
                     }
-                    free(array);
+                    dispose_array(array, m);
                     return EXIT_FAILURE;
                 }
 
@@ -215,7 +215,7 @@ int syntaxer()
                             eCode = sINTERN;
                         }
 
-                        free(array);
+                        dispose_array(array, m);
                         return EXIT_FAILURE;
                      }                
 
@@ -228,7 +228,7 @@ int syntaxer()
                         printERR(eWRONG);
                         eCode = sSyn;
                     }
-                    free(array);
+                    dispose_array(array, m);
                     return EXIT_FAILURE;
                 }
 
@@ -261,7 +261,7 @@ int syntaxer()
                                 printERR(eINTERN);
                                 eCode = sINTERN;
                             }
-                            free(array);
+                            dispose_array(array, m);
                             return EXIT_FAILURE;
                         }                
                     }
@@ -273,7 +273,7 @@ int syntaxer()
                             printERR(eWRONG);
                             eCode = sSyn;
                         }
-                        free(array);
+                        dispose_array(array, m);
                         return EXIT_FAILURE;
                     }
 
@@ -286,7 +286,7 @@ int syntaxer()
                         printERR(eWRONG);
                         eCode = sSyn;
                     }
-                    free(array);
+                    dispose_array(array, m);
                     return EXIT_FAILURE;
                 }
 
@@ -303,7 +303,7 @@ int syntaxer()
                         printERR(eSBRACKETO);
                         eCode = sSyn;
                     }
-                    free(array);
+                    dispose_array(array, m);
                     return EXIT_FAILURE;
                 }
 
@@ -318,7 +318,7 @@ int syntaxer()
                     printERR(eBRACKETO);
                     eCode = sSyn;
                 }
-                free(array);
+                dispose_array(array, m);
                 return EXIT_FAILURE;
             }
             inFOR = true;
@@ -330,7 +330,7 @@ int syntaxer()
                 // prikaz break nebo continue se nenachazi uvnitr prikazu FOR
                 printERR(eFOR);
                 eCode = sSyn;
-                free(array);
+                dispose_array(array, m);
                 return EXIT_FAILURE;
             }
 
@@ -347,7 +347,7 @@ int syntaxer()
                     printERR(eWRONG);
                     eCode = sSyn;
                 }
-                free(array);
+                dispose_array(array, m);
                 return EXIT_FAILURE;
             }
         }
@@ -367,7 +367,7 @@ int syntaxer()
                     printERR(eINTERN);
                     eCode = sINTERN;
                 }
-                free(array);
+                dispose_array(array, m);
                 return EXIT_FAILURE;
             }
         }
@@ -388,7 +388,7 @@ int syntaxer()
                     printERR(eSBRACKETO);
                     eCode = sSyn;
                 }
-                free(array);
+                dispose_array(array, m);
                 return EXIT_FAILURE;
             }
 
@@ -445,7 +445,7 @@ int syntaxer()
                                     eCode = sSyn;
                                     printERR(ePARAM);
                                 }
-                                free(array);
+                                dispose_array(array, m);
                                 return EXIT_FAILURE;
                             }
 
@@ -459,7 +459,7 @@ int syntaxer()
                             // spatna posloupnost argumentu funkce
                             printERR(ePARAM);
                             eCode = sSyn;
-                            free(array);
+                            dispose_array(array, m);
                             return EXIT_FAILURE;
                         }
 
@@ -476,7 +476,7 @@ int syntaxer()
                                 printERR(eWRONG);
                                 eCode = sSyn;
                             }
-                            free(array);
+                            dispose_array(array, m);
                             return EXIT_FAILURE;
                         }
                     }
@@ -488,7 +488,7 @@ int syntaxer()
                             printERR(eWRONG);
                             eCode = sSyn;
                         }
-                        free(array);
+                        dispose_array(array, m);
                         return EXIT_FAILURE;
                     }
                 }
@@ -507,7 +507,7 @@ int syntaxer()
                         eCode = sINTERN;
                     }
 
-                    free(array);
+                    dispose_array(array, m);
                     return EXIT_FAILURE;
                 }
             }
@@ -519,7 +519,7 @@ int syntaxer()
                     printERR(eASSIGN);
                     eCode = sSyn;
                 }
-                free(array);
+                dispose_array(array, m);
                 return EXIT_FAILURE;
             }
         }
@@ -567,7 +567,7 @@ int syntaxer()
                                 eCode = sSyn;
                                 printERR(ePARAM);
                             }
-                            free(array);
+                            dispose_array(array, m);
                             return EXIT_FAILURE;
                         }
 
@@ -581,7 +581,7 @@ int syntaxer()
                         // spatna posloupnost parametru funkce
                         printERR(ePARAM);
                         eCode = sSyn;
-                        free(array);
+                        dispose_array(array, m);
                         return EXIT_FAILURE;
                     }
                     
@@ -598,7 +598,7 @@ int syntaxer()
                             printERR(eSBRACKETO);
                             eCode = sSyn;
                         }
-                        free(array);
+                        dispose_array(array, m);
                         return EXIT_FAILURE;
                     }
 
@@ -613,7 +613,7 @@ int syntaxer()
                         printERR(eBRACKETO);
                         eCode = sSyn;
                     }
-                    free(array);
+                    dispose_array(array, m);
                     return EXIT_FAILURE;
                 }
             }
@@ -625,7 +625,7 @@ int syntaxer()
                     printERR(eWRONG);
                     eCode = sSyn;
                 }
-                free(array);
+                dispose_array(array, m);
                 return EXIT_FAILURE;
             }
         }
@@ -638,7 +638,7 @@ int syntaxer()
                 // vice '}' nez '{' zavorek
                 printERR(eWRONG);
                 eCode = sSyn;
-                free(array);
+                dispose_array(array, m);
                 return EXIT_FAILURE;
             }
 
@@ -647,7 +647,7 @@ int syntaxer()
                 // zavorka s prazdnym zasobnikem
                 printERR(eWRONG);
                 eCode = sSyn;
-                free(array);
+                dispose_array(array, m);
                 return EXIT_FAILURE;
             }
 
@@ -697,7 +697,7 @@ int syntaxer()
             // token, ktery se nesmi nalezat na zacatku radku
             printERR(eWRONG);
             eCode = sSyn;
-            free(array);
+            dispose_array(array, m);
             return EXIT_FAILURE;
         }
 
@@ -732,7 +732,7 @@ int syntaxer()
                         // prazdny zasobnik ( == else(if) bez IF ?)
                         printERR(eWRONG);
                         eCode = sSyn;
-                        free(array);
+                        dispose_array(array, m);
                         return EXIT_FAILURE;
                     }
                     TOP( &leStack, &top );
@@ -749,7 +749,7 @@ int syntaxer()
                         // else(if) bez IF
                         printERR(eWRONG);
                         eCode = sSyn;
-                        free(array);
+                        dispose_array(array, m);
                         return EXIT_FAILURE;
                     }
         }
@@ -767,7 +767,7 @@ int syntaxer()
     }
 
     // uvolneni pole tokenu pri konci syntakticke a semanticke analyzy
-    free(array);
+    dispose_array(array, m);
 
     if( unit.type_token == 0 || unit.type_token == 100 )
     {

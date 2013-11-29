@@ -1401,9 +1401,29 @@ int initialize_array(TOKEN**array, int i, int m)
 
     for(int x=0; x<m; x++)
     {
+    /*
+        if( i!=0 && (*array)[x].string != NULL)
+            free((*array)[x].string);
+        if( i!=0 && (*array)[x].id_name != NULL)
+            free((*array)[x].id_name);
+            */
         token_init(&((*array)[x]));
     }
 	return EXIT_SUCCESS;
+}
+
+void dispose_array(TOKEN *array, int max)
+{
+    for(int x=0; x<max; x++)
+    {
+        if( array[x].type_token == 0 )
+            break;
+        if( array[x].string != NULL )
+            free(array[x].string);
+        if( array[x].id_name != NULL )
+            free(array[x].id_name);
+    }
+    free(array);
 }
 
 // funkce pro realokaci pole
@@ -1412,9 +1432,9 @@ int realloc_array(TOKEN*array, int*m)
 	TOKEN *aux = NULL;
 	if( (aux = realloc(array,(*m)*2*sizeof(TOKEN))) == NULL )
 	{
-		free(array);
 		printERR(eINTERN);
 		eCode = sINTERN;
+        dispose_array(array, *m);
 		return EXIT_FAILURE;
 	}
 	array = aux;
