@@ -352,48 +352,36 @@ int semantixer(TOKEN *array)
         n = m;
         // kontrola, zda byla funkce volana pred jeji definici
         NODE assist2 = searchIdent(array[n].id_name, &check_func);
-        INSTRUCT aux = NULL;
 
         // pokud byla funkce jiz volana, existuji instrukce prirazeni parametru ovsem do nespravenho stromu
         // projdeme cely seznam instrukci a najdeme tedy tyto instrukce k aktualni funkci, prvni z nich bude v aux
         if( assist2 != NULL )
         {
-            INSTRUCT aux2 = NULL;
-            aux = list.first;       // tady je to prustrelne, musel bych prohledavat i seznamy instrukci pro vsechny funkce TODO
-            while( aux != NULL )    // prochazeni celym listem
+            // hlavni telo programu
+            correct_list(&list);
+
+            // tela jednotlivych funkci
+            NODE aux = tree;
+            tSNode stack;
+            initNode(&stack);
+
+            while( aux != NULL )
             {
-                top = 1;
-                if( aux->id == iSAVE_PAR )  // nalezeni instrukce prirazeni hodnot parametrum
+                PUSHNode(&stack, aux);
+                correct_list(aux->body);
+                aux = aux->LPtr;
+            }
+
+            while( !SEmptyNode(&stack) )
+            {
+                TOPPOPNode(&stack, &aux);
+                aux = aux->RPtr;
+                while( aux != NULL )
                 {
-                    aux2 = aux->right;
-                    while( aux2 != NULL && aux2->id != iASSIGN )    // cyklus pro kontrolu, ke ktere funkci instrukce nalezi
-                    {
-                        aux2 = aux2->right;
-                    }
-                    
-                    if( aux2 != NULL && aux2->id == iASSIGN && aux2->operand_1 != NULL &&
-                        strcmp(aux2->operand_1->key,func->data.id_name) == 0)
-                    {
-                        // nasli jsme aktualni funkci
-                        while( aux->id == iSAVE_PAR )      // )
-                        {
-                            if( (assist1 = searchParam(top++, &(func->params))) != NULL )
-                            {
-                                aux->result = assist1;
-                            }
-                            else
-                            {
-                                aux->result = NULL;
-                            }
-                            aux = aux->right;
-                        }
-                    }
-                    else
-                        aux = aux2;     // nenasli jsme aktualni funkci, hledani pokracuje
+                    PUSHNode(&stack, aux);
+                    correct_list(aux->body);
+                    aux = aux->LPtr;
                 }
-                else
-                    // nenasli jsme instrukci typu iSAVE_PAR
-                    aux = aux->right;
             }
         }
     }
@@ -1447,4 +1435,50 @@ int realloc_array(TOKEN*array, int*m)
 	(*m)*=2;
 
 	return EXIT_SUCCESS;
+}
+
+void correct_list(LIST_3AK *check)
+{
+    if( check != NULL )
+    {
+        INSTRUCT aux, aux2;
+        NODE assist1 = NULL;
+        int top;
+        aux = check->first;
+        while( aux != NULL )    // prochazeni celym listem
+        {
+            top = 1;
+            if( aux->id == iSAVE_PAR )  // nalezeni instrukce prirazeni hodnot parametrum
+            {
+                aux2 = aux->right;
+                while( aux2 != NULL && aux2->id != iASSIGN )    // cyklus pro kontrolu, ke ktere funkci instrukce nalezi
+                {
+                    aux2 = aux2->right;
+                }
+                
+                if( aux2 != NULL && aux2->id == iASSIGN && aux2->operand_1 != NULL &&
+                    strcmp(aux2->operand_1->key,func->data.id_name) == 0)
+                {
+                    // nasli jsme aktualni funkci
+                    while( aux->id == iSAVE_PAR )      // )
+                    {
+                        if( (assist1 = searchParam(top++, &(func->params))) != NULL )
+                        {
+                            aux->result = assist1;
+                        }
+                        else
+                        {
+                            aux->result = NULL;
+                        }
+                        aux = aux->right;
+                    }
+                }
+                else
+                    aux = aux2;     // nenasli jsme aktualni funkci, hledani pokracuje
+            }
+            else
+                // nenasli jsme instrukci typu iSAVE_PAR
+                aux = aux->right;
+        }
+    }
 }

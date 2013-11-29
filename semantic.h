@@ -87,9 +87,11 @@ bool Compatible(NODE *a1, NODE *a2, int sign);
 int Give_index(int type);
 
 // funkce pro inicializaci pole tokenu, i = index, m = velikost pole
-int initialize_array(TOKEN**array, int i, int m);
+int initialize_array(TOKEN **array, int i, int m);
 
 // funkce pro zvetseni velikosti pole
-int realloc_array(TOKEN*array, int*m);
+int realloc_array(TOKEN *array, int *m);
+
+void correct_list(LIST_3AK *check);
 
 #endif
