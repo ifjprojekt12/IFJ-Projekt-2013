@@ -15,6 +15,7 @@
 
 #define DEBUG printf("blablabla")
 
+extern int eCode;
 struct list3_ak;
 
 // linearni seznam pro parametry funkci

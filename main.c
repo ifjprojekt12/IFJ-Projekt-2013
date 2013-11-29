@@ -100,6 +100,32 @@ void print_tree(NODE a1, NODE a2)
     }
 }
 
+void free_node(NODE aux)
+{
+    if( aux != NULL )
+    {
+        free_node(aux->LPtr);
+        free_node(aux->RPtr);
+        free(aux->key);
+        if( aux->params != NULL )
+            free_node(aux->params);
+        if( aux->body != NULL )
+            free_instr_list(aux->body);
+        if( aux->data.string != NULL )
+            free(aux->data.string);
+        if( aux->data.id_name != NULL )
+            free(aux->data.id_name);
+        free(aux);
+    }
+}
+
+void free_all()
+{
+    free_node(root);
+    free_node(tree);
+    free_instr_list(&list);
+}
+
 int main(int argc, char *argv[])
 {
 	eCode = sOK;
@@ -118,7 +144,10 @@ int main(int argc, char *argv[])
 
 	/* Po otevreni souboru prechazime do syntaxe, ktera vyvolava i semantickou kontrolu */
 	if( syntaxer() == EXIT_FAILURE )
+    {
+        free_all();
     	return eCode;
+    }
 
     //printf("syntaxe + semantika v poradku.\n"); fflush(stdout);
 /*
@@ -216,7 +245,7 @@ int main(int argc, char *argv[])
     interpret( &list );
 
     /* Odstraneni veskere pouzite pameti */
-    // TODO
+    free_all();
 
     return eCode;
 }

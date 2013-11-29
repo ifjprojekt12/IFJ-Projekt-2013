@@ -15,13 +15,19 @@ void insertVarToTree (char *key, TOKEN data, NODE *ptr)
     NODE node = *ptr;
     if (node == NULL) // strom je prazdny
     {
-        node = malloc(sizeof(struct NODE));
+        if( (node = malloc(sizeof(struct NODE))) == NULL )
+        {
+            eCode = 99;
+            return;
+        }
         node->LPtr = NULL;
         node->RPtr = NULL;
         node->params = NULL;
+        node->body = NULL;
         node->position = 0;
-        node->key = malloc((strlen(key)+1)*sizeof(char));
-        strcpy(node->key, key);
+        //node->key = malloc((strlen(key)+1)*sizeof(char));
+        //strcpy(node->key, key);
+        node->key = key;
         node->data = data;
         *ptr = node;
     }

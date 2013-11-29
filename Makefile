@@ -1,6 +1,6 @@
 RM=rm
 CC=gcc
-CFLAGS=-c -std=c99 -pedantic -Werror -Wall
+CFLAGS=-c -std=c99 -pedantic -Werror -Wall -g
 
 #timto se sestavi spustitelny soubor z *.o binarek
 interpret: data_struct.o ial.o function.o stack.o lexical.o interpret.o semantic.o syntax.o main.o
