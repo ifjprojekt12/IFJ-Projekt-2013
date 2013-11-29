@@ -50,7 +50,7 @@ void print_tree(NODE a1, NODE a2)
                 if( a->operand_2 != NULL )
                     printf(", ass2: %s", a->operand_2->key);
                 if( a->result != NULL )
-                    printf(", ass3: %s", a->result->key);
+                    printf(", result: %s", a->result->key);
                 if( a->jump != NULL )
                     printf(", jump: %d", a->jump->number);
                 printf("\n");
@@ -87,7 +87,7 @@ void print_tree(NODE a1, NODE a2)
                 if( a->operand_2 != NULL )
                     printf(", ass2: %s", a->operand_2->key);
                 if( a->result != NULL )
-                    printf(", ass3: %s", a->result->key);
+                    printf(", result: %s", a->result->key);
                 if( a->jump != NULL )
                     printf(", jump: %d", a->jump->number);
                 printf("\n");
@@ -123,7 +123,8 @@ void free_all()
 {
     free_node(root);
     free_node(tree);
-    free_instr_list(&list);
+    if( list.first != NULL )
+        free_instr_list(&list);
 }
 
 int main(int argc, char *argv[])
@@ -171,7 +172,7 @@ int main(int argc, char *argv[])
             }
             if( a->result != NULL )
             {
-                printf(", ass3: %s", a->result->key);
+                printf(", result: %s", a->result->key);
             }
             if( a->jump != NULL )
             {
@@ -223,7 +224,7 @@ int main(int argc, char *argv[])
                 if( a->operand_2 != NULL )
                     printf(", ass2: %s", a->operand_2->key);
                 if( a->result != NULL )
-                    printf(", ass3: %s", a->result->key);
+                    printf(", result: %s", a->result->key);
                 if( a->jump != NULL )
                     printf(", jump: %d (%d)", a->jump->number,a->jump->id);
                 printf("\n");
