@@ -53,6 +53,10 @@ int interpret(LIST_3AK *list){
       list->actual = list->actual->right;
     }
 
+    if(list->actual->id == iSAVE_PAR && list->actual->result == NULL){
+      list->actual = list->actual->right;
+      continue;
+    }
     //*******************************************
     //konec funkce
     //*******************************************
