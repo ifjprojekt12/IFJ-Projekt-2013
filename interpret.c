@@ -124,9 +124,7 @@ int interpret(LIST_3AK *list){
     if(list->actual->id == iASSIGN && list->actual->operand_1->data.type_token == 35){
       //defaultni navratovy typ
       if(list->actual->result != NULL){
-        if(list->actual->id != iRETURN){
-          result = searchIdent(list->actual->result->key,symbol_tables->next->ptr);
-        }
+        result = searchIdent(list->actual->result->key,symbol_tables->next->ptr);
         result->data.type_token = 34;
       }
       //ulozeni instrukce nasledujici po funkci
