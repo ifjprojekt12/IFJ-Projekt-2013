@@ -96,8 +96,11 @@ int syntaxer()
                 if( unit.type_token != 42 ) // {
                 {
                     // chybejici znak {
-                    printERR(eSBRACKETO);
-                    eCode = sSyn;
+                    if( eCode == sOK )
+                    {
+                        printERR(eSBRACKETO);
+                        eCode = sSyn;
+                    }
                     free(array);
                     return EXIT_FAILURE;
                 }
@@ -108,8 +111,11 @@ int syntaxer()
             else
             {
                 // chybejici znak (
-                printERR(eBRACKETO);
-                eCode = sSyn;
+                if( eCode == sOK )
+                {
+                    printERR(eBRACKETO);
+                    eCode = sSyn;
+                }
                 free(array);
                 return EXIT_FAILURE;
             }
@@ -163,8 +169,11 @@ int syntaxer()
                     else
                     {
                         // chybi znamenko '='
-                        printERR(eWRONG);
-                        eCode = sSyn;
+                        if( eCode == sOK )
+                        {
+                            printERR(eWRONG);
+                            eCode = sSyn;
+                        }
                         free(array);
                         return EXIT_FAILURE;
                     }
@@ -172,8 +181,11 @@ int syntaxer()
                 else if( unit.type_token != 22 )     // pokud je prvni cast prazdna, musi nasledovat ';'
                 {
                     // chybi znamenko ';'
-                    printERR(eWRONG);
-                    eCode = sSyn;
+                    if( eCode == sOK )
+                    {
+                        printERR(eWRONG);
+                        eCode = sSyn;
+                    }
                     free(array);
                     return EXIT_FAILURE;
                 }
@@ -211,8 +223,11 @@ int syntaxer()
                 else if( unit.type_token != 22 )     // pokud je druha cast prazdna, musi nasledovat ';'
                 {
                     // chybi znamenko ';'
-                    printERR(eWRONG);
-                    eCode = sSyn;
+                    if( eCode == sOK )
+                    {
+                        printERR(eWRONG);
+                        eCode = sSyn;
+                    }
                     free(array);
                     return EXIT_FAILURE;
                 }
@@ -253,8 +268,11 @@ int syntaxer()
                     else
                     {
                         // chybejici znak '='
-                        printERR(eWRONG);
-                        eCode = sSyn;
+                        if( eCode == sOK )
+                        {
+                            printERR(eWRONG);
+                            eCode = sSyn;
+                        }
                         free(array);
                         return EXIT_FAILURE;
                     }
@@ -263,8 +281,11 @@ int syntaxer()
                 else if( unit.type_token != 41 )    // pokud je treti cast prazdna, musi nasledovat ')'
                 {
                     // chybi znamenko ';'
-                    printERR(eWRONG);
-                    eCode = sSyn;
+                    if( eCode == sOK )
+                    {
+                        printERR(eWRONG);
+                        eCode = sSyn;
+                    }
                     free(array);
                     return EXIT_FAILURE;
                 }
@@ -277,8 +298,11 @@ int syntaxer()
                 if( unit.type_token != 42 )     // {
                 {
                     // chybejici znak '{'
-                    printERR(eSBRACKETO);
-                    eCode = sSyn;
+                    if( eCode == sOK )
+                    {
+                        printERR(eSBRACKETO);
+                        eCode = sSyn;
+                    }
                     free(array);
                     return EXIT_FAILURE;
                 }
@@ -289,8 +313,11 @@ int syntaxer()
             else
             {
                 // chybejici znak '('
-                printERR(eBRACKETO);
-                eCode = sSyn;
+                if( eCode == sOK )
+                {
+                    printERR(eBRACKETO);
+                    eCode = sSyn;
+                }
                 free(array);
                 return EXIT_FAILURE;
             }
@@ -315,8 +342,11 @@ int syntaxer()
             if( unit.type_token != 22 )     // ;
             {
                 // chybejici znak ';'
-                printERR(eWRONG);
-                eCode = sSyn;
+                if( eCode == sOK )
+                {
+                    printERR(eWRONG);
+                    eCode = sSyn;
+                }
                 free(array);
                 return EXIT_FAILURE;
             }
@@ -353,8 +383,11 @@ int syntaxer()
             if( unit.type_token != 42 ) // {
             {
                 // chybejici znak {
-                printERR(eSBRACKETO);
-                eCode = sSyn;
+                if( eCode == sOK )
+                {
+                    printERR(eSBRACKETO);
+                    eCode = sSyn;
+                }
                 free(array);
                 return EXIT_FAILURE;
             }
@@ -407,8 +440,11 @@ int syntaxer()
                             else
                             {
                                 // nespravny token ci posloupnost
-                                eCode = sSyn;
-                                printERR(ePARAM);
+                                if( eCode == sOK )
+                                {
+                                    eCode = sSyn;
+                                    printERR(ePARAM);
+                                }
                                 free(array);
                                 return EXIT_FAILURE;
                             }
@@ -435,8 +471,11 @@ int syntaxer()
                         if( unit.type_token != 22 ) // ;
                         {
                             // chybejici znak ';'
-                            printERR(eWRONG);
-                            eCode = sSyn;
+                            if( eCode == sOK )
+                            {
+                                printERR(eWRONG);
+                                eCode = sSyn;
+                            }
                             free(array);
                             return EXIT_FAILURE;
                         }
@@ -444,8 +483,11 @@ int syntaxer()
                     else
                     {
                         // chybejici znak '('
-                        printERR(eWRONG);
-                        eCode = sSyn;
+                        if( eCode == sOK )
+                        {
+                            printERR(eWRONG);
+                            eCode = sSyn;
+                        }
                         free(array);
                         return EXIT_FAILURE;
                     }
@@ -472,8 +514,11 @@ int syntaxer()
             else
             {
                 // chybejici znak =
-                printERR(eASSIGN);
-                eCode = sSyn;
+                if( eCode == sOK )
+                {
+                    printERR(eASSIGN);
+                    eCode = sSyn;
+                }
                 free(array);
                 return EXIT_FAILURE;
             }
@@ -517,8 +562,11 @@ int syntaxer()
                         else
                         {
                             // nespravny token ci posloupnost
-                            eCode = sSyn;
-                            printERR(ePARAM);
+                            if( eCode == sOK )
+                            {
+                                eCode = sSyn;
+                                printERR(ePARAM);
+                            }
                             free(array);
                             return EXIT_FAILURE;
                         }
@@ -545,8 +593,11 @@ int syntaxer()
                     if( unit.type_token != 42 ) // {
                     {
                         // chybejici znak {
-                        printERR(eSBRACKETO);
-                        eCode = sSyn;
+                        if( eCode == sOK )
+                        {
+                            printERR(eSBRACKETO);
+                            eCode = sSyn;
+                        }
                         free(array);
                         return EXIT_FAILURE;
                     }
@@ -556,16 +607,24 @@ int syntaxer()
                 }
                 else
                 {
-                    printERR(eBRACKETO);
-                    eCode = sSyn;
+                    // chybejici znak '('
+                    if( eCode == sOK )
+                    {
+                        printERR(eBRACKETO);
+                        eCode = sSyn;
+                    }
                     free(array);
                     return EXIT_FAILURE;
                 }
             }
             else
             {
-                printERR(eWRONG);
-                eCode = sSyn;
+                // chybejici id pri definici funkce
+                if( eCode == sOK )
+                {
+                    printERR(eWRONG);
+                    eCode = sSyn;
+                }
                 free(array);
                 return EXIT_FAILURE;
             }
@@ -636,7 +695,7 @@ int syntaxer()
         else
         {
             // token, ktery se nesmi nalezat na zacatku radku
-            printERR(eUNKNOWN);
+            printERR(eWRONG);
             eCode = sSyn;
             free(array);
             return EXIT_FAILURE;
@@ -712,9 +771,11 @@ int syntaxer()
 
     if( unit.type_token == 0 || unit.type_token == 100 )
     {
-        printERR(eWRONG);
         if( eCode == sOK )
+        {
+            printERR(eWRONG);
             eCode = sSyn;
+        }
         return EXIT_FAILURE;
     }
     else if( super_brackets != 0 )
@@ -808,7 +869,7 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending, int *m)
         }
         else
             // znak na nespravnem miste
-            break;
+            return -1;
 
         unit = get_token();
     }
