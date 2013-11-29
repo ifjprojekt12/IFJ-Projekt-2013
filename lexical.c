@@ -463,9 +463,11 @@ TOKEN get_token(){
       }
       //kontrola na znaky <31 a $
       if(buffer[pos_buffer - 1] == '$' && buffer[pos_buffer - 2] != '\\'){
+        eCode = 1;
         return new_tok;
       }
       if(buffer[pos_buffer - 1] < 32){
+        eCode = 1;
         return new_tok;
       }
 
@@ -654,7 +656,7 @@ TOKEN get_token(){
       return new_tok;
     }
   }
-
+  //printf("Hello World\n");
   //pokud program dosel az sem, znamena to, ze je ve slepe vetvi automatu
   eCode = 1;
   return new_tok;
