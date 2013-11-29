@@ -353,7 +353,6 @@ int semantixer(TOKEN *array)
         // kontrola, zda byla funkce volana pred jeji definici
         NODE assist2 = searchIdent(array[n].id_name, &check_func);
         INSTRUCT aux = NULL;
-        top = 1;
 
         // pokud byla funkce jiz volana, existuji instrukce prirazeni parametru ovsem do nespravenho stromu
         // projdeme cely seznam instrukci a najdeme tedy tyto instrukce k aktualni funkci, prvni z nich bude v aux
@@ -363,6 +362,7 @@ int semantixer(TOKEN *array)
             aux = list.first;       // tady je to prustrelne, musel bych prohledavat i seznamy instrukci pro vsechny funkce TODO
             while( aux != NULL )    // prochazeni celym listem
             {
+                top = 1;
                 if( aux->id == iSAVE_PAR )  // nalezeni instrukce prirazeni hodnot parametrum
                 {
                     aux2 = aux->right;
