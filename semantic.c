@@ -427,7 +427,7 @@ int functions(TOKEN *array, int n)
         unit.type_token = 31;
 
         assist1 = searchIdent(array[n].id_name, &tree);
-        if( assist1 == NULL )
+        if( assist1 == NULL && (assist1 = searchIdent(array[n].id_name, &check_func)) == NULL )
         {
             // definice funkce se nachazi az za jejim volanim
             insertVarToTree(array[n].id_name, array[n], &check_func);
@@ -499,15 +499,6 @@ int functions(TOKEN *array, int n)
             assist3 = searchIdent(name, dest_root);     // hledani hodnoty/promenne ve stromu
             if( assist3 == NULL )                       // hledani neuspesne
             {
-                /*
-                if( array[n].type_token == 36 )
-                {
-                    // nedefinovana promenna
-                    printERR(eVAR);
-                    eCode = sSemVar;
-                    return EXIT_FAILURE;
-                }
-                */
                 insertVarToTree(name, array[n], dest_root);     // vlozeni hodnoty do stromu
                 if( eCode != sOK )
                 {
