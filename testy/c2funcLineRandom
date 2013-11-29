@@ -1,0 +1,54 @@
+<?php
+//projedeme pres spousty funkci az do funkce a
+function a(){
+$x = put_string("jsme tam", "\n");
+}
+function b(){
+$x = a();
+}
+function c(){
+$x = b();
+}
+function i(){
+$x = h();
+}
+function j(){
+$x = i();
+}
+
+function g(){
+$x = f();
+}
+function h(){
+$x = g();
+}
+
+function k(){
+$x = j();
+}
+function l(){
+$x = k();
+}
+function m(){
+$x = k();
+}
+
+$c = o();
+
+
+function n(){
+$x = m();
+}
+function o(){
+$x = n();
+}
+
+function d(){
+$x = c();
+}
+function e(){
+$x = d();
+}
+function f(){
+$x = e();
+}
