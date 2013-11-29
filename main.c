@@ -149,7 +149,6 @@ int main(int argc, char *argv[])
     	return eCode;
     }
 
-    //printf("syntaxe + semantika v poradku.\n"); fflush(stdout);
 /*
     printf("Seznam instrukci:\n");
     if( list.first == NULL )
@@ -245,6 +244,7 @@ int main(int argc, char *argv[])
     interpret( &list );
 
     /* Odstraneni veskere pouzite pameti */
+    //printf("mazani pameti:\n");fflush(stdout);
     free_all();
 
     return eCode;
