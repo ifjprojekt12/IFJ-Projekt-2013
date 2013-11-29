@@ -656,7 +656,7 @@ TOKEN get_token(){
       return new_tok;
     }
   }
-  printf("Hello World\n");
+  //printf("Hello World\n");
   //pokud program dosel az sem, znamena to, ze je ve slepe vetvi automatu
   eCode = 1;
   return new_tok;
