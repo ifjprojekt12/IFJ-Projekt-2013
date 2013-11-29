@@ -480,6 +480,12 @@ int functions(TOKEN *array, int n)
         // prirazeni hodnot parametrum
         while(array[n].type_token != 41 )       // )
         {
+            if( array[n].type_token == 23 )
+            {
+                n++;
+                continue;
+            }
+
             if( !def )
             {
                 unit.c_number = x;
