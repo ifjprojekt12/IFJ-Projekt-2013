@@ -13,7 +13,8 @@ const int str_rezerv = 50;
 int interpret(LIST_3AK *list){
 
   NODE op_1, op_2, result;
-
+  op_1 = malloc(sizeof(struct NODE));
+  result = malloc(sizeof(struct NODE));
   STACK symbol_tables;
   tSInstr next_instr;
 
@@ -101,15 +102,19 @@ int interpret(LIST_3AK *list){
     //*******************************************
     //pomocna instrukce znacici, ze prijde volani funkce
     if(list->actual->id == iFUNCTION){
-      NODE new_tab;
-      treeInit(&new_tab);
+      //NODE *new_tab = malloc(struct NODE);
+      NODE *new_tab = malloc(sizeof(struct NODE));
+     //printf("NT:%p\n",new_tab);
+      treeInit(new_tab);
       //printf("prvni");
       //fflush(stdout);
       //NODE old = op_1->params;
-      new_tab = copyTree(&op_1->params);
+      *new_tab = copyTree(&op_1->params);
+      //printf("FP:%p\n",&op_1->params);
       //new_tab = op_1->params;
-
-      push(&symbol_tables,&new_tab);
+      //printf("Vkladam tabulku\n");
+      //printf("NT:%p\n",new_tab);
+      push(&symbol_tables,new_tab);
 
      // printf("druha");
      // fflush(stdout);
