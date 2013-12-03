@@ -100,25 +100,6 @@ void print_tree(NODE a1, NODE a2)
     }
 }
 
-void free_node(NODE aux)
-{
-    if( aux != NULL )
-    {
-        free_node(aux->LPtr);
-        free_node(aux->RPtr);
-        free(aux->key);
-        if( aux->params != NULL )
-            free_node(aux->params);
-        if( aux->body != NULL )
-            free_instr_list(aux->body);
-        if( aux->data.string != NULL )
-            free(aux->data.string);
-        if( aux->data.id_name != NULL )
-            free(aux->data.id_name);
-        free(aux);
-    }
-}
-
 void free_all()
 {
     free_node(root);
@@ -246,7 +227,7 @@ int main(int argc, char *argv[])
 
     /* Odstraneni veskere pouzite pameti */
     //printf("mazani pameti:\n");fflush(stdout);
-    free_all();
+    //free_all();
 
     return eCode;
 }

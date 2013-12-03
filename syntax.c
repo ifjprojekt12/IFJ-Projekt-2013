@@ -46,7 +46,7 @@ int syntaxer()
     int top = 0;
     int super_brackets = 0;
     bool inFOR = false;
-    /* -------------------------------- */
+    /* ---------------------------------------------------------------------------------- */
 
     // cyklus zajistujici nacitani tokenu
     while(unit.type_token > 0 && unit.type_token != 100 )    // konec pri chybe nebo EOF
@@ -793,6 +793,8 @@ int syntaxer()
         return EXIT_FAILURE;
     }
 
+    //free_node(check_func);
+
     return EXIT_SUCCESS;
 }
 
@@ -882,4 +884,20 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending, int *m)
         return -3;
 
     return i;
+}
+
+void free_node(NODE aux)
+{
+    if( aux != NULL )
+    {
+        free_node(aux->LPtr);
+        free_node(aux->RPtr);
+        free(aux->key);
+        free_node(aux->params);
+        if( aux->body != NULL )
+            free_instr_list(aux->body);
+        free(aux->data.string);
+        free(aux->data.id_name);
+        free(aux);
+    }
 }
