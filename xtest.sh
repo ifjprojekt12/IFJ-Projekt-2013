@@ -18,10 +18,10 @@ yellow='\e[1;33m'
 NC='\e[0m' # no color
 
 
-echo -e "TEST 0  ECODE a OUT .: ${red} FAIL  ${NC} --- ${yellow}p2${NC}"
+echo -e "TEST 0  ECODE a OUT .: ${green} SUCCESS  ${NC} --- ${yellow}p2${NC}"
 echo -e "TEST 0  ECODE a OUT .: ${red} FAIL  ${NC} --- ${yellow}p3${NC}"
-echo -e "TEST 0  ECODE a OUT .: ${red} FAIL  ${NC} --- ${yellow}p8${NC} je to deadlock ale mel by se chovat jinak"
-echo -e "TEST 0  ECODE a OUT .: ${red} FAIL  ${NC} --- ${yellow}p9${NC} je taky nekonecny a spadne"
+echo -e "TEST 0  ECODE a OUT .: ${green} SUCCESS  ${NC} --- ${yellow}p8${NC} je to deadlock ale mel by se chovat jinak"
+echo -e "TEST 0  ECODE a OUT .: ${green} SUCCESS  ${NC} --- ${yellow}p9${NC} je taky nekonecny a spadne"
 #ziskani testovacich souboru
 location="./testy"
 foundExp=`find ./ -maxdepth 1 -type f ! -name '.*'` 
