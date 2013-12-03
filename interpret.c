@@ -13,8 +13,7 @@ const int str_rezerv = 50;
 int interpret(LIST_3AK *list){
 
   NODE op_1, op_2, result;
-  op_1 = malloc(sizeof(struct NODE));
-  result = malloc(sizeof(struct NODE));
+
   STACK symbol_tables;
   tSInstr next_instr;
 
@@ -180,11 +179,12 @@ int interpret(LIST_3AK *list){
 
       result->data.type_token = op_1->data.type_token;
       if(result->data.type_token == 30){
-        if((result->data.string = malloc(sizeof(op_1->data.string))) == NULL){
+        if((result->data.string = malloc(strlen(op_1->data.string))) == NULL){
           eCode = 99;
           return EXIT_FAILURE;
         }
         strcpy(result->data.string,op_1->data.string);
+
       }
       if(result->data.type_token == 31){
         result->data.c_number = op_1->data.c_number;
