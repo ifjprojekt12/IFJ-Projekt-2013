@@ -151,7 +151,7 @@ int interpret(LIST_3AK *list){
 
       result->data.type_token = op_1->data.type_token;
       if(result->data.type_token == 30){
-        if((result->data.string = malloc(sizeof(op_1->data.string))) == NULL){
+        if((result->data.string = malloc(strlen(op_1->data.string))) == NULL){
           eCode = 99;
           return EXIT_FAILURE;
         }
