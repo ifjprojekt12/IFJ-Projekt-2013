@@ -1446,40 +1446,31 @@ void correct_list(LIST_3AK *check)
 {
     if( check != NULL )
     {
-        INSTRUCT aux, aux2;
+        INSTRUCT aux;
         NODE assist1 = NULL;
         int top;
         aux = check->first;
         while( aux != NULL )    // prochazeni celym listem
         {
             top = 1;
-            if( aux->id == iSAVE_PAR )  // nalezeni instrukce prirazeni hodnot parametrum
+            if( aux->id == iFUNCTION )  // nalezeni instrukce prirazeni hodnot parametrum
             {
-                aux2 = aux->right;
-                while( aux2 != NULL && aux2->id != iASSIGN )    // cyklus pro kontrolu, ke ktere funkci instrukce nalezi
+                if( strcmp(aux->operand_1->key, func->data.id_name) == 0)
                 {
-                    aux2 = aux2->right;
-                }
-                
-                if( aux2 != NULL && aux2->id == iASSIGN && aux2->operand_1 != NULL &&
-                    strcmp(aux2->operand_1->key,func->data.id_name) == 0)
-                {
-                    // nasli jsme aktualni funkci
-                    while( aux->id == iSAVE_PAR )      // )
+                    aux->operand_1 = func;
+                    aux = aux->right;
+                    while( aux->id == iSAVE_PAR )
                     {
                         if( (assist1 = searchParam(top++, &(func->params))) != NULL )
-                        {
                             aux->result = assist1;
-                        }
                         else
-                        {
                             aux->result = NULL;
-                        }
                         aux = aux->right;
                     }
+                    aux->operand_1 = func;
                 }
                 else
-                    aux = aux2;     // nenasli jsme aktualni funkci, hledani pokracuje
+                    aux = aux->right;     // nenasli jsme aktualni funkci, hledani pokracuje
             }
             else
                 // nenasli jsme instrukci typu iSAVE_PAR
