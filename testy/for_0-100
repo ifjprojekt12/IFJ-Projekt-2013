@@ -1,0 +1,24 @@
+<?php
+// tady to jede v poho
+//function tas($d){
+//  $c = put_string("for",$d,"\n");
+  
+//}
+
+
+$a = 0;
+while($a < 3){
+	$a = $a + 1;
+	$c = put_string($a,"\n");
+}
+
+// tady to hazi chybu
+function tas($d){
+  $c = put_string("for",$d,"\n");
+  
+}
+
+
+for($d = 1; $d <= 3;$d=$d+1){
+  $b = tas($d);
+}

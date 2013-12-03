@@ -1,0 +1,14 @@
+<?php
+
+function a($d){
+  
+  if($d === 1){
+    $p = put_string("konec","\n");
+    return 3;	// nevraci se ale pokracuje dal sekvencne v kodu
+  }
+  $p = put_string("sem ne","\n");
+  return 1;			//neopravneny pristup do pameti odkomentovat
+}
+
+$c = a(1);
+$p = put_string($c,"\n");

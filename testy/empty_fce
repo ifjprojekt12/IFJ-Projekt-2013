@@ -1,0 +1,11 @@
+<?php
+//prazdna funkce spadne neopravneny pristup do pameti
+
+function tas($d){
+
+}
+
+
+for($d = 1; $d <= 3;$d=$d+1){
+  $b = tas($d);
+}

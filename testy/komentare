@@ -1,0 +1,20 @@
+<?php
+
+//chyba odstraneni komentaru
+
+function a($d){
+  //$d = put_string("here","\n");	TODO tady odstranit
+  
+  //if($d === "Ahoj jak se mas ja se mam dobre neuvjeritelne dlouhy retezec mysliz ze to zpracujes haha!!!"){ TODO tady odstranit
+  
+  if($d === "Ahoj"){
+    $p = put_string("konec","\n");  
+   // return 3;	// nevraci se ale pokracuje dal sekvencne v kodu
+  }
+  $d = put_string("sem ne","\n");
+  return 1;			//neopravneny pristup do pameti odkomentovat
+}
+
+$c = a("Ahoj");
+//$c = a("Ahoj jak se mas ja se mam dobre neuvjeritelne dlouhy retezec mysliz ze to zpracujes haha!!!"); TODO tady odstranit
+$p = put_string($c,"\n");
