@@ -102,10 +102,14 @@ void print_tree(NODE a1, NODE a2)
 
 void free_all()
 {
+    printf("root:\n");
     free_node(root);
+    printf("tree:\n");
     free_node(tree);
-    if( list.first != NULL )
+    if( list.first != NULL ) {
+        printf("list:\n");
         free_instr_list(&list);
+        }
 }
 
 int main(int argc, char *argv[])
@@ -127,7 +131,7 @@ int main(int argc, char *argv[])
 	/* Po otevreni souboru prechazime do syntaxe, ktera vyvolava i semantickou kontrolu */
 	if( syntaxer() == EXIT_FAILURE )
     {
-        free_all();
+        //free_all();
     	return eCode;
     }
 

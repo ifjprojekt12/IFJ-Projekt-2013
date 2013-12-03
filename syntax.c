@@ -892,12 +892,20 @@ void free_node(NODE aux)
     {
         free_node(aux->LPtr);
         free_node(aux->RPtr);
-        free(aux->key);
-        free_node(aux->params);
-        if( aux->body != NULL )
+        if( aux->params != NULL )
+            free_node(aux->params);
+        if( aux->body != NULL ) {
+            //printf("funkce: %s\n",aux->key);
             free_instr_list(aux->body);
-        free(aux->data.string);
-        free(aux->data.id_name);
+            }
+        if( aux->data.string != NULL )
+            free(aux->data.string);
+        if( aux->data.id_name != NULL )
+            free(aux->data.id_name);
+        if( aux->key != NULL ) {
+            printf("key: %s\ttype: %d\n",aux->key,aux->data.type_token);
+            free(aux->key);
+            }
         free(aux);
     }
 }

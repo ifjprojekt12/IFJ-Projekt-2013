@@ -91,16 +91,11 @@ int new_instr(LIST_3AK *list, int id, NODE *op_1, NODE *op_2, NODE *result, INST
 void free_instr_list(LIST_3AK *list){
   INSTRUCT del;
 
-  while(1){
-    if(list->first != NULL){
+  while(list->first != NULL){
       del = list->first;
       list->first = list->first->right;
-      list->first->left = NULL;
+      //list->first->left = NULL;
       free(del);
-    }
-
-    if(list->first->right == NULL)
-      break;
   }
 }
 
