@@ -86,6 +86,7 @@ int semantixer(TOKEN *array)
         n++;
         if( expression_sem(array, &n, SEMICOLON, false) == EXIT_FAILURE )
             return EXIT_FAILURE;
+        new_instr(dest, iEND_FCE, NULL, NULL, NULL, NULL );
     }
     else if( array[n].type_token == 2 )     // else
     {
