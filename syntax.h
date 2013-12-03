@@ -40,4 +40,7 @@ int expression(TOKEN*array, int i, TOKEN unit, int ending, int *m);
 // funkce prochazejici celym stromem, kontroluje zda byly volane funkce definovane
 int func_defined(NODE a1, NODE a2);
 
+// funkce pro uvolnovani pameti
+void free_node(NODE aux);
+
 #endif
