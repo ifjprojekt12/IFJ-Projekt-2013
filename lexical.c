@@ -138,9 +138,19 @@ TOKEN get_token(){
       } else break;
     }
     if(buffer[pos_buffer] == '/' && buffer[pos_buffer+1] == '/'){
-      if(read_src() == 1){
-        new_tok.type_token = 50;
-        return new_tok;
+      while(1){
+        if(buffer[strlen(buffer)-1] == '\n' ){
+          if(read_src() == 1){
+            new_tok.type_token = 50;
+            return new_tok;
+          }
+          break;
+        } else {
+          if(read_src() == 1){
+            new_tok.type_token = 50;
+            return new_tok;
+          }
+        }
       }
       pos_buffer = 0;
     } else {break;}
