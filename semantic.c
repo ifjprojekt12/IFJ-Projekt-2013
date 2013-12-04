@@ -342,6 +342,12 @@ int semantixer(TOKEN *array)
                 name = makeName(array[n]);
                 if( name == NULL )
                     return EXIT_FAILURE;
+                if( (assist1 = searchIdent(name, &(func->params))) != NULL )
+                {
+                    printERR(ePARAM);
+                    eCode = sSynRest;
+                    return EXIT_FAILURE;
+                }
                 insertVarToTree(name, array[n], &(func->params));
                 if( eCode != sOK )
                 {
