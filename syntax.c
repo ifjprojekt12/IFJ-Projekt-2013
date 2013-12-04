@@ -619,6 +619,13 @@ int syntaxer()
                     return EXIT_FAILURE;
                 }
             }
+            else if( unit.type_token >= 60 && unit.type_token <= 69 )
+            {
+                // pokus o redefinici vestavenych funkci
+                printERR(eFCEREDEF);
+                eCode = sSemFceDef;
+                return EXIT_FAILURE;
+            }
             else
             {
                 // chybejici id pri definici funkce
