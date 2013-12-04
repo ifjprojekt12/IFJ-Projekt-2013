@@ -34,9 +34,11 @@ int syntaxer()
 
     // inicializace pomocnych ukazatelu na instrukci, zasobniku, stromu pro funkce
     aux = NULL;
+    aux_f = NULL;
     func = NULL;
     func_end = false;
     initInstr( &InstrStack );
+    initInstr( &InstrFunc );
     initInstr( &InstrFor );
     initInstr( &InstrBreak );
     treeInit( &check_func );

@@ -19,7 +19,9 @@ xfiser10 - Jakub Fiser
 #define END_S   31	// semicolon
 
 INSTRUCT aux;           // pomocny ukazatel instrukce pro vytvareni skokovych instrukci v semantice
+INSTRUCT aux_f;
 tSInstr InstrStack;
+tSInstr InstrFunc;
 tSInstr InstrFor;
 tSInstr InstrBreak;
 NODE check_func;

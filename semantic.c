@@ -37,10 +37,14 @@ int semantixer(TOKEN *array)
     // deklarace pomocnych promennych
     LIST_3AK *dest = &list;
     NODE *dest_root = &root;
+    tSInstr *dest_stack = &InstrStack;
+    INSTRUCT *dest_aux = &aux;
     if( func != NULL )
     {
         dest = func->body;
         dest_root = &(func->params);
+        dest_stack = &InstrFunc;
+        dest_aux = &aux_f;
     }
 
     NODE assist1 = NULL;
@@ -92,7 +96,7 @@ int semantixer(TOKEN *array)
     {
         // vytvoreni skokove instrukce a jeji ulozeni na zasobnik
         new_instr(dest, iJUMP, NULL, NULL, NULL, NULL);
-        PUSHInstr( &InstrStack, dest->last, array[n].type_token );
+        PUSHInstr( dest_stack, dest->last, array[n].type_token );
     }
     else if( array[n].type_token == 43 )    // }
     {
@@ -101,22 +105,22 @@ int semantixer(TOKEN *array)
             // bude potreba vytvorit praznou skokovou instrukci v pripade, kdy funkce konci
             // neuplnym ifem bez prikazu return
             new_instr(dest, iEND_FCE, NULL, NULL, NULL, NULL );
-            if( aux != NULL )
-                aux->jump = dest->last;
-            if( !SEmptyInstr( &InstrStack ) )
+            if( *dest_aux != NULL )
+                (*dest_aux)->jump = dest->last;
+            if( !SEmptyInstr( dest_stack ) )
             {
-                TOPInstr( &InstrStack, &top );
+                TOPInstr( dest_stack, &top );
                 while( top == 43 )
                 {
-                    POPInstr( &InstrStack, &aux, &top );
-                    aux->jump = dest->last;
-                    if( !SEmptyInstr( &InstrStack) )
-                        TOPInstr( &InstrStack, &top);
+                    POPInstr( dest_stack, dest_aux, &top );
+                    (*dest_aux)->jump = dest->last;
+                    if( !SEmptyInstr( dest_stack) )
+                        TOPInstr( dest_stack, &top);
                     else
                         break;
                 }
             }
-            aux = NULL;
+            *dest_aux = NULL;
             func = NULL;
             func_end = false;
         }
@@ -126,15 +130,15 @@ int semantixer(TOKEN *array)
             bool wasFor = false;
             INSTRUCT aux2 = NULL, aux3 = NULL;
             new_instr(dest, iJUMP, NULL, NULL, NULL, NULL);
-            TOPInstr( &InstrStack, &top );
+            TOPInstr( dest_stack, &top );
             if( top == 4 || top == 5 )  // pro while nebo for si ulozime instrukci aux
-                aux2 = aux;
-            else if( aux != NULL )
+                aux2 = *dest_aux;
+            else if( *dest_aux != NULL )
             {
-                aux->jump = dest->last;
-                aux = NULL;
+                (*dest_aux)->jump = dest->last;
+                *dest_aux = NULL;
             }
-            POPInstr( &InstrStack, &aux, &top );
+            POPInstr( dest_stack, dest_aux, &top );
 
             while( !quit )
             {
@@ -144,16 +148,16 @@ int semantixer(TOKEN *array)
                     case 1:     // if
                     case 3:     // elseif
 
-                        if( aux->id == iBVAL )
-                            aux = aux->right;
-                        PUSHInstr( &InstrStack, dest->last, array[n].type_token );
+                        if( (*dest_aux)->id == iBVAL )
+                            *dest_aux = (*dest_aux)->right;
+                        PUSHInstr( dest_stack, dest->last, array[n].type_token );
                         quit = true;
                         break;
 
                     case 43:    // }
 
-                        aux->jump = dest->last;
-                        POPInstr( &InstrStack, &aux, &top );
+                        (*dest_aux)->jump = dest->last;
+                        POPInstr( dest_stack, dest_aux, &top );
                         break;
 
                     case 5:     // for
@@ -181,9 +185,9 @@ int semantixer(TOKEN *array)
 
                     case 4:     // while
 
-                        dest->last->jump = aux;
-                        if( aux->id == iBVAL )
-                            aux = aux->right;
+                        dest->last->jump = *dest_aux;
+                        if( (*dest_aux)->id == iBVAL )
+                            *dest_aux = (*dest_aux)->right;
                         new_instr(dest, iJUMP, NULL, NULL, NULL, NULL);
                         if( wasFor )
                         {
@@ -202,11 +206,11 @@ int semantixer(TOKEN *array)
 
                     case 2:     // else
 
-                        aux = NULL;
+                        *dest_aux = NULL;
 
                     default:
 
-                        PUSHInstr( &InstrStack, dest->last, array[n].type_token );
+                        PUSHInstr( dest_stack, dest->last, array[n].type_token );
                         quit = true;
                 }
             }
@@ -215,12 +219,12 @@ int semantixer(TOKEN *array)
     else if( array[n].type_token == 50 )    // EOF
     {
         new_instr(dest, iEND, NULL, NULL, NULL, NULL);
-        if( aux != NULL )
-            aux->jump = dest->last;
-        while( !SEmptyInstr( &InstrStack ) )
+        if( *dest_aux != NULL )
+            (*dest_aux)->jump = dest->last;
+        while( !SEmptyInstr( dest_stack ) )
         {
-            POPInstr( &InstrStack, &aux, &top );
-            aux->jump = dest->last;
+            POPInstr( dest_stack, dest_aux, &top );
+            (*dest_aux)->jump = dest->last;
         }
     }
     else if( array[n].type_token == 5 )     // for
@@ -284,7 +288,7 @@ int semantixer(TOKEN *array)
     }
     else if( array[n].type_token == 9 )     // continue
     {
-        tInstrPtr h = InstrStack.Last;
+        tInstrPtr h = dest_stack->Last;
 
         // cyklus pro nalezeni instrukce pro for, ve ktere se zrovna nachazime
         while( h != NULL )
@@ -362,26 +366,26 @@ int semantixer(TOKEN *array)
             correct_list(&list);
 
             // tela jednotlivych funkci
-            NODE aux = tree;
+            NODE aux2 = tree;
             tSNode stack;
             initNode(&stack);
 
-            while( aux != NULL )
+            while( aux2 != NULL )
             {
-                PUSHNode(&stack, aux);
-                correct_list(aux->body);
-                aux = aux->LPtr;
+                PUSHNode(&stack, aux2);
+                correct_list(aux2->body);
+                aux2 = aux2->LPtr;
             }
 
             while( !SEmptyNode(&stack) )
             {
-                TOPPOPNode(&stack, &aux);
-                aux = aux->RPtr;
-                while( aux != NULL )
+                TOPPOPNode(&stack, &aux2);
+                aux2 = aux2->RPtr;
+                while( aux2 != NULL )
                 {
-                    PUSHNode(&stack, aux);
-                    correct_list(aux->body);
-                    aux = aux->LPtr;
+                    PUSHNode(&stack, aux2);
+                    correct_list(aux2->body);
+                    aux2 = aux2->LPtr;
                 }
             }
         }
@@ -399,10 +403,14 @@ int functions(TOKEN *array, int n)
 {
     LIST_3AK *dest = &list;
     NODE *dest_root = &root;
+    tSInstr *dest_stack = &InstrStack;
+    INSTRUCT *dest_aux = &aux;
     if( func != NULL )
     {
         dest = func->body;
         dest_root = &(func->params);
+        dest_stack = &InstrFunc;
+        dest_aux = &aux_f;
     }
 
     char *name = makeName(array[n]);
@@ -446,21 +454,21 @@ int functions(TOKEN *array, int n)
         // prirazeni volani funkce do promenne
         new_instr(dest, iFUNCTION, &assist1, NULL, NULL, NULL);
 
-        if( aux != NULL )
+        if( *dest_aux != NULL )
         {
-            aux->jump = dest->last;
-            aux = NULL;
+            (*dest_aux)->jump = dest->last;
+            *dest_aux = NULL;
         }
-        if( !SEmptyInstr( &InstrStack ) )
+        if( !SEmptyInstr( dest_stack ) )
         {
-            TOPInstr( &InstrStack, &top );
+            TOPInstr( dest_stack, &top );
             while( top == 43 )
             {
-                POPInstr( &InstrStack, &aux, &top );
-                aux->jump = dest->last;
-                aux = NULL;
-                if( !SEmptyInstr( &InstrStack ) )
-                    TOPInstr( &InstrStack, &top );
+                POPInstr( dest_stack, dest_aux, &top );
+                (*dest_aux)->jump = dest->last;
+                *dest_aux = NULL;
+                if( !SEmptyInstr( dest_stack ) )
+                    TOPInstr( dest_stack, &top );
                 else
                     break;
             }
@@ -531,22 +539,22 @@ int functions(TOKEN *array, int n)
         if( type == iP_STR )
         {
             new_instr(dest, iP_STR_NEW, NULL, NULL, NULL, NULL);   // uvodni instrukce pro funkci put_string
-            if( aux != NULL )
+            if( *dest_aux != NULL )
             {
-                aux->jump = dest->last;
-                aux = NULL;
+                (*dest_aux)->jump = dest->last;
+                *dest_aux = NULL;
             }
 
-            if( !SEmptyInstr( &InstrStack ) )
+            if( !SEmptyInstr( dest_stack ) )
             {
-                TOPInstr( &InstrStack, &top );
+                TOPInstr( dest_stack, &top );
                 while( top == 43 )  // }
                 {
-                    POPInstr( &InstrStack, &aux, &top );
-                    aux->jump = dest->last;
-                    aux = NULL;
-                    if( !SEmptyInstr( &InstrStack ) )
-                        TOPInstr( &InstrStack, &top );
+                    POPInstr( dest_stack, dest_aux, &top );
+                    (*dest_aux)->jump = dest->last;
+                    *dest_aux = NULL;
+                    if( !SEmptyInstr( dest_stack ) )
+                        TOPInstr( dest_stack, &top );
                     else
                         break;
                 }
@@ -556,22 +564,22 @@ int functions(TOKEN *array, int n)
         else if( type == iG_STR )   // get_string()
         {
             new_instr(dest, type, NULL, NULL, &assist2, NULL);
-            if( aux != NULL )
+            if( *dest_aux != NULL )
             {
-                aux->jump = dest->last;
-                aux = NULL;
+                (*dest_aux)->jump = dest->last;
+                *dest_aux = NULL;
             }
 
-            if( !SEmptyInstr( &InstrStack ) )
+            if( !SEmptyInstr( dest_stack ) )
             {
-                TOPInstr( &InstrStack, &top );
+                TOPInstr( dest_stack, &top );
                 while( top == 43 )  // }
                 {
-                    POPInstr( &InstrStack, &aux, &top );
-                    aux->jump = dest->last;
-                    aux = NULL;
-                    if( !SEmptyInstr( &InstrStack ) )
-                        TOPInstr( &InstrStack, &top );
+                    POPInstr( dest_stack, dest_aux, &top );
+                    (*dest_aux)->jump = dest->last;
+                    *dest_aux = NULL;
+                    if( !SEmptyInstr( dest_stack ) )
+                        TOPInstr( dest_stack, &top );
                     else
                         break;
                 }
@@ -593,16 +601,6 @@ int functions(TOKEN *array, int n)
             assist1 = searchIdent(name, dest_root);
             if(assist1 == NULL)
             {
-                /*
-                if(array[n].type_token == 36)
-                {
-                    // nedeklarovana promenna
-                    printERR(eVAR);
-                    eCode = sSemVar;
-                    return EXIT_FAILURE;
-                }
-                */
-
                 insertVarToTree(name, array[n], dest_root);
                 if( eCode != sOK )
                 {
@@ -632,21 +630,21 @@ int functions(TOKEN *array, int n)
                         new_instr(dest, type, &substr1, &substr2, &substr3, NULL);
                         if( first )
                         {
-                            if( aux != NULL )
+                            if( *dest_aux != NULL )
                             {
-                                aux->jump = dest->last;
-                                aux = NULL;
+                                (*dest_aux)->jump = dest->last;
+                                *dest_aux = NULL;
                             }
-                            if( !SEmptyInstr( &InstrStack ) )
+                            if( !SEmptyInstr( dest_stack ) )
                             {
-                                TOPInstr( &InstrStack, &top );
+                                TOPInstr( dest_stack, &top );
                                 while( top == 43 )
                                 {
-                                    POPInstr( &InstrStack, &aux, &top );
-                                    aux->jump = dest->last;
-                                    aux = NULL;
-                                    if( !SEmptyInstr( &InstrStack ) )
-                                        TOPInstr( &InstrStack, &top );
+                                    POPInstr( dest_stack, dest_aux, &top );
+                                    (*dest_aux)->jump = dest->last;
+                                    *dest_aux = NULL;
+                                    if( !SEmptyInstr( dest_stack ) )
+                                        TOPInstr( dest_stack, &top );
                                     else
                                         break;
                                 }
@@ -665,21 +663,21 @@ int functions(TOKEN *array, int n)
                         new_instr(dest, type, &substr1, &assist1, &assist2, NULL );
                         if( first )
                         {
-                            if( aux != NULL )
+                            if( *dest_aux != NULL )
                             {
-                                aux->jump = dest->last;
-                                aux = NULL;
+                                (*dest_aux)->jump = dest->last;
+                                *dest_aux = NULL;
                             }
-                            if( !SEmptyInstr( &InstrStack ) )
+                            if( !SEmptyInstr( dest_stack ) )
                             {
-                                TOPInstr( &InstrStack, &top );
+                                TOPInstr( dest_stack, &top );
                                 while( top == 43 )
                                 {
-                                    POPInstr( &InstrStack, &aux, &top );
-                                    aux->jump = dest->last;
-                                    aux = NULL;
-                                    if( !SEmptyInstr( &InstrStack ) )
-                                        TOPInstr( &InstrStack, &top );
+                                    POPInstr( dest_stack, dest_aux, &top );
+                                    (*dest_aux)->jump = dest->last;
+                                    *dest_aux = NULL;
+                                    if( !SEmptyInstr( dest_stack ) )
+                                        TOPInstr( dest_stack, &top );
                                     else
                                         break;
                                 }
@@ -694,21 +692,21 @@ int functions(TOKEN *array, int n)
                     new_instr(dest, type, &assist1, NULL, &assist2, NULL);
                     if( first )
                     {
-                        if( aux != NULL )
+                        if( *dest_aux != NULL )
                         {
-                            aux->jump = dest->last;
-                            aux = NULL;
+                            (*dest_aux)->jump = dest->last;
+                            *dest_aux = NULL;
                         }
-                        if( !SEmptyInstr( &InstrStack ) )
+                        if( !SEmptyInstr( dest_stack ) )
                         {
-                            TOPInstr( &InstrStack, &top );
+                            TOPInstr( dest_stack, &top );
                             while( top == 43 )
                             {
-                                POPInstr( &InstrStack, &aux, &top );
-                                aux->jump = dest->last;
-                                aux = NULL;
-                                if( !SEmptyInstr( &InstrStack ) )
-                                    TOPInstr( &InstrStack, &top );
+                                POPInstr( dest_stack, dest_aux, &top );
+                                (*dest_aux)->jump = dest->last;
+                                *dest_aux = NULL;
+                                if( !SEmptyInstr( dest_stack ) )
+                                    TOPInstr( dest_stack, &top );
                                 else
                                     break;
                             }
@@ -804,6 +802,7 @@ int expression_sem(TOKEN *array, int *m, int end, bool is_for)  // m = index v p
                     {
                         // TODO chyba
                         fprintf(stderr, "chyba, old < 0\n");
+                        eCode = sINTERN;
                         free(array_expr);
                         return EXIT_FAILURE;
                     }
@@ -869,16 +868,6 @@ int expression_sem(TOKEN *array, int *m, int end, bool is_for)  // m = index v p
 // funkce pro cteni postfixove notace vyrazu a odesilani instrukci interpretu
 int read_postfix(TOKEN *array, int type, int max)
 {
-    /*
-    printf("read_postfix array: ");
-    for(int h=0; h<max; h++)
-    {
-        if( array[h].type_token == 0 )
-            break;
-        printf("%d, ",array[h].type_token);
-    }
-    printf("\n"); */
-
     // pomocne promenne
     int i=0, top;
     char *name = NULL;
@@ -894,10 +883,14 @@ int read_postfix(TOKEN *array, int type, int max)
     // cil pro ukladani instrukci (hlavni telo programu nebo telo funkce)
     LIST_3AK *dest = &list;
     NODE *dest_root = &root;
+    tSInstr *dest_stack = &InstrStack;
+    INSTRUCT *dest_aux = &aux;
     if( func != NULL )
     {
         dest = func->body;
         dest_root = &(func->params);
+        dest_stack = &InstrFunc;
+        dest_aux = &aux_f;
     }
 
     while( i < max && array[i].type_token != 0 )
@@ -911,16 +904,6 @@ int read_postfix(TOKEN *array, int type, int max)
             assist1 = searchIdent(name, dest_root);
             if(assist1 == NULL)
             {               
-                /*
-                if(array[i].type_token == 36)
-                {
-                    // nedeklarovana promenna
-                    printERR(eVAR);
-                    eCode = sSemVar;
-                    return EXIT_FAILURE;
-                }
-                */
-
                 insertVarToTree(name, array[i], dest_root);
                 if( eCode != sOK )
                 {
@@ -1007,27 +990,27 @@ int read_postfix(TOKEN *array, int type, int max)
 
             if( type != 50 )
             {
-                if( aux != NULL )
+                if( *dest_aux != NULL )
                 {
-                    aux->jump = dest->last;
-                    aux = NULL;
+                    (*dest_aux)->jump = dest->last;
+                    *dest_aux = NULL;
                 }
 
                 if( type == 1 || (type >= 3 && type < 5) || ( type == 5 && array[i].type_token != 10 ) )     // if, elseif, while, for
                 {
-                    PUSHInstr( &InstrStack, dest->last, type );
+                    PUSHInstr( dest_stack, dest->last, type );
                     type = 0;
                 }
-                else if( !SEmptyInstr( &InstrStack ) )
+                else if( !SEmptyInstr( dest_stack ) )
                 {
-                    TOPInstr( &InstrStack, &top );
+                    TOPInstr( dest_stack, &top );
                     while( top == 43 )
                     {
-                        POPInstr( &InstrStack, &aux, &top );
-                        aux->jump = dest->last;
-                        aux = NULL;
-                        if( !SEmptyInstr( &InstrStack ) )
-                            TOPInstr( &InstrStack, &top );
+                        POPInstr( dest_stack, dest_aux, &top );
+                        (*dest_aux)->jump = dest->last;
+                        *dest_aux = NULL;
+                        if( !SEmptyInstr( dest_stack ) )
+                            TOPInstr( dest_stack, &top );
                         else
                             break;
                     }
@@ -1074,19 +1057,19 @@ int read_postfix(TOKEN *array, int type, int max)
                 assist2 = searchIdent(name, dest_root);
                 new_instr(dest, iBVAL, &assist1, NULL, &assist2, NULL);
 
-                if( aux != NULL )
+                if( *dest_aux != NULL )
                 {
-                    aux->jump = dest->last;
-                    aux = NULL;
+                    (*dest_aux)->jump = dest->last;
+                    *dest_aux = NULL;
                 }
 
-                PUSHInstr( &InstrStack, dest->last, type );
+                PUSHInstr( dest_stack, dest->last, type );
                 type = 0;
 
                 token_init(&unit);
                 unit.type_token = 33;   // bool
                 unit.boolean = 1;
-                insertVarToTree("true", unit, dest_root);
+                insertVarToTree("true", unit, dest_root);       // TODO pro node->key musi byt malloc
                 if( eCode != sOK )
                 {
                     printERR(eINTERN);
@@ -1100,21 +1083,21 @@ int read_postfix(TOKEN *array, int type, int max)
             case 7:     // return
 
                 new_instr(dest, iRETURN, &assist1, NULL, NULL, NULL);
-                if( aux != NULL )
+                if( *dest_aux != NULL )
                 {
-                    aux->jump = dest->last;
-                    aux = NULL;
+                    (*dest_aux)->jump = dest->last;
+                    *dest_aux = NULL;
                 }
-                if( !SEmptyInstr( &InstrStack ) )
+                if( !SEmptyInstr( dest_stack ) )
                 {
-                    TOPInstr( &InstrStack, &top );
+                    TOPInstr( dest_stack, &top );
                     while( top == 43 )
                     {
-                        POPInstr( &InstrStack, &aux, &top );
-                        aux->jump = dest->last;
-                        aux = NULL;
-                        if( !SEmptyInstr( &InstrStack ) )
-                            TOPInstr( &InstrStack, &top );
+                        POPInstr( dest_stack, dest_aux, &top );
+                        (*dest_aux)->jump = dest->last;
+                        *dest_aux = NULL;
+                        if( !SEmptyInstr( dest_stack ) )
+                            TOPInstr( dest_stack, &top );
                         else
                             break;
                     }
@@ -1424,15 +1407,15 @@ void dispose_array(TOKEN *array, int max)
 // funkce pro realokaci pole
 int realloc_array(TOKEN*array, int*m)
 {
-	TOKEN *aux = NULL;
-	if( (aux = realloc(array,(*m)*2*sizeof(TOKEN))) == NULL )
+	TOKEN *aux2 = NULL;
+	if( (aux2 = realloc(array,(*m)*2*sizeof(TOKEN))) == NULL )
 	{
 		printERR(eINTERN);
 		eCode = sINTERN;
         dispose_array(array, *m);
 		return EXIT_FAILURE;
 	}
-	array = aux;
+	array = aux2;
 
 	for(int x=(*m); x<(*m)*2; x++)
 	{
@@ -1447,35 +1430,35 @@ void correct_list(LIST_3AK *check)
 {
     if( check != NULL )
     {
-        INSTRUCT aux;
+        INSTRUCT aux2;
         NODE assist1 = NULL;
         int top;
-        aux = check->first;
-        while( aux != NULL )    // prochazeni celym listem
+        aux2 = check->first;
+        while( aux2 != NULL )    // prochazeni celym listem
         {
             top = 1;
-            if( aux->id == iFUNCTION )  // nalezeni instrukce prirazeni hodnot parametrum
+            if( aux2->id == iFUNCTION )  // nalezeni instrukce prirazeni hodnot parametrum
             {
-                if( strcmp(aux->operand_1->key, func->data.id_name) == 0)
+                if( strcmp(aux2->operand_1->key, func->data.id_name) == 0)
                 {
-                    aux->operand_1 = func;
-                    aux = aux->right;
-                    while( aux->id == iSAVE_PAR )
+                    aux2->operand_1 = func;
+                    aux2 = aux2->right;
+                    while( aux2->id == iSAVE_PAR )
                     {
                         if( (assist1 = searchParam(top++, &(func->params))) != NULL )
-                            aux->result = assist1;
+                            aux2->result = assist1;
                         else
-                            aux->result = NULL;
-                        aux = aux->right;
+                            aux2->result = NULL;
+                        aux2 = aux2->right;
                     }
-                    aux->operand_1 = func;
+                    aux2->operand_1 = func;
                 }
                 else
-                    aux = aux->right;     // nenasli jsme aktualni funkci, hledani pokracuje
+                    aux2 = aux2->right;     // nenasli jsme aktualni funkci, hledani pokracuje
             }
             else
                 // nenasli jsme instrukci typu iSAVE_PAR
-                aux = aux->right;
+                aux2 = aux2->right;
         }
     }
 }
