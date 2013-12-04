@@ -147,6 +147,11 @@ int interpret(LIST_3AK *list){
     //*******************************************
     //return
     if(list->actual->id == iRETURN){
+
+      if(SEmptyNode(&ret_addr)){
+        return EXIT_SUCCESS;
+      }
+
       TOPPOPNode(&ret_addr,&result);
 
       result->data.type_token = op_1->data.type_token;

@@ -162,7 +162,8 @@ TOKEN get_token(){
     while(1){
       if(buffer[pos_buffer] == '\n'){
         if(read_src() == 1){
-          new_tok.type_token = 50;
+          new_tok.type_token = 0;
+          eCode = 1;
           return new_tok;
         }
         pos_buffer = 0;
