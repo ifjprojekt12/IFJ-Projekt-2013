@@ -51,12 +51,9 @@ int boolval(NODE value){
 // 101 = e
 
 double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit napr 1.3e chyba
-
 		int i = 0;
 		double result = 0.0;
 		int exponent = 0;
-
-
 		switch(node->data.type_token){
 			case 30://string
 				break;
@@ -98,39 +95,11 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 				i++;
 
 			}
-			if ( string[i] == '+' ){ //exponent
+			if ( string[i] == 'E'  || string[i] == 'e' ){
 				i++;
-				if ( string[i] == 'E' || string[i] == 'e' ){
+				if ( string[i] == '-'){
 					i++;
-				}else{
-					eCode = 11;
-					return EXIT_FAILURE;
-				}
-				if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
-					while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
-						exponent *= 10;
-						exponent += (double) string[i]-48;
-						i++;
-					}
-					for (int i = 1; i <exponent;i++ ){
-						result*=10;
-					}
-					return result; //vysledek
-				}else{
-					eCode = 11;
-					return EXIT_FAILURE;
-				}
-
-
-			}else if ( string[i] == '-' ){
-				i++;
-				if ( string[i] == 'E' || string[i] == 'e' ){
-					i++;
-				}else{
-					eCode = 11;
-					return EXIT_FAILURE;
-				}
-				if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
+					if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
 					while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
 						exponent *= 10;
 						exponent += (double) string[i]-48;
@@ -140,26 +109,26 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 						result/=10;
 					}
 					return result; // vysledek
-				}else{
-					eCode = 11;
-					return EXIT_FAILURE;
-				}
-			} else if ( string[i] == 'E' || string[i] == 'e' ){
-				i++;
-				if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
-					while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
-						exponent *= 10;
-						exponent += (double) string[i]-48;
-						i++;
+					}else{
+						eCode = 11;
+						return EXIT_FAILURE;
 					}
-					for (int i = 1; i <=exponent;i++ ){
-						result*=10;
-					}
-					return result; // vysledek
 				}else{
-					eCode = 11;
-					return EXIT_FAILURE;
-				}
+					if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
+						while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
+							exponent *= 10;
+							exponent += (double) string[i]-48;
+							i++;
+						}
+						for (int i = 1; i <exponent;i++ ){
+							result*=10;
+						}
+						return result; //vysledek
+					}else{
+						eCode = 11;
+						return EXIT_FAILURE;
+					}
+				}												
 			} else if( string[i] == '.' ){	// nasleduje desetina cast
 					i++;
 					if ( string[i] >= 48 && string[i] <= 57 ){
@@ -169,85 +138,54 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 						result += ((double) string[i]-48)/ count;
 						count *= 10;
 						i++;
+					}										
+					if ( string[i] == 'E'  || string[i] == 'e' ){
+						i++;
+						if ( string[i] == '-'){
+							i++;
+							if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
+							while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
+								exponent *= 10;
+								exponent += (double) string[i]-48;
+								i++;
+							}
+							for (int i = 1; i <=exponent;i++ ){
+								result/=10;
+							}
+							return result; // vysledek
+							}else{
+								eCode = 11;
+								return EXIT_FAILURE;
+							}
+						}else{
+							if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
+								while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
+									exponent *= 10;
+									exponent += (double) string[i]-48;
+									i++;
+								}
+								for (int i = 1; i <exponent;i++ ){
+									result*=10;
+								}
+								return result; //vysledek
+							}else{
+								eCode = 11;
+								return EXIT_FAILURE;
+							}
+						}																							
 					}
-
-					if ( string[i] == '+' ){
-							i++;
-							if ( string[i] == 'E' || string[i] == 'e' ){
-								i++;
-							}else{
-								eCode = 11;
-								return EXIT_FAILURE;
-							}
-							if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
-								while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
-									exponent *= 10;
-									exponent += (double) string[i]-48;
-									i++;
-								}
-								for (int i = 1; i <=exponent;i++ ){
-									result*=10;
-								}
-								return result;	// vysledek
-
-							}else{
-								eCode = 11;
-								return EXIT_FAILURE;
-							}
-
-
-						}else if ( string[i] == '-' ){
-							i++;
-							if ( string[i] == 'E' || string[i] == 'e' ){
-								i++;
-							}else{
-								eCode = 11;
-								return EXIT_FAILURE;
-							}
-							if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
-								while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
-									exponent *= 10;
-									exponent += (double) string[i]-48;
-									i++;
-								}
-								for (int i = 1; i <=exponent;i++ ){
-									result/=10;
-								}
-								return result; // vysledek
-							}else{
-								eCode = 11;
-								return EXIT_FAILURE;
-							}
-						} else if ( string[i] == 'E' || string[i] == 'e' ){
-							i++;
-							if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
-								while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
-									exponent *= 10;
-									exponent += (double) string[i]-48;
-									i++;
-								}
-								for (int i = 1; i <=exponent;i++ ){
-									result*=10;
-								}
-								return result;	// vysledek
-							}else{
-								eCode = 11;
-								return EXIT_FAILURE;
-							}
-						}
 					}else{
 						eCode = 11;
 
 						return EXIT_FAILURE;
 					}
 			}
-
-
 		} else if ( string[i] < 49 || string[i] > 57 ){
 			return result;
 		}
 		return result;
-}
+}			
+
 
 //Funkce prevede retezec na int
 int intval(NODE node){
