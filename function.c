@@ -321,7 +321,7 @@ void put_string(NODE *ptr)
     NODE node = *ptr;
     if (node->data.type_token == 30) printf("%s", node->data.string);
     else if (node->data.type_token == 31) printf("%i", node->data.c_number);
-    else if (node->data.type_token == 32) printf("%f", node->data.d_number);
+    else if (node->data.type_token == 32) printf("%g", node->data.d_number);
     else if (node->data.type_token == 33)
     {
         if (node->data.boolean == TRUE) printf("1");
