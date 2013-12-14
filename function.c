@@ -114,13 +114,16 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 						return EXIT_FAILURE;
 					}
 				}else{
+					if(string[i] == '+'){
+					i++;
+					}
 					if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
 						while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
 							exponent *= 10;
 							exponent += (double) string[i]-48;
 							i++;
 						}
-						for (int i = 1; i <exponent;i++ ){
+						for (int i = 1; i <=exponent;i++ ){
 							result*=10;
 						}
 						return result; //vysledek
@@ -158,13 +161,16 @@ double doubleval(NODE node){ //TODO pokud je spatny format cisla tak ukoncit nap
 								return EXIT_FAILURE;
 							}
 						}else{
+							if(string[i] == '+'){
+							i++;
+							}
 							if ( string[i] >= 48 && string[i] <= 57 ){ // znak je cislo
 								while ( string[i] >= 48 && string[i] <= 57 ){	//konvertuje retezcova cisla na cisla double
 									exponent *= 10;
 									exponent += (double) string[i]-48;
 									i++;
 								}
-								for (int i = 1; i <exponent;i++ ){
+								for (int i = 1; i <=exponent;i++ ){
 									result*=10;
 								}
 								return result; //vysledek
