@@ -950,7 +950,7 @@ int interpret(LIST_3AK *list){
         return EXIT_FAILURE;
       }
       result->data.d_number = doubleval(op_1);
-      if(eCode == 13){
+      if(eCode != sOK){
         return EXIT_FAILURE;
       }
       result->data.type_token = 32;
