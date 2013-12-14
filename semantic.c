@@ -258,8 +258,25 @@ int semantixer(TOKEN *array)
         }
         else
         {
-            fprintf(stderr,"sem bych se nemel nikdy dostat.\n");
-            // co kdyz bude prazdna, jakou instrukci vytvorit ?? TODO
+            // nekonecny cyklus for
+            TOKEN unit;
+            token_init(&unit);
+            unit.type_token = 33;   // bool
+            unit.boolean = 1;
+            insertVarToTree("true", unit, dest_root);       // TODO pro node->key musi byt malloc
+            if( eCode != sOK )
+            {
+                printERR(eINTERN);
+                return EXIT_FAILURE;
+            }
+            NODE assist3 = searchIdent("true", dest_root);
+            new_instr(dest, iEQ, &assist3, &assist3, NULL, NULL);
+            if( *dest_aux != NULL )
+            {
+                (*dest_aux)->jump = dest->last;
+                *dest_aux = NULL;
+            }
+            PUSHInstr( dest_stack, dest->last, array[0].type_token );
         }
         n++;
 
