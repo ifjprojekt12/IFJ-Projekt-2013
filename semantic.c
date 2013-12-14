@@ -1002,9 +1002,29 @@ int read_postfix(TOKEN *array, int type, int max)
                     *dest_aux = NULL;
                 }
 
-                if( type == 1 || (type >= 3 && type < 5) || ( type == 5 && array[i].type_token != 10 ) )     // if, elseif, while, for
+                if( type == 1 || type == 4 || ( type == 5 && array[i].type_token != 10 ) )     // if, elseif, while, for
                 {
+                    if( !SEmptyInstr(dest_stack))
+                    {
+                        TOPInstr(dest_stack, &top);
+                        while( top == 43 )
+                        {
+                            POPInstr( dest_stack, dest_aux, &top );
+                            (*dest_aux)->jump = dest->last;
+                            *dest_aux = NULL;
+                            if( !SEmptyInstr( dest_stack ) )
+                                TOPInstr( dest_stack, &top );
+                            else
+                                break;
+                        }
+                    }
+
                     PUSHInstr( dest_stack, dest->last, type );
+                    type = 0;
+                }
+                if( type == 3 )     // elseif
+                {
+                    PUSHInstr( dest_stack, dest->last, type);
                     type = 0;
                 }
                 else if( !SEmptyInstr( dest_stack ) )
