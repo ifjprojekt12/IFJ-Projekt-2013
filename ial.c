@@ -231,10 +231,7 @@ void reverse(char s[]) {
 }
 
 // funkce vrací seøazený øetìzec podle shell sortu
-char *my_sort_string (char *old_string) {
-
-    char*string = malloc(strlen(old_string));
-    strcpy(string, old_string);
+char *my_sort_string (char *string) {
 
     unsigned int length = strlen(string);
     int increment = length / 2;
